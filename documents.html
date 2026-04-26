@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DB Studio — Documents</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --gold: #C9A84C; --bg: #080808; --surface: #0f0f0f; --surface2: #161616; --border: #1e1e1e; --text: #e8e8e8; --muted: #555; --green: #27ae60; --red: #c0392b; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; display: flex; min-height: 100vh; }
+  nav { width: 220px; min-height: 100vh; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 32px 0; position: fixed; top: 0; left: 0; bottom: 0; }
+  .nav-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 16px; color: var(--gold); letter-spacing: 3px; padding: 0 24px; margin-bottom: 40px; }
+  .nav-section { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); padding: 0 24px; margin-bottom: 8px; margin-top: 20px; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 24px; font-size: 13px; color: var(--muted); text-decoration: none; transition: all 0.15s; border-left: 2px solid transparent; }
+  .nav-item:hover { color: var(--text); background: var(--surface2); }
+  .nav-item.active { color: var(--gold); border-left-color: var(--gold); background: rgba(201,168,76,0.05); }
+  .nav-item .ico { font-size: 15px; width: 18px; text-align: center; }
+  .nav-bottom { margin-top: auto; padding: 0 24px; }
+  .nav-logout { font-size: 11px; color: var(--muted); cursor: pointer; text-decoration: none; }
+  .nav-logout:hover { color: var(--red); }
+  main { margin-left: 220px; flex: 1; padding: 40px; display: flex; flex-direction: column; }
+  .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 40px; }
+  .page-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 24px; }
+
+  .doc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-bottom: 40px; }
+  .doc-card { background: var(--surface); border: 1px solid var(--border); padding: 28px; cursor: pointer; transition: border-color 0.15s; text-align: center; }
+  .doc-card:hover { border-color: var(--gold); }
+  .doc-ico { font-size: 32px; margin-bottom: 16px; }
+  .doc-name { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+  .doc-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
+  .doc-btn { margin-top: 20px; display: inline-block; padding: 10px 20px; background: var(--gold); color: #000; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; border: none; cursor: pointer; transition: background 0.2s; }
+  .doc-btn:hover { background: #d9b55c; }
+
+  /* MODAL */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 100; align-items: center; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--surface); border: 1px solid var(--border); width: 600px; max-width: 95vw; max-height: 90vh; overflow-y: auto; padding: 40px; animation: fadeUp 0.2s ease; }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+  .modal h3 { font-family: 'Syne', sans-serif; font-size: 18px; margin-bottom: 8px; color: var(--gold); }
+  .modal-sub { font-size: 12px; color: var(--muted); margin-bottom: 28px; }
+  .form-row { margin-bottom: 16px; }
+  .form-row label { display: block; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 7px; }
+  .form-row input, .form-row textarea, .form-row select { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 11px 14px; outline: none; transition: border-color 0.2s; }
+  .form-row input:focus, .form-row textarea:focus { border-color: var(--gold); }
+  .form-row textarea { min-height: 80px; resize: vertical; }
+  .form-row select option { background: var(--surface); }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .modal-btns { display: flex; gap: 10px; margin-top: 24px; }
+  .btn-gold { padding: 12px 24px; background: var(--gold); border: none; color: #000; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; }
+  .btn-gold:hover { background: #d9b55c; }
+  .btn-cancel { padding: 12px 20px; background: transparent; border: 1px solid var(--border); color: var(--muted); font-size: 12px; cursor: pointer; }
+  .btn-cancel:hover { border-color: var(--muted); }
+
+  /* PREVIEW */
+  .preview { background: var(--bg); border: 1px solid var(--border); padding: 32px; margin-top: 24px; font-size: 13px; line-height: 1.8; white-space: pre-wrap; display: none; }
+  .preview.show { display: block; }
+  .preview-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px; }
+  .preview-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 20px; color: var(--gold); letter-spacing: 3px; }
+  .preview-doc-type { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
+  .preview h4 { font-family: 'Syne', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin: 20px 0 8px; }
+  .preview-line { border-bottom: 1px solid var(--border); margin: 16px 0; }
+  .preview-total { font-family: 'Syne', sans-serif; font-size: 18px; color: var(--gold); }
+  .btn-print { padding: 10px 20px; background: transparent; border: 1px solid var(--gold); color: var(--gold); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; font-family: 'Syne', sans-serif; }
+  .btn-print:hover { background: var(--gold); color: #000; }
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-logo">DB STUDIO</div>
+  <div class="nav-section">Principal</div>
+  <a href="dashboard.html" class="nav-item"><span class="ico">⬛</span> Dashboard</a>
+  <a href="crm.html" class="nav-item"><span class="ico">◈</span> Prospects & Clients</a>
+  <a href="projets.html" class="nav-item"><span class="ico">◇</span> Projets</a>
+  <div class="nav-section">Gestion</div>
+  <a href="finances.html" class="nav-item"><span class="ico">◆</span> Finances</a>
+  <a href="documents.html" class="nav-item active"><span class="ico">▣</span> Documents</a>
+  <div class="nav-bottom"><a class="nav-logout" onclick="logout()">← Déconnexion</a></div>
+</nav>
+
+<main>
+  <div class="top-bar">
+    <div class="page-title">Documents</div>
+  </div>
+
+  <div class="doc-grid">
+    <div class="doc-card">
+      <div class="doc-ico">📋</div>
+      <div class="doc-name">Devis</div>
+      <div class="doc-desc">Génère un devis professionnel DB Studio avec tes prestations et tarifs.</div>
+      <button class="doc-btn" onclick="openDoc('devis')">Créer un devis</button>
+    </div>
+    <div class="doc-card">
+      <div class="doc-ico">📄</div>
+      <div class="doc-name">Facture</div>
+      <div class="doc-desc">Génère une facture officielle à envoyer au client après signature ou livraison.</div>
+      <button class="doc-btn" onclick="openDoc('facture')">Créer une facture</button>
+    </div>
+    <div class="doc-card">
+      <div class="doc-ico">📝</div>
+      <div class="doc-name">Contrat</div>
+      <div class="doc-desc">Génère un contrat de prestation pour sécuriser la relation client dès le départ.</div>
+      <button class="doc-btn" onclick="openDoc('contrat')">Créer un contrat</button>
+    </div>
+  </div>
+</main>
+
+<!-- MODAL DOCUMENT -->
+<div class="modal-overlay" id="docModal">
+  <div class="modal">
+    <h3 id="docTitle">Nouveau document</h3>
+    <div class="modal-sub" id="docSub"></div>
+
+    <div id="formZone"></div>
+
+    <div id="previewZone" class="preview"></div>
+
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">Fermer</button>
+      <button class="btn-gold" id="btnGenerate" onclick="generateDoc()">Générer →</button>
+      <button class="btn-print" id="btnPrint" style="display:none" onclick="window.print()">Imprimer / PDF</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  if (!sessionStorage.getItem('auth')) window.location.href = 'index.html';
+  function logout() { sessionStorage.clear(); window.location.href = 'index.html'; }
+
+  let currentDocType = null;
+
+  const AGENCE = {
+    nom: 'DB Studio',
+    siret: 'SIRET : à compléter',
+    adresse: 'Gap, Hautes-Alpes (05), France',
+    email: 'contact@dbstudio.fr',
+    site: 'dbstudio.fr'
+  };
+
+  function openDoc(type) {
+    currentDocType = type;
+    const titles = { devis: 'Nouveau devis', facture: 'Nouvelle facture', contrat: 'Nouveau contrat' };
+    const subs = { devis: 'Remplis les infos ci-dessous. Le document sera généré à la demande.', facture: 'Remplis les infos ci-dessous. La facture sera générée à la demande.', contrat: 'Remplis les infos ci-dessous. Le contrat sera généré à la demande.' };
+    document.getElementById('docTitle').textContent = titles[type];
+    document.getElementById('docSub').textContent = subs[type];
+    document.getElementById('previewZone').classList.remove('show');
+    document.getElementById('btnPrint').style.display = 'none';
+    document.getElementById('btnGenerate').style.display = '';
+    renderForm(type);
+    document.getElementById('docModal').classList.add('open');
+  }
+
+  function closeModal() { document.getElementById('docModal').classList.remove('open'); }
+
+  function renderForm(type) {
+    const z = document.getElementById('formZone');
+    if (type === 'devis' || type === 'facture') {
+      z.innerHTML = `
+        <div class="form-grid">
+          <div class="form-row"><label>Client</label><input id="dClient" placeholder="Nom du client"></div>
+          <div class="form-row"><label>Entreprise</label><input id="dEntreprise" placeholder="Entreprise / Commerce"></div>
+          <div class="form-row"><label>Email client</label><input id="dEmail" placeholder="client@exemple.com"></div>
+          <div class="form-row"><label>N° ${type === 'devis' ? 'Devis' : 'Facture'}</label><input id="dNum" placeholder="${type === 'devis' ? 'DEV' : 'FAC'}-2026-001"></div>
+        </div>
+        <div class="form-row"><label>Prestation(s)</label><textarea id="dPresta" placeholder="- Création site vitrine 5 pages&#10;- Hébergement 1 an inclus&#10;- SEO de base"></textarea></div>
+        <div class="form-grid">
+          <div class="form-row"><label>Montant HT (€)</label><input id="dMontant" type="number" placeholder="0"></div>
+          <div class="form-row"><label>Date</label><input id="dDate" type="date" value="${new Date().toISOString().split('T')[0]}"></div>
+        </div>
+        <div class="form-row"><label>Conditions de paiement</label><input id="dConditions" placeholder="Acompte 30% à la signature, solde à la livraison"></div>
+      `;
+    } else {
+      z.innerHTML = `
+        <div class="form-grid">
+          <div class="form-row"><label>Client</label><input id="dClient" placeholder="Nom du client"></div>
+          <div class="form-row"><label>Entreprise</label><input id="dEntreprise" placeholder="Entreprise / Commerce"></div>
+        </div>
+        <div class="form-row"><label>Objet du contrat</label><input id="dObjet" placeholder="Création et maintenance de site web"></div>
+        <div class="form-grid">
+          <div class="form-row"><label>Date de début</label><input id="dDebut" type="date" value="${new Date().toISOString().split('T')[0]}"></div>
+          <div class="form-row"><label>Durée</label><input id="dDuree" placeholder="12 mois renouvelable"></div>
+        </div>
+        <div class="form-row"><label>Montant total (€)</label><input id="dMontant" type="number" placeholder="0"></div>
+        <div class="form-row"><label>Prestations incluses</label><textarea id="dPresta" placeholder="- Création site vitrine&#10;- Hébergement&#10;- Maintenance mensuelle"></textarea></div>
+      `;
+    }
+  }
+
+  function generateDoc() {
+    const z = document.getElementById('previewZone');
+    z.classList.add('show');
+    document.getElementById('btnPrint').style.display = '';
+    document.getElementById('btnGenerate').style.display = 'none';
+
+    const client = document.getElementById('dClient')?.value || '—';
+    const entreprise = document.getElementById('dEntreprise')?.value || '';
+    const montant = Number(document.getElementById('dMontant')?.value || 0);
+    const date = document.getElementById('dDate')?.value || new Date().toISOString().split('T')[0];
+    const num = document.getElementById('dNum')?.value || '—';
+
+    if (currentDocType === 'devis' || currentDocType === 'facture') {
+      const label = currentDocType === 'devis' ? 'DEVIS' : 'FACTURE';
+      const presta = document.getElementById('dPresta')?.value || '—';
+      const conditions = document.getElementById('dConditions')?.value || '—';
+      const tva = (montant * 0.20).toFixed(2);
+      const ttc = (montant * 1.20).toFixed(2);
+      z.innerHTML = `
+        <div class="preview-header">
+          <div><div class="preview-logo">DB STUDIO</div><div class="preview-doc-type">${label}</div></div>
+          <div style="text-align:right;font-size:12px;color:var(--muted)">
+            <div>${AGENCE.siret}</div>
+            <div>${AGENCE.adresse}</div>
+            <div>${AGENCE.email}</div>
+            <div>${AGENCE.site}</div>
+          </div>
+        </div>
+        <div class="preview-line"></div>
+        <h4>Informations</h4>
+        <div>N° ${label} : <strong>${num}</strong></div>
+        <div>Date : <strong>${date}</strong></div>
+        <div style="margin-top:12px">Client : <strong>${client}${entreprise ? ' — ' + entreprise : ''}</strong></div>
+        <h4>Prestations</h4>
+        <div style="white-space:pre-line">${presta}</div>
+        <div class="preview-line"></div>
+        <div>Montant HT : <strong>${montant.toLocaleString('fr-FR')} €</strong></div>
+        <div>TVA (20%) : <strong>${parseFloat(tva).toLocaleString('fr-FR')} €</strong></div>
+        <div style="margin-top:8px">Total TTC : <span class="preview-total">${parseFloat(ttc).toLocaleString('fr-FR')} €</span></div>
+        <div class="preview-line"></div>
+        <h4>Conditions de paiement</h4>
+        <div>${conditions}</div>
+        <div style="margin-top:24px;font-size:11px;color:var(--muted)">Document généré par DB Studio — ${new Date().toLocaleDateString('fr-FR')}</div>
+      `;
+    } else {
+      const objet = document.getElementById('dObjet')?.value || '—';
+      const debut = document.getElementById('dDebut')?.value || '—';
+      const duree = document.getElementById('dDuree')?.value || '—';
+      const presta = document.getElementById('dPresta')?.value || '—';
+      z.innerHTML = `
+        <div class="preview-header">
+          <div><div class="preview-logo">DB STUDIO</div><div class="preview-doc-type">CONTRAT DE PRESTATION</div></div>
+          <div style="text-align:right;font-size:12px;color:var(--muted)">
+            <div>${AGENCE.siret}</div>
+            <div>${AGENCE.adresse}</div>
+            <div>${AGENCE.email}</div>
+          </div>
+        </div>
+        <div class="preview-line"></div>
+        <h4>Parties</h4>
+        <div><strong>Prestataire :</strong> DB Studio — ${AGENCE.adresse}</div>
+        <div style="margin-top:8px"><strong>Client :</strong> ${client}${entreprise ? ' — ' + entreprise : ''}</div>
+        <h4>Objet</h4>
+        <div>${objet}</div>
+        <h4>Prestations</h4>
+        <div style="white-space:pre-line">${presta}</div>
+        <h4>Durée & Montant</h4>
+        <div>Date de début : <strong>${debut}</strong></div>
+        <div>Durée : <strong>${duree}</strong></div>
+        <div>Montant : <span class="preview-total">${montant.toLocaleString('fr-FR')} €</span></div>
+        <div class="preview-line"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:32px;font-size:12px;color:var(--muted)">
+          <div>Signature Prestataire<br><br><br>_______________</div>
+          <div>Signature Client<br><br><br>_______________</div>
+        </div>
+        <div style="margin-top:24px;font-size:11px;color:var(--muted)">Document généré par DB Studio — ${new Date().toLocaleDateString('fr-FR')}</div>
+      `;
+    }
+  }
+</script>
+</body>
+</html>

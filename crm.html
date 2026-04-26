@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DB Studio — CRM</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --gold: #C9A84C;
+    --bg: #080808;
+    --surface: #0f0f0f;
+    --surface2: #161616;
+    --border: #1e1e1e;
+    --text: #e8e8e8;
+    --muted: #555;
+    --green: #27ae60;
+    --red: #c0392b;
+    --orange: #e67e22;
+    --blue: #2980b9;
+  }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; display: flex; min-height: 100vh; }
+
+  nav {
+    width: 220px; min-height: 100vh; background: var(--surface);
+    border-right: 1px solid var(--border); display: flex; flex-direction: column;
+    padding: 32px 0; position: fixed; top: 0; left: 0; bottom: 0;
+  }
+  .nav-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 16px; color: var(--gold); letter-spacing: 3px; padding: 0 24px; margin-bottom: 40px; }
+  .nav-section { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); padding: 0 24px; margin-bottom: 8px; margin-top: 20px; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 24px; font-size: 13px; color: var(--muted); text-decoration: none; transition: all 0.15s; border-left: 2px solid transparent; }
+  .nav-item:hover { color: var(--text); background: var(--surface2); }
+  .nav-item.active { color: var(--gold); border-left-color: var(--gold); background: rgba(201,168,76,0.05); }
+  .nav-item .ico { font-size: 15px; width: 18px; text-align: center; }
+  .nav-bottom { margin-top: auto; padding: 0 24px; }
+  .nav-logout { font-size: 11px; color: var(--muted); cursor: pointer; text-decoration: none; letter-spacing: 1px; }
+  .nav-logout:hover { color: var(--red); }
+
+  main { margin-left: 220px; flex: 1; padding: 40px; }
+
+  .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 40px; }
+  .page-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 24px; }
+
+  .btn-gold {
+    padding: 12px 24px; background: var(--gold); border: none; color: #000;
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 11px;
+    letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: background 0.2s;
+  }
+  .btn-gold:hover { background: #d9b55c; }
+
+  /* PIPELINE */
+  .pipeline { display: flex; gap: 12px; overflow-x: auto; margin-bottom: 32px; padding-bottom: 8px; }
+  .stage {
+    min-width: 200px; background: var(--surface); border: 1px solid var(--border);
+    border-top: 2px solid var(--gold); flex: 1;
+  }
+  .stage-header { padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+  .stage-name { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); }
+  .stage-count { font-size: 11px; color: var(--muted); }
+  .stage-cards { min-height: 60px; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+  .prospect-card {
+    background: var(--surface2); border: 1px solid var(--border); padding: 12px;
+    cursor: pointer; transition: border-color 0.15s;
+  }
+  .prospect-card:hover { border-color: var(--gold); }
+  .prospect-card .name { font-size: 13px; font-weight: 500; margin-bottom: 4px; }
+  .prospect-card .company { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
+  .prospect-card .meta { display: flex; justify-content: space-between; font-size: 10px; color: var(--muted); }
+
+  /* FILTER BAR */
+  .filter-bar { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+  .filter-btn {
+    padding: 6px 14px; background: var(--surface); border: 1px solid var(--border);
+    color: var(--muted); font-size: 11px; cursor: pointer; letter-spacing: 1px; transition: all 0.15s;
+  }
+  .filter-btn.active { border-color: var(--gold); color: var(--gold); }
+
+  /* TABLE VUE */
+  .table-view { display: none; }
+  .table-view.active { display: block; }
+  .pipeline-view { display: block; }
+  .pipeline-view.hidden { display: none; }
+
+  table { width: 100%; border-collapse: collapse; }
+  th { text-align: left; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); padding: 10px 14px; border-bottom: 1px solid var(--border); }
+  td { padding: 14px; border-bottom: 1px solid var(--border); font-size: 13px; vertical-align: middle; }
+  tr:hover td { background: var(--surface); }
+  .badge {
+    display: inline-block; padding: 3px 10px; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; border-radius: 0;
+  }
+  .badge.ident { background: rgba(41,128,185,0.15); color: var(--blue); border: 1px solid rgba(41,128,185,0.3); }
+  .badge.contact { background: rgba(230,126,34,0.15); color: var(--orange); border: 1px solid rgba(230,126,34,0.3); }
+  .badge.rdv { background: rgba(201,168,76,0.15); color: var(--gold); border: 1px solid rgba(201,168,76,0.3); }
+  .badge.nego { background: rgba(155,89,182,0.15); color: #9b59b6; border: 1px solid rgba(155,89,182,0.3); }
+  .badge.signe { background: rgba(39,174,96,0.15); color: var(--green); border: 1px solid rgba(39,174,96,0.3); }
+  .badge.perdu { background: rgba(192,57,43,0.15); color: var(--red); border: 1px solid rgba(192,57,43,0.3); }
+  .action-link { font-size: 11px; color: var(--gold); cursor: pointer; margin-right: 12px; }
+  .action-link:hover { text-decoration: underline; }
+
+  /* MODAL */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 100; align-items: flex-start; justify-content: flex-end; }
+  .modal-overlay.open { display: flex; }
+  .drawer {
+    background: var(--surface); border-left: 1px solid var(--border);
+    width: 480px; max-width: 95vw; height: 100vh; overflow-y: auto;
+    padding: 40px 32px; animation: slideIn 0.25s ease;
+  }
+  @keyframes slideIn { from { transform: translateX(40px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  .drawer h3 { font-family: 'Syne', sans-serif; font-size: 18px; margin-bottom: 6px; }
+  .drawer-sub { font-size: 11px; color: var(--muted); margin-bottom: 32px; }
+  .form-row { margin-bottom: 18px; }
+  .form-row label { display: block; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 7px; }
+  .form-row input, .form-row select, .form-row textarea {
+    width: 100%; background: var(--bg); border: 1px solid var(--border);
+    color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px;
+    padding: 11px 14px; outline: none; transition: border-color 0.2s;
+  }
+  .form-row input:focus, .form-row select:focus, .form-row textarea:focus { border-color: var(--gold); }
+  .form-row select option { background: var(--surface); }
+  .form-row textarea { resize: vertical; min-height: 80px; }
+  .drawer-btns { display: flex; gap: 10px; margin-top: 24px; }
+  .btn-cancel { padding: 12px 20px; background: transparent; border: 1px solid var(--border); color: var(--muted); font-size: 12px; cursor: pointer; }
+  .btn-cancel:hover { border-color: var(--muted); color: var(--text); }
+
+  /* ETAPES */
+  .etapes { margin-bottom: 24px; }
+  .etape-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .etape {
+    padding: 5px 12px; font-size: 10px; letter-spacing: 1px; text-transform: uppercase;
+    border: 1px solid var(--border); color: var(--muted); cursor: pointer; transition: all 0.15s;
+  }
+  .etape.done { background: rgba(201,168,76,0.1); border-color: var(--gold); color: var(--gold); }
+  .etape.current { background: var(--gold); color: #000; border-color: var(--gold); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">DB STUDIO</div>
+  <div class="nav-section">Principal</div>
+  <a href="dashboard.html" class="nav-item"><span class="ico">⬛</span> Dashboard</a>
+  <a href="crm.html" class="nav-item active"><span class="ico">◈</span> Prospects & Clients</a>
+  <a href="projets.html" class="nav-item"><span class="ico">◇</span> Projets</a>
+  <div class="nav-section">Gestion</div>
+  <a href="finances.html" class="nav-item"><span class="ico">◆</span> Finances</a>
+  <a href="documents.html" class="nav-item"><span class="ico">▣</span> Documents</a>
+  <div class="nav-bottom">
+    <a class="nav-logout" onclick="logout()">← Déconnexion</a>
+  </div>
+</nav>
+
+<main>
+  <div class="top-bar">
+    <div class="page-title">Prospects & Clients</div>
+    <button class="btn-gold" onclick="openDrawer()">+ Nouveau prospect</button>
+  </div>
+
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="setFilter('tous',this)">Tous</button>
+    <button class="filter-btn" onclick="setFilter('actif',this)">Actifs</button>
+    <button class="filter-btn" onclick="setFilter('signe',this)">Signés</button>
+    <button class="filter-btn" onclick="setFilter('perdu',this)">Perdus</button>
+    <div style="flex:1"></div>
+    <button class="filter-btn" onclick="toggleView('pipeline',this)" id="btnPipeline" style="border-color:var(--gold);color:var(--gold)">Pipeline</button>
+    <button class="filter-btn" onclick="toggleView('table',this)" id="btnTable">Tableau</button>
+  </div>
+
+  <!-- PIPELINE -->
+  <div class="pipeline-view" id="pipelineView">
+    <div class="pipeline" id="pipelineBoard"></div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-view" id="tableView">
+    <table>
+      <thead>
+        <tr>
+          <th>Contact</th>
+          <th>Entreprise</th>
+          <th>Étape</th>
+          <th>Dernier contact</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+
+</main>
+
+<!-- DRAWER -->
+<div class="modal-overlay" id="drawer">
+  <div class="drawer">
+    <h3 id="drawerTitle">Nouveau prospect</h3>
+    <div class="drawer-sub">Renseigne les informations de base. Tu pourras enrichir la fiche ensuite.</div>
+
+    <div class="form-row">
+      <label>Nom du contact</label>
+      <input type="text" id="fNom" placeholder="Jean Dupont">
+    </div>
+    <div class="form-row">
+      <label>Entreprise / Commerce</label>
+      <input type="text" id="fEntreprise" placeholder="Hôtel Le Napoléon">
+    </div>
+    <div class="form-row">
+      <label>Téléphone</label>
+      <input type="tel" id="fTel" placeholder="+33 6 ...">
+    </div>
+    <div class="form-row">
+      <label>Email</label>
+      <input type="email" id="fEmail" placeholder="contact@exemple.com">
+    </div>
+    <div class="form-row">
+      <label>Étape actuelle</label>
+      <select id="fEtape">
+        <option value="0">1 — Identification</option>
+        <option value="1">2 — Qualification</option>
+        <option value="2">3 — Prise de contact</option>
+        <option value="3">4 — Rendez-vous</option>
+        <option value="4">5 — Maquette</option>
+        <option value="5">6 — Proposition</option>
+        <option value="6">7 — Relances</option>
+        <option value="7">8 — Négociation</option>
+        <option value="8">9 — Signé</option>
+        <option value="9">10 — Onboarding</option>
+        <option value="10">11 — Construction</option>
+        <option value="11">12 — Validation client</option>
+        <option value="12">13 — Livraison</option>
+        <option value="13">14 — Formation client</option>
+        <option value="14">15 — Maintenance</option>
+        <option value="15">16 — Upsell</option>
+        <option value="16">17 — Renouvellement/Résiliation</option>
+        <option value="perdu">Perdu</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <label>Notes</label>
+      <textarea id="fNotes" placeholder="Besoins, remarques, infos utiles..."></textarea>
+    </div>
+
+    <div class="drawer-btns">
+      <button class="btn-cancel" onclick="closeDrawer()">Annuler</button>
+      <button class="btn-gold" onclick="saveProspect()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  if (!sessionStorage.getItem('auth')) window.location.href = 'index.html';
+  function logout() { sessionStorage.clear(); window.location.href = 'index.html'; }
+
+  const ETAPES = [
+    'Identification','Qualification','Prise de contact','Rendez-vous',
+    'Maquette','Proposition','Relances','Négociation','Signé',
+    'Onboarding','Construction','Validation','Livraison','Formation',
+    'Maintenance','Upsell','Renouvellement'
+  ];
+
+  let data = JSON.parse(localStorage.getItem('crm') || '[]');
+  let editIdx = null;
+  let currentFilter = 'tous';
+  let currentView = 'pipeline';
+
+  function save() { localStorage.setItem('crm', JSON.stringify(data)); syncDashboard(); }
+
+  function syncDashboard() {
+    let st = JSON.parse(localStorage.getItem('dbstate') || '{}');
+    st.prospects = data.filter(p => typeof p.etape === 'number' && p.etape < 8).length;
+    st.clients = data.filter(p => typeof p.etape === 'number' && p.etape >= 8).length;
+    st.projets = data.filter(p => typeof p.etape === 'number' && p.etape >= 10 && p.etape <= 12).length;
+    localStorage.setItem('dbstate', JSON.stringify(st));
+  }
+
+  function getFilteredData() {
+    if (currentFilter === 'tous') return data;
+    if (currentFilter === 'actif') return data.filter(p => typeof p.etape === 'number' && p.etape < 8);
+    if (currentFilter === 'signe') return data.filter(p => typeof p.etape === 'number' && p.etape >= 8);
+    if (currentFilter === 'perdu') return data.filter(p => p.etape === 'perdu');
+    return data;
+  }
+
+  function setFilter(f, btn) {
+    currentFilter = f;
+    document.querySelectorAll('.filter-btn').forEach(b => {
+      if (b.id !== 'btnPipeline' && b.id !== 'btnTable') b.classList.remove('active');
+    });
+    btn.classList.add('active');
+    render();
+  }
+
+  function toggleView(v, btn) {
+    currentView = v;
+    document.getElementById('pipelineView').classList.toggle('hidden', v !== 'pipeline');
+    document.getElementById('tableView').classList.toggle('active', v === 'table');
+    document.getElementById('btnPipeline').style.color = v === 'pipeline' ? 'var(--gold)' : '';
+    document.getElementById('btnPipeline').style.borderColor = v === 'pipeline' ? 'var(--gold)' : '';
+    document.getElementById('btnTable').style.color = v === 'table' ? 'var(--gold)' : '';
+    document.getElementById('btnTable').style.borderColor = v === 'table' ? 'var(--gold)' : '';
+    render();
+  }
+
+  function render() { renderPipeline(); renderTable(); }
+
+  function renderPipeline() {
+    const board = document.getElementById('pipelineBoard');
+    board.innerHTML = '';
+    const filtered = getFilteredData();
+    const groups = {};
+    ETAPES.forEach((e,i) => groups[i] = []);
+    groups['perdu'] = [];
+    filtered.forEach(p => { if (groups[p.etape] !== undefined) groups[p.etape].push(p); });
+    const shown = ETAPES.slice(0,9).concat(['perdu']);
+    shown.forEach((label, idx) => {
+      const key = idx < 9 ? idx : 'perdu';
+      const name = idx < 9 ? ETAPES[idx] : 'Perdu';
+      const cards = groups[key];
+      const stage = document.createElement('div');
+      stage.className = 'stage';
+      stage.innerHTML = `
+        <div class="stage-header">
+          <span class="stage-name">${name}</span>
+          <span class="stage-count">${cards.length}</span>
+        </div>
+        <div class="stage-cards">
+          ${cards.map(p => {
+            const i = data.indexOf(p);
+            return `<div class="prospect-card" onclick="openDrawer(${i})">
+              <div class="name">${p.nom}</div>
+              <div class="company">${p.entreprise||'—'}</div>
+              <div class="meta"><span>${p.tel||''}</span></div>
+            </div>`;
+          }).join('')}
+        </div>`;
+      board.appendChild(stage);
+    });
+  }
+
+  function renderTable() {
+    const tbody = document.getElementById('tableBody');
+    const filtered = getFilteredData();
+    tbody.innerHTML = '';
+    if (filtered.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" style="color:var(--muted);font-size:12px;padding:24px">Aucun prospect.</td></tr>';
+      return;
+    }
+    filtered.forEach((p, idx) => {
+      const realIdx = data.indexOf(p);
+      const etapeLabel = p.etape === 'perdu' ? 'Perdu' : (ETAPES[p.etape] || '—');
+      const badgeClass = p.etape === 'perdu' ? 'perdu' : p.etape >= 8 ? 'signe' : p.etape >= 7 ? 'nego' : p.etape >= 3 ? 'rdv' : p.etape >= 2 ? 'contact' : 'ident';
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><strong>${p.nom}</strong></td>
+        <td>${p.entreprise||'—'}</td>
+        <td><span class="badge ${badgeClass}">${etapeLabel}</span></td>
+        <td style="color:var(--muted);font-size:12px">${p.date||'—'}</td>
+        <td>
+          <span class="action-link" onclick="openDrawer(${realIdx})">Modifier</span>
+          <span class="action-link" style="color:var(--muted)" onclick="deleteProspect(${realIdx})">Supprimer</span>
+        </td>`;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function openDrawer(idx) {
+    editIdx = idx !== undefined ? idx : null;
+    if (editIdx !== null) {
+      const p = data[editIdx];
+      document.getElementById('drawerTitle').textContent = p.nom;
+      document.getElementById('fNom').value = p.nom;
+      document.getElementById('fEntreprise').value = p.entreprise||'';
+      document.getElementById('fTel').value = p.tel||'';
+      document.getElementById('fEmail').value = p.email||'';
+      document.getElementById('fEtape').value = p.etape;
+      document.getElementById('fNotes').value = p.notes||'';
+    } else {
+      document.getElementById('drawerTitle').textContent = 'Nouveau prospect';
+      ['fNom','fEntreprise','fTel','fEmail','fNotes'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('fEtape').value = 0;
+    }
+    document.getElementById('drawer').classList.add('open');
+  }
+
+  function closeDrawer() { document.getElementById('drawer').classList.remove('open'); }
+
+  function saveProspect() {
+    const nom = document.getElementById('fNom').value.trim();
+    if (!nom) return;
+    const p = {
+      nom,
+      entreprise: document.getElementById('fEntreprise').value.trim(),
+      tel: document.getElementById('fTel').value.trim(),
+      email: document.getElementById('fEmail').value.trim(),
+      etape: document.getElementById('fEtape').value === 'perdu' ? 'perdu' : parseInt(document.getElementById('fEtape').value),
+      notes: document.getElementById('fNotes').value.trim(),
+      date: new Date().toLocaleDateString('fr-FR')
+    };
+    if (editIdx !== null) data[editIdx] = p;
+    else data.push(p);
+    save(); render(); closeDrawer();
+  }
+
+  function deleteProspect(idx) {
+    if (confirm('Supprimer ce prospect ?')) { data.splice(idx, 1); save(); render(); }
+  }
+
+  render();
+</script>
+</body>
+</html>
