@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DB Studio — Alter Ego</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --gold: #C9A84C; --gold-dim: rgba(201,168,76,0.1);
+    --bg: #080808; --surface: #0f0f0f; --surface2: #161616;
+    --border: #1e1e1e; --text: #e8e8e8; --muted: #555;
+    --red: #c0392b; --green: #27ae60;
+  }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; display: flex; min-height: 100vh; overflow: hidden; }
+  nav { width: 220px; min-height: 100vh; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 32px 0; position: fixed; top: 0; left: 0; bottom: 0; z-index: 10; }
+  .nav-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 16px; color: var(--gold); letter-spacing: 3px; padding: 0 24px; margin-bottom: 40px; }
+  .nav-section { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); padding: 0 24px; margin-bottom: 8px; margin-top: 20px; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 24px; font-size: 13px; color: var(--muted); text-decoration: none; transition: all 0.15s; border-left: 2px solid transparent; }
+  .nav-item:hover { color: var(--text); background: var(--surface2); }
+  .nav-item.active { color: var(--gold); border-left-color: var(--gold); background: rgba(201,168,76,0.05); }
+  .nav-item .ico { font-size: 15px; width: 18px; text-align: center; }
+  .nav-bottom { margin-top: auto; padding: 0 24px; }
+  .nav-logout { font-size: 11px; color: var(--muted); cursor: pointer; text-decoration: none; }
+  .nav-logout:hover { color: var(--red); }
+  main { margin-left: 220px; flex: 1; display: flex; flex-direction: column; height: 100vh; }
+  .ae-header { padding: 28px 40px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+  .ae-identity { display: flex; align-items: center; gap: 16px; }
+  .ae-avatar { width: 44px; height: 44px; background: var(--gold-dim); border: 1px solid var(--gold); display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 16px; color: var(--gold); position: relative; }
+  .ae-avatar::after { content: ''; position: absolute; bottom: -3px; right: -3px; width: 8px; height: 8px; background: var(--green); border: 2px solid var(--bg); border-radius: 50%; }
+  .ae-name { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 18px; }
+  .ae-desc { font-size: 11px; color: var(--muted); letter-spacing: 1px; margin-top: 2px; }
+  .header-actions { display: flex; gap: 10px; }
+  .btn-sm { padding: 8px 16px; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; font-family: 'Syne', sans-serif; font-weight: 700; cursor: pointer; transition: all 0.15s; }
+  .btn-sm.outline { background: transparent; border: 1px solid var(--border); color: var(--muted); }
+  .btn-sm.outline:hover { border-color: var(--gold); color: var(--gold); }
+  .btn-sm.gold { background: var(--gold); border: none; color: #000; }
+  .context-banner { background: var(--gold-dim); border-bottom: 1px solid rgba(201,168,76,0.15); padding: 10px 40px; font-size: 11px; color: #888; display: flex; gap: 24px; flex-shrink: 0; flex-wrap: wrap; }
+  .ctx-item { display: flex; align-items: center; gap: 6px; }
+  .ctx-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); }
+  .ctx-val { color: var(--gold); font-weight: 500; }
+  .ctx-val.danger { color: var(--red); }
+  .ctx-val.ok { color: var(--green); }
+  .chat-area { flex: 1; overflow-y: auto; padding: 28px 40px; display: flex; flex-direction: column; gap: 20px; }
+  .chat-area::-webkit-scrollbar { width: 3px; }
+  .chat-area::-webkit-scrollbar-thumb { background: var(--border); }
+  .msg { display: flex; gap: 14px; animation: msgIn 0.3s ease; }
+  @keyframes msgIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+  .msg.user { flex-direction: row-reverse; }
+  .msg-avatar { width: 32px; height: 32px; flex-shrink: 0; background: var(--surface2); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 11px; font-family: 'Syne', sans-serif; font-weight: 700; color: var(--muted); }
+  .msg.ae .msg-avatar { background: var(--gold-dim); border-color: rgba(201,168,76,0.3); color: var(--gold); }
+  .msg-content { max-width: 75%; }
+  .msg-bubble { padding: 14px 18px; font-size: 13.5px; line-height: 1.75; }
+  .msg.ae .msg-bubble { background: var(--surface); border: 1px solid var(--border); border-left: 2px solid var(--gold); }
+  .msg.user .msg-bubble { background: var(--gold-dim); border: 1px solid rgba(201,168,76,0.2); text-align: right; }
+  .msg-time { font-size: 10px; color: var(--muted); margin-top: 5px; }
+  .msg.user .msg-time { text-align: right; }
+  .hi { color: var(--gold); font-weight: 600; }
+  .bad { color: var(--red); font-weight: 600; }
+  .ok { color: var(--green); font-weight: 600; }
+  .sep { display: block; height: 1px; background: var(--border); margin: 10px 0; }
+  .typing { display: none; }
+  .typing.show { display: flex; gap: 14px; }
+  .typing-dots { background: var(--surface); border: 1px solid var(--border); border-left: 2px solid var(--gold); padding: 16px 20px; display: flex; gap: 6px; align-items: center; }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); animation: pulse 1.2s infinite; }
+  .dot:nth-child(2) { animation-delay: 0.2s; }
+  .dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes pulse { 0%,60%,100% { opacity:0.2; } 30% { opacity:1; } }
+  .quick-actions { padding: 10px 40px; display: flex; gap: 8px; flex-wrap: wrap; border-top: 1px solid var(--border); flex-shrink: 0; }
+  .quick-btn { padding: 7px 13px; font-size: 11px; color: var(--muted); background: var(--surface); border: 1px solid var(--border); cursor: pointer; transition: all 0.15s; }
+  .quick-btn:hover { border-color: var(--gold); color: var(--gold); }
+  .input-area { padding: 14px 40px 24px; display: flex; gap: 10px; align-items: flex-end; flex-shrink: 0; }
+  .input-wrap { flex: 1; background: var(--surface); border: 1px solid var(--border); transition: border-color 0.2s; }
+  .input-wrap:focus-within { border-color: var(--gold); }
+  textarea#userInput { width: 100%; background: transparent; border: none; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; padding: 13px 16px; resize: none; outline: none; min-height: 50px; max-height: 140px; }
+  .send-btn { width: 50px; height: 50px; background: var(--gold); border: none; cursor: pointer; font-size: 20px; color: #000; font-weight: bold; flex-shrink: 0; }
+  .send-btn:hover { background: #d9b55c; }
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 200; align-items: center; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--surface); border: 1px solid var(--border); width: 560px; max-width: 95vw; max-height: 90vh; overflow-y: auto; padding: 40px; }
+  .modal h3 { font-family: 'Syne', sans-serif; font-size: 18px; margin-bottom: 6px; color: var(--gold); }
+  .modal-sub { font-size: 12px; color: var(--muted); margin-bottom: 28px; line-height: 1.6; }
+  .form-row { margin-bottom: 16px; }
+  .form-row label { display: block; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 7px; }
+  .form-row input, .form-row textarea { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 11px 14px; outline: none; transition: border-color 0.2s; }
+  .form-row input:focus, .form-row textarea:focus { border-color: var(--gold); }
+  .form-row textarea { min-height: 80px; resize: vertical; }
+  .modal-btns { display: flex; gap: 10px; margin-top: 24px; }
+  .btn-cancel { padding: 12px 20px; background: transparent; border: 1px solid var(--border); color: var(--muted); font-size: 12px; cursor: pointer; }
+  .btn-save { padding: 12px 24px; background: var(--gold); border: none; color: #000; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 11px; letter-spacing: 2px; cursor: pointer; }
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-logo">DB STUDIO</div>
+  <div class="nav-section">Principal</div>
+  <a href="dashboard.html" class="nav-item"><span class="ico">⬛</span> Dashboard</a>
+  <a href="crm.html" class="nav-item"><span class="ico">◈</span> Prospects & Clients</a>
+  <a href="projets.html" class="nav-item"><span class="ico">◇</span> Projets</a>
+  <div class="nav-section">Gestion</div>
+  <a href="finances.html" class="nav-item"><span class="ico">◆</span> Finances</a>
+  <a href="documents.html" class="nav-item"><span class="ico">▣</span> Documents</a>
+  <div class="nav-section">Alter Ego</div>
+  <a href="alterego.html" class="nav-item active"><span class="ico">◉</span> Mon Alter Ego</a>
+  <div class="nav-bottom"><a class="nav-logout" onclick="logout()">← Déconnexion</a></div>
+</nav>
+
+<main>
+  <div class="ae-header">
+    <div class="ae-identity">
+      <div class="ae-avatar">AE</div>
+      <div>
+        <div class="ae-name">Alter Ego — DB Studio</div>
+        <div class="ae-desc">Ton partenaire stratégique · 100% local</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn-sm outline" onclick="clearChat()">Effacer</button>
+      <button class="btn-sm gold" onclick="openProfil()">⚙ Profil</button>
+    </div>
+  </div>
+
+  <div class="context-banner">
+    <div class="ctx-item"><div class="ctx-dot"></div>Prospects : <span class="ctx-val" id="ctxP">0</span></div>
+    <div class="ctx-item"><div class="ctx-dot"></div>Clients : <span class="ctx-val" id="ctxC">0</span></div>
+    <div class="ctx-item"><div class="ctx-dot"></div>Impayées : <span class="ctx-val" id="ctxF">0</span></div>
+    <div class="ctx-item"><div class="ctx-dot"></div>CA : <span class="ctx-val" id="ctxCA">0 €</span></div>
+    <div class="ctx-item"><div class="ctx-dot"></div>Objectif : <span class="ctx-val" id="ctxPct">— %</span></div>
+  </div>
+
+  <div class="chat-area" id="chatArea">
+    <div class="typing" id="typing">
+      <div class="msg-avatar">AE</div>
+      <div class="typing-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+    </div>
+  </div>
+
+  <div class="quick-actions">
+    <button class="quick-btn" onclick="go('mission')">Mission du jour</button>
+    <button class="quick-btn" onclick="go('analyse')">Analyse globale</button>
+    <button class="quick-btn" onclick="go('boost')">Boost motivation</button>
+    <button class="quick-btn" onclick="go('recentrer')">Recentrer</button>
+    <button class="quick-btn" onclick="go('semaine')">Plan semaine</button>
+    <button class="quick-btn" onclick="go('kick')">Coup de pied</button>
+    <button class="quick-btn" onclick="go('prospect')">Comment prospecter</button>
+    <button class="quick-btn" onclick="go('finances')">État finances</button>
+  </div>
+
+  <div class="input-area">
+    <div class="input-wrap">
+      <textarea id="userInput" placeholder="Écris quelque chose..." rows="1"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();fromInput();}"
+        oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,140)+'px'"></textarea>
+    </div>
+    <button class="send-btn" onclick="fromInput()">→</button>
+  </div>
+</main>
+
+<div class="modal-overlay" id="profilModal">
+  <div class="modal">
+    <h3>Profil — Alter Ego</h3>
+    <div class="modal-sub">Ce que ton alter ego sait de toi. Plus c'est précis, plus il est utile.</div>
+    <div class="form-row"><label>Objectif CA mensuel (€)</label><input type="number" id="pCA" placeholder="Ex: 2000"></div>
+    <div class="form-row"><label>Objectif à 6 mois</label><input type="text" id="p6m" placeholder="Ex: 5 clients actifs, 3000€/mois"></div>
+    <div class="form-row"><label>Vision long terme</label><textarea id="pVision" placeholder="Ce que tu veux construire dans 2-3 ans..."></textarea></div>
+    <div class="form-row"><label>Tes forces</label><input type="text" id="pForces" placeholder="Ex: Design, technique, vision"></div>
+    <div class="form-row"><label>Tes faiblesses</label><input type="text" id="pFaiblesses" placeholder="Ex: Prospection, consistance"></div>
+    <div class="form-row"><label>Ce qui te bloque</label><textarea id="pBlocage" placeholder="Ce qui t'empêche d'avancer en ce moment..."></textarea></div>
+    <div class="form-row"><label>Pourquoi tu fais tout ça</label><textarea id="pPourquoi" placeholder="Ta raison profonde."></textarea></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="document.getElementById('profilModal').classList.remove('open')">Annuler</button>
+      <button class="btn-save" onclick="saveProfil()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+if (!sessionStorage.getItem('auth')) window.location.href = 'index.html';
+function logout() { sessionStorage.clear(); window.location.href = 'index.html'; }
+
+let profil = JSON.parse(localStorage.getItem('aeProfil') || '{}');
+const pick = a => a[Math.floor(Math.random()*a.length)];
+
+function getS() {
+  const st = JSON.parse(localStorage.getItem('dbstate') || '{}');
+  const factures = JSON.parse(localStorage.getItem('factures') || '[]');
+  const abos = JSON.parse(localStorage.getItem('abos') || '[]');
+  const projets = JSON.parse(localStorage.getItem('projects') || '[]');
+  const mois = new Date().getMonth();
+  const ca = factures.filter(f => f.statut==='payee' && new Date(f.echeance).getMonth()===mois).reduce((s,f)=>s+Number(f.montant),0);
+  const caObj = Number(profil.caObj || st.caObj || 0);
+  const pct = caObj>0 ? Math.round((ca/caObj)*100) : 0;
+  const impayees = factures.filter(f=>f.statut!=='payee');
+  return {
+    prospects: st.prospects||0, clients: st.clients||0, projets: st.projets||0,
+    factImp: st.facturesImpayees||0, montantImp: impayees.reduce((s,f)=>s+Number(f.montant),0),
+    ca, caObj, pct,
+    abos: abos.length, aboAtt: abos.filter(a=>a.statut!=='payé').length,
+    enConst: projets.filter(p=>p.phase==='construction').length,
+    joursRest: new Date(new Date().getFullYear(),new Date().getMonth()+1,0).getDate()-new Date().getDate()
+  };
+}
+
+function updateCtx() {
+  const s = getS();
+  const set = (id,val,cls) => { const el=document.getElementById(id); el.textContent=val; el.className='ctx-val'+(cls?' '+cls:''); };
+  set('ctxP', s.prospects, s.prospects===0?'danger':'ok');
+  set('ctxC', s.clients, s.clients===0?'danger':'ok');
+  set('ctxF', s.factImp, s.factImp>0?'danger':'');
+  set('ctxCA', s.ca.toLocaleString('fr-FR')+' €', '');
+  set('ctxPct', s.caObj>0?s.pct+'%':'— %', s.pct>=80?'ok':s.pct>=40?'':'danger');
+}
+
+function respond(intent, txt) {
+  const s = getS(); const p = profil;
+  if (!intent) {
+    const t=(txt||'').toLowerCase();
+    if(t.match(/mission|aujourd|quoi faire|par quoi/)) intent='mission';
+    else if(t.match(/motiv|courage|boost|décourag|fatigue|moral/)) intent='boost';
+    else if(t.match(/perdu|recentr|priorit|sais pas|perdu|flou/)) intent='recentrer';
+    else if(t.match(/semaine|plan|cette semaine/)) intent='semaine';
+    else if(t.match(/coup|pied|secoue|fainéant|botte/)) intent='kick';
+    else if(t.match(/prospect|client|vendre|contact|démarche/)) intent='prospect';
+    else if(t.match(/finance|argent|facture|revenu|ca|chiffre|sous/)) intent='finances';
+    else if(t.match(/analys|bilan|état|situation|où j'en/)) intent='analyse';
+    else if(t.match(/kora|formation|académie/)) intent='kora';
+    else if(t.match(/nul|merde|incompétent|pas capable|incapable|honte/)) intent='doute';
+    else if(t.match(/bien|super|top|nickel|ça va|content|heureux/)) intent='positif';
+    else intent='libre';
+  }
+
+  if (intent==='mission') {
+    if (!p.caObj) return `Avant toute mission, remplis ton <span class="hi">⚙ Profil</span>. Je suis aveugle sans ton objectif et ta vision. Clique en haut à droite, 5 minutes, et je deviens vraiment utile.`;
+    if (s.factImp>0) return `Mission aujourd'hui : <span class="bad">relancer les impayés.</span><span class="sep"></span>T'as <span class="hi">${s.montantImp.toLocaleString('fr-FR')} €</span> qui traînent. Cet argent t'appartient déjà. Envoie un message direct à chaque client concerné — poli, ferme, sans justification. Une fois fait, tu passes à la prospection.`;
+    if (s.prospects===0 && s.clients===0) return `Mission aujourd'hui : <span class="hi">prospecter.</span><span class="sep"></span>CA à <span class="bad">0 €</span>, 0 prospect, 0 client. Il reste <span class="hi">${s.joursRest} jours</span> dans le mois. Rien d'autre ne compte avant d'avoir changé ça.\n\nGoogle Maps, 5 commerces à Gap sans site ou avec un site moche. Un message court. Tu envoies aujourd'hui. Pas demain.`;
+    if (s.prospects>0 && s.clients===0) return `Mission aujourd'hui : <span class="hi">convertir tes prospects.</span><span class="sep"></span>T'as <span class="hi">${s.prospects} prospect(s)</span> en cours, 0 signé. Il manque une relance ou une deadline claire.\n\nOuvre le CRM. Pour chaque contact inactif depuis 3+ jours, envoie un message avec une deadline. "Je garde ce tarif jusqu'à vendredi." Direct, efficace.`;
+    if (s.enConst>0) return `Mission aujourd'hui : <span class="hi">avancer sur les projets.</span><span class="sep"></span>${s.enConst} site(s) en construction. Un client livré vite = une référence + un renouvellement + la tête libre.\n\nIdentifie le point bloquant. Règle-le aujourd'hui. Une étape minimum.`;
+    if (s.pct<50 && s.joursRest<15) return `Mission aujourd'hui : <span class="bad">urgence CA.</span><span class="sep"></span>T'es à <span class="bad">${s.pct}%</span> de l'objectif, il reste ${s.joursRest} jours. Propose un upsell à un client existant — c'est plus rapide qu'un nouveau prospect. Puis tu prospectes.`;
+    return `T'es à <span class="ok">${s.pct}%</span> de l'objectif, ${s.clients} client(s) actif(s). La machine tourne.<span class="sep"></span>Mission : <span class="hi">consolider et développer.</span> Un prospect contacté aujourd'hui, un client qu'on s'assure qu'il est satisfait. Deux fronts en même temps.${p.p6mois?`\n\nCap 6 mois : <span class="hi">${p.p6mois}</span>. Chaque jour compte.`:''}`;
+  }
+
+  if (intent==='analyse') {
+    let m = `<strong>— Analyse DB Studio —</strong><span class="sep"></span>`;
+    m += `Prospects : <span class="${s.prospects>0?'ok':'bad'}">${s.prospects}</span> &nbsp;·&nbsp; Clients : <span class="${s.clients>0?'ok':'bad'}">${s.clients}</span> &nbsp;·&nbsp; Projets actifs : ${s.projets}<br>`;
+    if(s.caObj>0) m+=`CA ce mois : <span class="${s.pct>=50?'ok':'bad'}">${s.ca.toLocaleString('fr-FR')} € / ${s.caObj.toLocaleString('fr-FR')} € (${s.pct}%)</span><br>`;
+    if(s.factImp>0) m+=`<br><span class="bad">⚠ ${s.factImp} facture(s) impayée(s) — ${s.montantImp.toLocaleString('fr-FR')} € à récupérer</span><br>`;
+    if(s.aboAtt>0) m+=`<span class="bad">⚠ ${s.aboAtt} abonnement(s) en attente de paiement</span><br>`;
+    m+=`<span class="sep"></span><strong>Priorité :</strong><br>`;
+    if(s.factImp>0) m+=`→ <span class="bad">Relancer les impayés maintenant.</span>`;
+    else if(s.prospects===0) m+=`→ <span class="bad">0 prospect. Prospecte aujourd'hui.</span>`;
+    else if(s.clients===0) m+=`→ Convertir les prospects en clients.`;
+    else if(s.pct<50) m+=`→ CA insuffisant. Intensifier prospection ou upsell.`;
+    else m+=`→ <span class="ok">Situation stable. Maintenir et développer.</span>`;
+    if(!p.caObj) m+=`<span class="sep"></span><span class="bad">⚠ Profil incomplet. Remplis ⚙ Profil pour une analyse plus précise.</span>`;
+    return m;
+  }
+
+  if (intent==='boost') return pick([
+    `T'as lancé deux projets en même temps à 22 ans, solo, sans équipe, sans filet. La majorité des gens réfléchissent encore à l'idée. Toi t'as déjà commencé.<span class="sep"></span>La fatigue que tu ressens c'est pas un signal d'arrêter. C'est le prix de construire quelque chose de réel. Chaque jour que tu tiens, tu prends de l'avance.`,
+    `DB Studio c'est pas juste une agence. C'est la première brique d'un écosystème que t'as imaginé seul. Kora derrière. L'intranet après. Tu joues sur plusieurs niveaux en même temps.<span class="sep"></span>Les jours difficiles font partie du prix. Ils sélectionnent. Ceux qui abandonnent là où tu tiens seront pas là à l'arrivée.`,
+    p.pourquoi ? `Tu fais tout ça parce que : "<span class="hi">${p.pourquoi}</span>"<span class="sep"></span>Garde ça en tête. Pas demain. Maintenant. C'est ça qui fait la différence entre tenir et lâcher.` : `Dis-moi pourquoi tu fais tout ça dans ⚙ Profil. Pas pour moi — pour toi. Les jours difficiles, c'est la seule chose qui tient vraiment.`,
+    `La maquette Napoléon c'est une preuve concrète de ta capacité. T'as créé quelque chose de professionnel sans client, sans validation externe. C'est du niveau.<span class="sep"></span>T'as juste pas encore converti. La conversion c'est une compétence qui vient avec la répétition. T'es au début, pas à la fin.`
+  ]);
+
+  if (intent==='recentrer') {
+    if(s.prospects===0 && s.clients===0) return `Ce qui est important en ce moment : <span class="hi">une seule chose.</span><span class="sep"></span>Pas l'outil, pas Kora, pas la vidéo, pas la formation. <span class="hi">Trouver ton premier client.</span>\n\nTout le reste sera utile quand la base sera là. Pour l'instant la base c'est le CA. Et le CA vient des clients. Et les clients viennent de la prospection.\n\nUne action. Maintenant.`;
+    if(s.factImp>0) return `Ce qui est le plus important là maintenant : <span class="bad">récupérer l'argent qui t'est dû.</span><span class="sep"></span>${s.montantImp.toLocaleString('fr-FR')} € qui traînent. Avant de penser à la suite, relance chaque client impayé aujourd'hui.`;
+    return `Ce qui compte vraiment pour DB Studio en ce moment :\n\n1. <span class="hi">Prospects → Signature</span><br>2. <span class="hi">Livraison des projets en cours</span><br>3. <span class="hi">Acquisition de nouveaux prospects</span><span class="sep"></span>${p.p6mois?`Cap 6 mois : <span class="hi">${p.p6mois}</span>. Chaque action doit servir ça.`:'Définis ton cap 6 mois dans ⚙ Profil.'}`;
+  }
+
+  if (intent==='kick') return pick([
+    `T'as un outil complet, tu sais faire des sites, t'as une vision. Et t'as 0 client.\n\nC'est pas l'incompétence. C'est que t'as pas assez décroché ton téléphone. Pas envoyé assez de messages. <span class="bad">C'est aussi simple que ça.</span><span class="sep"></span>Aujourd'hui tu contactes quelqu'un. Un. C'est tout.`,
+    `Arrête de préparer. Commence à faire.\n\nChaque jour à "préparer le terrain" c'est un jour sans CA. L'outil parfait, la formation idéale — c'est du confort masqué en travail.<span class="sep"></span><span class="bad">La prospection c'est inconfortable. C'est fait exprès.</span> Ceux qui la font quand même, c'est eux qui réussissent.`,
+    `T'as dit toi-même que tu fuyais tes responsabilités. Là, maintenant, tu fais quoi ?<span class="sep"></span>Si t'as ouvert cet outil sans objectif concret pour les 2 prochaines heures, tu fuis encore. Ferme ça. Ouvre le CRM. Trouve un nom. Envoie un message.`
+  ]);
+
+  if (intent==='prospect') return `Comment prospecter avec DB Studio :\n\n<strong>1. Identifier</strong><br>Google Maps + "restaurant Gap", "hôtel Gap", "artisan Gap"... Tu cherches des boites sans site ou avec un site moche et daté.<span class="sep"></span><strong>2. Qualifier</strong><br>Vrai commerce ? Patron décideur ? Budget possible ?<span class="sep"></span><strong>3. Contacter</strong><br>"Bonjour, je développe des sites pour des entreprises locales à Gap. J'ai vu votre activité et je pense qu'un site peut vraiment vous aider à développer votre clientèle. Disponible pour en parler 15 min ?"<span class="sep"></span><strong>4. Relancer</strong><br>Pas de réponse après 3 jours = une relance. Une seule. Ensuite tu passes au suivant.<span class="sep"></span>Objectif : <span class="hi">5 contacts par jour</span> jusqu'à la signature.`;
+
+  if (intent==='finances') {
+    let m=`<strong>— État financier —</strong><span class="sep"></span>`;
+    m+=`CA ce mois : <span class="${s.pct>=50?'ok':'bad'}">${s.ca.toLocaleString('fr-FR')} €</span>`;
+    if(s.caObj>0) m+=` / objectif <span class="hi">${s.caObj.toLocaleString('fr-FR')} €</span> (${s.pct}%)`;
+    if(s.factImp>0) m+=`<br><span class="bad">Impayées : ${s.factImp} — ${s.montantImp.toLocaleString('fr-FR')} € à récupérer</span>`;
+    m+=`<br>Abonnements : <span class="hi">${s.abos-s.aboAtt}/${s.abos}</span>`;
+    if(s.aboAtt>0) m+=` <span class="bad">(${s.aboAtt} en attente)</span>`;
+    m+=`<span class="sep"></span>`;
+    if(s.factImp>0) m+=`→ <span class="bad">Relancer les impayés en priorité.</span>`;
+    else if(s.ca===0) m+=`→ <span class="bad">0 € ce mois. Prospecte aujourd'hui.</span>`;
+    else m+=`→ Situation ${s.pct>=80?'<span class="ok">bonne</span>':s.pct>=40?'moyenne':'<span class="bad">insuffisante</span>'}. ${s.joursRest} jours restants.`;
+    return m;
+  }
+
+  if (intent==='semaine') return `Plan de la semaine :\n\n<strong>Chaque jour :</strong><br>→ <span class="hi">5 prospects contactés</span> (tant que pas de client signé)<br>→ Avancer sur les projets en cours<br>→ Ouvrir cet outil le matin, tâches cochées le soir<span class="sep"></span><strong>Cette semaine :</strong><br>${s.factImp>0?`→ <span class="bad">Relancer les ${s.factImp} impayé(s) dès aujourd'hui</span><br>`:''}${s.prospects>0&&s.clients===0?`→ <span class="hi">Relancer tous les prospects avec une deadline</span><br>`:''}${s.enConst>0?`→ <span class="hi">Avancer d'au moins 2 étapes sur chaque projet</span><br>`:''}${s.caObj>0&&s.pct<60?`→ <span class="bad">CA à ${s.pct}% — intensifier prospection ou upsell</span><br>`:''}<span class="sep"></span>${p.p6mois?`Cap : <span class="hi">${p.p6mois}</span>. Chaque action cette semaine doit servir ça.`:'Définis ton objectif 6 mois dans ⚙ Profil.'}`;
+
+  if (intent==='kora') return `Kora c'est ta deuxième jambe. Mais right now, c'est DB Studio qui doit marcher en premier.\n\nLe process que t'as défini : tu buildes, tu documentes, ça devient une formation. C'est le bon process.<span class="sep"></span>Mais si tu penses à Kora parce que DB Studio te pèse — vérifie ça avant de basculer. C'est peut-être une fuite.`;
+
+  if (intent==='doute') return `Stop.\n\nT'es pas incompétent. T'as 22 ans, deux projets lancés, une maquette professionnelle, une vision d'écosystème que la plupart n'ont pas après 5 ans.<span class="sep"></span>Ce que t'appelles incompétence c'est de l'inexpérience. Et l'inexpérience se règle avec une seule chose : <span class="hi">l'action répétée.</span>\n\nDis-moi ce qui s'est passé concrètement.`;
+
+  if (intent==='positif') return pick([
+    `Bien. Maintenant capitalise dessus. Un bon élan se perd vite si t'en fais rien. Qu'est-ce que tu vas faire là maintenant ?`,
+    `C'est le bon état d'esprit. Garde-le et prospecte pendant que t'es dans cet élan.`,
+    `${s.prospects===0?`Parfait. Transforme ça en action. Contacte un prospect là maintenant.`:`C'est ça l'état dans lequel tu dois prospecter. Fonce.`}`
+  ]);
+
+  return pick([
+    `Dis-moi exactement ce qui se passe — ce qui bloque, ce qui avance, ce que tu ressens. Je m'adapte.`,
+    `Utilise les boutons rapides ou écris ce dont t'as besoin. Mission, analyse, boost, plan — je suis là pour ça.`,
+    `Précise ta question. Je travaille avec du concret.`
+  ]);
+}
+
+function addMsg(role, html) {
+  const area=document.getElementById('chatArea'), typing=document.getElementById('typing');
+  const time=new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+  const d=document.createElement('div');
+  d.className='msg '+(role==='user'?'user':'ae');
+  d.innerHTML=`<div class="msg-avatar">${role==='user'?'Moi':'AE'}</div><div class="msg-content"><div class="msg-bubble">${html}</div><div class="msg-time">${time}</div></div>`;
+  area.insertBefore(d,typing);
+  area.scrollTop=area.scrollHeight;
+}
+
+function showTyping(ms) {
+  return new Promise(r=>{
+    const t=document.getElementById('typing');
+    t.classList.add('show');
+    document.getElementById('chatArea').scrollTop=999999;
+    setTimeout(()=>{t.classList.remove('show');r();},ms);
+  });
+}
+
+async function go(intent) {
+  const labels={mission:'Mission du jour',analyse:'Analyse globale',boost:'Boost motivation',recentrer:'Recentrer',semaine:'Plan semaine',kick:'Coup de pied au cul',prospect:'Comment prospecter ?',finances:'État finances'};
+  addMsg('user',labels[intent]||intent);
+  await showTyping(600+Math.random()*600);
+  addMsg('ae',respond(intent,''));
+  updateCtx();
+}
+
+async function fromInput() {
+  const inp=document.getElementById('userInput');
+  const txt=inp.value.trim();
+  if(!txt) return;
+  inp.value=''; inp.style.height='auto';
+  addMsg('user',txt);
+  await showTyping(700+Math.random()*700);
+  addMsg('ae',respond(null,txt));
+  updateCtx();
+}
+
+function openProfil() {
+  document.getElementById('pCA').value=profil.caObj||'';
+  document.getElementById('p6m').value=profil.p6mois||'';
+  document.getElementById('pVision').value=profil.vision||'';
+  document.getElementById('pForces').value=profil.forces||'';
+  document.getElementById('pFaiblesses').value=profil.faiblesses||'';
+  document.getElementById('pBlocage').value=profil.blocage||'';
+  document.getElementById('pPourquoi').value=profil.pourquoi||'';
+  document.getElementById('profilModal').classList.add('open');
+}
+
+function saveProfil() {
+  profil={caObj:document.getElementById('pCA').value,p6mois:document.getElementById('p6m').value,vision:document.getElementById('pVision').value,forces:document.getElementById('pForces').value,faiblesses:document.getElementById('pFaiblesses').value,blocage:document.getElementById('pBlocage').value,pourquoi:document.getElementById('pPourquoi').value};
+  localStorage.setItem('aeProfil',JSON.stringify(profil));
+  let st=JSON.parse(localStorage.getItem('dbstate')||'{}');
+  if(profil.caObj){st.caObj=Number(profil.caObj);localStorage.setItem('dbstate',JSON.stringify(st));}
+  document.getElementById('profilModal').classList.remove('open');
+  clearChat();
+}
+
+function clearChat() {
+  const area=document.getElementById('chatArea'),typing=document.getElementById('typing');
+  while(area.firstChild&&area.firstChild!==typing) area.removeChild(area.firstChild);
+  welcome();
+}
+
+async function welcome() {
+  await showTyping(900);
+  if(!profil.caObj&&!profil.vision) addMsg('ae',`Je suis ton alter ego. Pour être vraiment utile, j'ai besoin de te connaître.<span class="sep"></span>Clique sur <span class="hi">⚙ Profil</span> en haut à droite. Mets ton objectif CA, ta vision, ce qui te bloque. 5 minutes. Ça change tout à ce que je peux faire pour toi.`);
+  else addMsg('ae',respond('analyse',''));
+  updateCtx();
+}
+
+updateCtx();
+welcome();
+</script>
+</body>
+</html>
