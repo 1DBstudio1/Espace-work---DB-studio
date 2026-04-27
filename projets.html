@@ -7,10 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --gold: #C9A84C; --bg: #080808; --surface: #0f0f0f; --surface2: #161616;
-    --border: #1e1e1e; --text: #e8e8e8; --muted: #555; --green: #27ae60; --red: #c0392b;
-  }
+  :root { --gold: #C9A84C; --bg: #080808; --surface: #0f0f0f; --surface2: #161616; --border: #1e1e1e; --text: #e8e8e8; --muted: #555; --green: #27ae60; --red: #c0392b; }
   body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; display: flex; min-height: 100vh; }
   nav { width: 220px; min-height: 100vh; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 32px 0; position: fixed; top: 0; left: 0; bottom: 0; }
   .nav-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 16px; color: var(--gold); letter-spacing: 3px; padding: 0 24px; margin-bottom: 40px; }
@@ -25,71 +22,49 @@
   main { margin-left: 220px; flex: 1; padding: 40px; }
   .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 40px; }
   .page-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 24px; }
-  .btn-gold { padding: 12px 24px; background: var(--gold); border: none; color: #000; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: background 0.2s; }
+  .btn-gold { padding: 12px 24px; background: var(--gold); border: none; color: #000; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 11px; letter-spacing: 2px; cursor: pointer; }
   .btn-gold:hover { background: #d9b55c; }
-
-  .projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; margin-bottom: 32px; }
+  .projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px,1fr)); gap: 16px; }
   .project-card { background: var(--surface); border: 1px solid var(--border); padding: 24px; cursor: pointer; transition: border-color 0.15s; }
   .project-card:hover { border-color: var(--gold); }
+  .project-phase { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
   .project-name { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; margin-bottom: 4px; }
   .project-client { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
-  .progress-bar-wrap { margin-bottom: 12px; }
-  .progress-label { display: flex; justify-content: space-between; font-size: 10px; color: var(--muted); margin-bottom: 6px; }
-  .bar-bg { background: var(--surface2); height: 4px; }
-  .bar-fill { height: 4px; background: var(--gold); transition: width 0.4s; }
-  .project-phase { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; }
-  .project-meta { display: flex; gap: 12px; font-size: 11px; color: var(--muted); }
-
-  /* MODAL PROJET */
+  .bar-bg { background: var(--surface2); height: 4px; margin-bottom: 8px; }
+  .bar-fill { height: 4px; background: var(--gold); }
+  .project-meta { font-size: 11px; color: var(--muted); }
   .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; }
   .modal-overlay.open { display: flex; }
-  .project-modal { background: var(--surface); border: 1px solid var(--border); width: 800px; max-width: 95vw; max-height: 90vh; overflow-y: auto; margin: auto; padding: 40px; animation: fadeUp 0.2s ease; }
-  @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
-  .modal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px; }
-  .modal-title { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; }
+  .project-modal { background: var(--surface); border: 1px solid var(--border); width: 760px; max-width: 95vw; max-height: 90vh; overflow-y: auto; margin: auto; padding: 40px; }
+  .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
+  .modal-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; }
   .modal-close { background: none; border: none; color: var(--muted); font-size: 20px; cursor: pointer; }
-  .modal-close:hover { color: var(--text); }
-  .tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
+  .tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
   .tab { padding: 10px 20px; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; }
   .tab.active { color: var(--gold); border-bottom-color: var(--gold); }
   .tab-content { display: none; }
   .tab-content.active { display: block; }
-
-  /* CHECKLIST */
-  .checklist { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
-  .check-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--surface2); border: 1px solid var(--border); cursor: pointer; transition: border-color 0.15s; }
+  .checklist { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+  .check-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--surface2); border: 1px solid var(--border); cursor: pointer; }
   .check-item:hover { border-color: var(--gold); }
   .check-box { width: 16px; height: 16px; border: 1px solid var(--muted); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; }
   .check-item.done .check-box { background: var(--gold); border-color: var(--gold); color: #000; }
   .check-item.done .check-label { color: var(--muted); text-decoration: line-through; }
-  .check-label { font-size: 13px; flex: 1; }
+  .check-label { flex: 1; font-size: 13px; }
   .add-row { display: flex; gap: 8px; }
-  .add-row input { flex:1; background:var(--bg); border:1px solid var(--border); color:var(--text); font-family:'DM Sans',sans-serif; font-size:13px; padding:10px 14px; outline:none; }
-  .add-row input:focus { border-color:var(--gold); }
-  .add-row button { padding:10px 18px; background:var(--surface2); border:1px solid var(--gold); color:var(--gold); font-size:11px; cursor:pointer; }
-
-  /* HEALTH */
-  .health-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
-  .health-card { background: var(--surface2); border: 1px solid var(--border); padding: 20px; }
-  .health-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
-  .health-val { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 700; color: var(--gold); margin-bottom: 4px; }
-  .health-sub { font-size: 11px; color: var(--muted); }
-  .health-status { display: inline-block; padding: 3px 10px; font-size: 10px; letter-spacing: 1px; margin-bottom: 12px; }
-  .health-status.ok { background: rgba(39,174,96,0.15); color: var(--green); border: 1px solid rgba(39,174,96,0.3); }
-  .health-status.warn { background: rgba(230,126,34,0.15); color: #e67e22; border: 1px solid rgba(230,126,34,0.3); }
-
-  /* FORM */
+  .add-row input { flex: 1; background: var(--bg); border: 1px solid var(--border); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 10px 14px; outline: none; }
+  .add-row input:focus { border-color: var(--gold); }
+  .add-row button { padding: 10px 18px; background: var(--surface2); border: 1px solid var(--gold); color: var(--gold); font-size: 11px; cursor: pointer; }
   .form-row { margin-bottom: 16px; }
   .form-row label { display: block; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 7px; }
-  .form-row input, .form-row textarea { width:100%; background:var(--bg); border:1px solid var(--border); color:var(--text); font-family:'DM Sans',sans-serif; font-size:13px; padding:11px 14px; outline:none; }
-  .form-row input:focus, .form-row textarea:focus { border-color:var(--gold); }
-  .form-row textarea { min-height:80px; resize:vertical; }
-
-  /* NEW PROJECT MODAL */
-  .new-modal { background:var(--surface); border:1px solid var(--border); width:480px; max-width:95vw; margin:auto; padding:40px; animation:fadeUp 0.2s ease; }
-  .new-modal h3 { font-family:'Syne',sans-serif; font-size:18px; margin-bottom:24px; color:var(--gold); }
-  .modal-btns { display:flex; gap:10px; }
-  .btn-cancel { padding:12px 20px; background:transparent; border:1px solid var(--border); color:var(--muted); font-size:12px; cursor:pointer; }
+  .form-row input, .form-row textarea, .form-row select { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 11px 14px; outline: none; }
+  .form-row input:focus, .form-row textarea:focus { border-color: var(--gold); }
+  .form-row textarea { min-height: 80px; resize: vertical; }
+  .form-row select option { background: var(--surface); }
+  .new-modal { background: var(--surface); border: 1px solid var(--border); width: 480px; max-width: 95vw; margin: auto; padding: 40px; }
+  .new-modal h3 { font-family: 'Syne', sans-serif; font-size: 18px; margin-bottom: 24px; color: var(--gold); }
+  .modal-btns { display: flex; gap: 10px; margin-top: 16px; }
+  .btn-cancel { padding: 12px 20px; background: transparent; border: 1px solid var(--border); color: var(--muted); font-size: 12px; cursor: pointer; }
 </style>
 </head>
 <body>
@@ -102,6 +77,8 @@
   <div class="nav-section">Gestion</div>
   <a href="finances.html" class="nav-item"><span class="ico">◆</span> Finances</a>
   <a href="documents.html" class="nav-item"><span class="ico">▣</span> Documents</a>
+  <div class="nav-section">Alter Ego</div>
+  <a href="alterego.html" class="nav-item"><span class="ico">◉</span> Mon Alter Ego</a>
   <div class="nav-bottom"><a class="nav-logout" onclick="logout()">← Déconnexion</a></div>
 </nav>
 
@@ -110,220 +87,173 @@
     <div class="page-title">Projets</div>
     <button class="btn-gold" onclick="document.getElementById('newModal').classList.add('open')">+ Nouveau projet</button>
   </div>
-  <div class="projects-grid" id="projectsGrid"></div>
-  <div id="emptyState" style="color:var(--muted);font-size:13px;display:none">Aucun projet pour le moment. Crée ton premier projet.</div>
+  <div class="projects-grid" id="grid"></div>
+  <div id="empty" style="color:var(--muted);font-size:13px;display:none">Aucun projet. Crée ton premier projet.</div>
 </main>
 
-<!-- PROJECT DETAIL MODAL -->
 <div class="modal-overlay" id="detailModal">
   <div class="project-modal">
     <div class="modal-header">
       <div>
-        <div class="modal-title" id="modalProjectName"></div>
-        <div style="font-size:12px;color:var(--muted);margin-top:4px" id="modalProjectClient"></div>
+        <div class="modal-title" id="mTitle"></div>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px" id="mClient"></div>
       </div>
       <button class="modal-close" onclick="closeDetail()">✕</button>
     </div>
     <div class="tabs">
       <div class="tab active" onclick="switchTab('construction',this)">Construction</div>
       <div class="tab" onclick="switchTab('maintenance',this)">Maintenance</div>
-      <div class="tab" onclick="switchTab('sante',this)">Santé du site</div>
       <div class="tab" onclick="switchTab('notes',this)">Notes client</div>
     </div>
-
     <div class="tab-content active" id="tab-construction">
-      <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:12px">Étapes de construction</div>
-      <ul class="checklist" id="constructionList"></ul>
+      <ul class="checklist" id="constList"></ul>
       <div class="add-row">
-        <input type="text" id="newConstStep" placeholder="Ajouter une étape..." onkeydown="if(event.key==='Enter')addStep('construction')">
-        <button onclick="addStep('construction')">+</button>
+        <input type="text" id="newConst" placeholder="Ajouter une étape..." onkeydown="if(event.key==='Enter')addTache('construction')">
+        <button onclick="addTache('construction')">+</button>
       </div>
     </div>
-
     <div class="tab-content" id="tab-maintenance">
-      <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:12px">Tâches mensuelles</div>
-      <ul class="checklist" id="maintenanceList"></ul>
+      <ul class="checklist" id="maintList"></ul>
       <div class="add-row">
-        <input type="text" id="newMaintStep" placeholder="Ajouter une tâche..." onkeydown="if(event.key==='Enter')addStep('maintenance')">
-        <button onclick="addStep('maintenance')">+</button>
+        <input type="text" id="newMaint" placeholder="Ajouter une tâche..." onkeydown="if(event.key==='Enter')addTache('maintenance')">
+        <button onclick="addTache('maintenance')">+</button>
       </div>
     </div>
-
-    <div class="tab-content" id="tab-sante">
-      <div class="health-grid">
-        <div class="health-card">
-          <div class="health-label">Performance</div>
-          <div class="health-val" id="healthPerf">—</div>
-          <div class="health-sub">Score PageSpeed</div>
-        </div>
-        <div class="health-card">
-          <div class="health-label">Statut en ligne</div>
-          <div class="health-status ok" id="healthUptime">En ligne</div>
-          <div class="health-sub" style="margin-top:4px">Dernière vérification : maintenant</div>
-        </div>
-      </div>
-      <div class="form-row" style="margin-top:16px">
-        <label>URL du site client</label>
-        <input type="url" id="siteUrl" placeholder="https://exemple.com" onchange="updateSiteUrl()">
-      </div>
-      <div class="form-row">
-        <label>Notes santé</label>
-        <textarea id="healthNotes" placeholder="Points faibles, recommandations..." onchange="saveHealthNotes()"></textarea>
-      </div>
-    </div>
-
     <div class="tab-content" id="tab-notes">
-      <div class="form-row">
-        <label>Souhaits du client</label>
-        <textarea id="clientWishes" style="min-height:120px" placeholder="Ce que le client veut, ses préférences, ses demandes particulières..." onchange="saveNotes('wishes')"></textarea>
-      </div>
-      <div class="form-row">
-        <label>Notes de réunion / échanges</label>
-        <textarea id="clientMeetings" style="min-height:120px" placeholder="Compte-rendus, points discutés, décisions prises..." onchange="saveNotes('meetings')"></textarea>
-      </div>
+      <div class="form-row"><label>URL du site</label><input type="url" id="siteUrl" placeholder="https://exemple.com"></div>
+      <div class="form-row"><label>Souhaits du client</label><textarea id="clientWishes" placeholder="Ce que le client veut..."></textarea></div>
+      <div class="form-row"><label>Notes / échanges</label><textarea id="clientMeetings" placeholder="Compte-rendus, décisions..."></textarea></div>
+      <button class="btn-gold" onclick="saveNotes()" style="margin-top:8px">Enregistrer</button>
     </div>
   </div>
 </div>
 
-<!-- NEW PROJECT MODAL -->
 <div class="modal-overlay" id="newModal" style="align-items:center;justify-content:center">
   <div class="new-modal">
     <h3>Nouveau projet</h3>
     <div class="form-row"><label>Nom du projet</label><input type="text" id="nNom" placeholder="Site Hôtel Napoléon"></div>
     <div class="form-row"><label>Client</label><input type="text" id="nClient" placeholder="Nom du client"></div>
     <div class="form-row"><label>Phase</label>
-      <select id="nPhase" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;padding:11px 14px;outline:none">
+      <select id="nPhase">
         <option value="construction">Construction</option>
         <option value="maintenance">Maintenance</option>
       </select>
     </div>
     <div class="modal-btns">
       <button class="btn-cancel" onclick="document.getElementById('newModal').classList.remove('open')">Annuler</button>
-      <button class="btn-gold" onclick="createProject()">Créer</button>
+      <button class="btn-gold" onclick="createProjet()">Créer</button>
     </div>
   </div>
 </div>
 
 <script>
+  const API = 'http://localhost:3000';
   if (!sessionStorage.getItem('auth')) window.location.href = 'index.html';
   function logout() { sessionStorage.clear(); window.location.href = 'index.html'; }
 
-  let projects = JSON.parse(localStorage.getItem('projects') || '[]');
-  let currentProject = null;
+  let projets = [];
+  let currentProjet = null;
+  let taches = [];
 
-  function save() { localStorage.setItem('projects', JSON.stringify(projects)); }
-
-  function createProject() {
-    const nom = document.getElementById('nNom').value.trim();
-    if (!nom) return;
-    projects.push({
-      nom,
-      client: document.getElementById('nClient').value.trim(),
-      phase: document.getElementById('nPhase').value,
-      construction: [],
-      maintenance: [],
-      siteUrl: '',
-      healthNotes: '',
-      wishes: '',
-      meetings: '',
-      created: new Date().toLocaleDateString('fr-FR')
-    });
-    save(); renderGrid();
-    document.getElementById('newModal').classList.remove('open');
+  async function load() {
+    try {
+      projets = await fetch(API+'/projets').then(r=>r.json());
+      renderGrid();
+    } catch(e) { document.getElementById('empty').style.display='block'; document.getElementById('empty').textContent='Serveur non connecté.'; }
   }
 
   function renderGrid() {
-    const grid = document.getElementById('projectsGrid');
-    const empty = document.getElementById('emptyState');
+    const grid = document.getElementById('grid');
+    const empty = document.getElementById('empty');
     grid.innerHTML = '';
-    if (projects.length === 0) { empty.style.display='block'; return; }
-    empty.style.display = 'none';
-    projects.forEach((p, i) => {
-      const total = p.construction.length + p.maintenance.length;
-      const done = [...p.construction, ...p.maintenance].filter(s => s.done).length;
-      const pct = total > 0 ? Math.round((done/total)*100) : 0;
+    if (!projets.length) { empty.style.display='block'; return; }
+    empty.style.display='none';
+    projets.forEach(p => {
       const card = document.createElement('div');
       card.className = 'project-card';
       card.innerHTML = `
-        <div class="project-phase">${p.phase === 'construction' ? '🔨 Construction' : '⚙️ Maintenance'}</div>
+        <div class="project-phase">${p.phase==='construction'?'🔨 Construction':'⚙️ Maintenance'}</div>
         <div class="project-name">${p.nom}</div>
         <div class="project-client">${p.client||'Client non défini'}</div>
-        <div class="progress-bar-wrap">
-          <div class="progress-label"><span>Avancement</span><span>${pct}%</span></div>
-          <div class="bar-bg"><div class="bar-fill" style="width:${pct}%"></div></div>
-        </div>
-        <div class="project-meta"><span>${done}/${total} tâches</span><span>Créé le ${p.created}</span></div>
-      `;
-      card.onclick = () => openDetail(i);
+        <div class="bar-bg"><div class="bar-fill" style="width:0%"></div></div>
+        <div class="project-meta">Créé le ${new Date(p.created_at).toLocaleDateString('fr-FR')}</div>`;
+      card.onclick = () => openDetail(p);
       grid.appendChild(card);
     });
   }
 
-  function openDetail(idx) {
-    currentProject = idx;
-    const p = projects[idx];
-    document.getElementById('modalProjectName').textContent = p.nom;
-    document.getElementById('modalProjectClient').textContent = p.client||'';
-    document.getElementById('siteUrl').value = p.siteUrl||'';
-    document.getElementById('healthNotes').value = p.healthNotes||'';
-    document.getElementById('clientWishes').value = p.wishes||'';
-    document.getElementById('clientMeetings').value = p.meetings||'';
-    renderChecklist('construction');
-    renderChecklist('maintenance');
+  async function openDetail(p) {
+    currentProjet = p;
+    document.getElementById('mTitle').textContent = p.nom;
+    document.getElementById('mClient').textContent = p.client||'';
+    document.getElementById('siteUrl').value = p.site_url||'';
+    document.getElementById('clientWishes').value = p.notes||'';
+    document.getElementById('clientMeetings').value = '';
+    taches = await fetch(API+'/projets/'+p.id+'/taches').then(r=>r.json());
+    renderTaches();
     switchTab('construction', document.querySelector('.tab'));
     document.getElementById('detailModal').classList.add('open');
   }
 
-  function closeDetail() { document.getElementById('detailModal').classList.remove('open'); renderGrid(); }
+  function closeDetail() { document.getElementById('detailModal').classList.remove('open'); load(); }
 
   function switchTab(name, el) {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
     el.classList.add('active');
     document.getElementById('tab-'+name).classList.add('active');
   }
 
-  function renderChecklist(type) {
-    const p = projects[currentProject];
-    const list = document.getElementById(type+'List');
-    list.innerHTML = '';
-    (p[type]||[]).forEach((item, i) => {
-      const li = document.createElement('li');
-      li.className = 'check-item' + (item.done ? ' done' : '');
-      li.innerHTML = `<div class="check-box">${item.done ? '✓' : ''}</div><span class="check-label">${item.text}</span><span style="font-size:11px;color:var(--muted);cursor:pointer" onclick="removeStep('${type}',${i})">✕</span>`;
-      li.querySelector('.check-box').parentElement.addEventListener('click', (e) => { if (!e.target.closest('span:last-child')) toggleStep(type, i); });
-      list.appendChild(li);
+  function renderTaches() {
+    ['construction','maintenance'].forEach(type => {
+      const list = document.getElementById(type==='construction'?'constList':'maintList');
+      list.innerHTML = '';
+      taches.filter(t=>t.type===type).forEach(t => {
+        const li = document.createElement('li');
+        li.className = 'check-item'+(t.done?' done':'');
+        li.innerHTML = `<div class="check-box">${t.done?'✓':''}</div><span class="check-label">${t.texte}</span><span style="font-size:11px;color:var(--muted);cursor:pointer" onclick="delTache(${t.id})">✕</span>`;
+        li.querySelector('.check-box').addEventListener('click', ()=>toggleTache(t.id, !t.done));
+        list.appendChild(li);
+      });
     });
   }
 
-  function addStep(type) {
-    const inp = document.getElementById(type === 'construction' ? 'newConstStep' : 'newMaintStep');
-    const text = inp.value.trim();
-    if (!text) return;
-    projects[currentProject][type].push({ text, done: false });
+  async function addTache(type) {
+    const inp = document.getElementById(type==='construction'?'newConst':'newMaint');
+    const texte = inp.value.trim();
+    if (!texte) return;
+    await fetch(API+'/projets/'+currentProjet.id+'/taches', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({type, texte}) });
     inp.value = '';
-    save(); renderChecklist(type);
+    taches = await fetch(API+'/projets/'+currentProjet.id+'/taches').then(r=>r.json());
+    renderTaches();
   }
 
-  function toggleStep(type, i) {
-    projects[currentProject][type][i].done = !projects[currentProject][type][i].done;
-    save(); renderChecklist(type);
+  async function toggleTache(id, done) {
+    await fetch(API+'/taches/'+id, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({done}) });
+    taches = await fetch(API+'/projets/'+currentProjet.id+'/taches').then(r=>r.json());
+    renderTaches();
   }
 
-  function removeStep(type, i) {
-    projects[currentProject][type].splice(i, 1);
-    save(); renderChecklist(type);
+  async function delTache(id) {
+    await fetch(API+'/taches/'+id, { method:'DELETE' });
+    taches = taches.filter(t=>t.id!==id);
+    renderTaches();
   }
 
-  function updateSiteUrl() { projects[currentProject].siteUrl = document.getElementById('siteUrl').value; save(); }
-  function saveHealthNotes() { projects[currentProject].healthNotes = document.getElementById('healthNotes').value; save(); }
-  function saveNotes(field) {
-    if (field === 'wishes') projects[currentProject].wishes = document.getElementById('clientWishes').value;
-    if (field === 'meetings') projects[currentProject].meetings = document.getElementById('clientMeetings').value;
-    save();
+  async function saveNotes() {
+    await fetch(API+'/projets/'+currentProjet.id, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ site_url: document.getElementById('siteUrl').value, notes: document.getElementById('clientWishes').value }) });
+    alert('Notes enregistrées.');
   }
 
-  renderGrid();
+  async function createProjet() {
+    const nom = document.getElementById('nNom').value.trim();
+    if (!nom) return;
+    await fetch(API+'/projets', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ nom, client: document.getElementById('nClient').value.trim(), phase: document.getElementById('nPhase').value }) });
+    document.getElementById('newModal').classList.remove('open');
+    load();
+  }
+
+  load();
 </script>
 </body>
 </html>

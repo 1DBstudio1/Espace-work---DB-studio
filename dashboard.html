@@ -7,286 +7,71 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --gold: #C9A84C;
-    --bg: #080808;
-    --surface: #0f0f0f;
-    --surface2: #161616;
-    --border: #1e1e1e;
-    --text: #e8e8e8;
-    --muted: #555;
-    --green: #27ae60;
-    --red: #c0392b;
-    --orange: #e67e22;
-  }
+  :root { --gold: #C9A84C; --bg: #080808; --surface: #0f0f0f; --surface2: #161616; --border: #1e1e1e; --text: #e8e8e8; --muted: #555; --green: #27ae60; --red: #c0392b; --orange: #e67e22; }
   body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; display: flex; min-height: 100vh; }
-
-  /* NAV */
-  nav {
-    width: 220px;
-    min-height: 100vh;
-    background: var(--surface);
-    border-right: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    padding: 32px 0;
-    position: fixed;
-    top: 0; left: 0; bottom: 0;
-  }
-  .nav-logo {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: 16px;
-    color: var(--gold);
-    letter-spacing: 3px;
-    padding: 0 24px;
-    margin-bottom: 40px;
-  }
-  .nav-section {
-    font-size: 9px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--muted);
-    padding: 0 24px;
-    margin-bottom: 8px;
-    margin-top: 20px;
-  }
-  .nav-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 24px;
-    font-size: 13px;
-    color: var(--muted);
-    text-decoration: none;
-    transition: all 0.15s;
-    border-left: 2px solid transparent;
-  }
+  nav { width: 220px; min-height: 100vh; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 32px 0; position: fixed; top: 0; left: 0; bottom: 0; }
+  .nav-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 16px; color: var(--gold); letter-spacing: 3px; padding: 0 24px; margin-bottom: 40px; }
+  .nav-section { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); padding: 0 24px; margin-bottom: 8px; margin-top: 20px; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 24px; font-size: 13px; color: var(--muted); text-decoration: none; transition: all 0.15s; border-left: 2px solid transparent; }
   .nav-item:hover { color: var(--text); background: var(--surface2); }
   .nav-item.active { color: var(--gold); border-left-color: var(--gold); background: rgba(201,168,76,0.05); }
   .nav-item .ico { font-size: 15px; width: 18px; text-align: center; }
   .nav-bottom { margin-top: auto; padding: 0 24px; }
-  .nav-logout { font-size: 11px; color: var(--muted); cursor: pointer; text-decoration: none; letter-spacing: 1px; }
+  .nav-logout { font-size: 11px; color: var(--muted); cursor: pointer; text-decoration: none; }
   .nav-logout:hover { color: var(--red); }
-
-  /* MAIN */
   main { margin-left: 220px; flex: 1; padding: 40px; }
-
-  .top-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 40px;
-  }
-  .page-title {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: 24px;
-    color: var(--text);
-  }
+  .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 40px; }
+  .page-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 24px; }
   .date { font-size: 12px; color: var(--muted); }
-
-  /* MISSION CARD */
-  .mission-card {
-    background: linear-gradient(135deg, #111 0%, #1a1500 100%);
-    border: 1px solid var(--gold-dim, #4a3a10);
-    border-left: 3px solid var(--gold);
-    padding: 32px;
-    margin-bottom: 32px;
-    position: relative;
-    overflow: hidden;
-  }
-  .mission-card::before {
-    content: '';
-    position: absolute;
-    top: -60px; right: -60px;
-    width: 200px; height: 200px;
-    background: radial-gradient(circle, rgba(201,168,76,0.08) 0%, transparent 70%);
-  }
-  .mission-label {
-    font-size: 9px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 12px;
-  }
-  .mission-text {
-    font-family: 'Syne', sans-serif;
-    font-size: 20px;
-    font-weight: 700;
-    line-height: 1.4;
-    margin-bottom: 16px;
-  }
+  .mission-card { background: linear-gradient(135deg, #111 0%, #1a1500 100%); border: 1px solid rgba(201,168,76,0.2); border-left: 3px solid var(--gold); padding: 32px; margin-bottom: 32px; }
+  .mission-label { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; }
+  .mission-text { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; line-height: 1.4; margin-bottom: 12px; }
   .mission-sub { font-size: 13px; color: #aaa; line-height: 1.6; }
-  .mission-btn {
-    display: inline-block;
-    margin-top: 20px;
-    padding: 10px 24px;
-    background: var(--gold);
-    color: #000;
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 11px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    cursor: pointer;
-    border: none;
-    transition: background 0.2s;
-  }
-  .mission-btn:hover { background: #d9b55c; }
-
-  /* OBJECTIF */
   .obj-bar-wrap { margin-bottom: 32px; }
   .obj-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
   .obj-label { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); }
-  .obj-vals { font-family: 'Syne', sans-serif; font-size: 13px; color: var(--text); }
+  .obj-vals { font-family: 'Syne', sans-serif; font-size: 13px; }
   .obj-vals span { color: var(--gold); }
-  .bar-bg { background: var(--surface2); height: 6px; border-radius: 0; }
+  .bar-bg { background: var(--surface2); height: 6px; }
   .bar-fill { height: 6px; background: var(--gold); transition: width 1s ease; }
-
-  /* STATS GRID */
-  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
-  .stat-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    padding: 20px;
-  }
+  .grid-4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 32px; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); padding: 20px; }
   .stat-label { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
   .stat-val { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 700; margin-bottom: 4px; }
   .stat-sub { font-size: 11px; color: var(--muted); }
   .stat-val.green { color: var(--green); }
   .stat-val.gold { color: var(--gold); }
   .stat-val.red { color: var(--red); }
-
-  /* ALERTES */
   .section-title { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; }
-  .alert-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 32px; }
-  .alert-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    font-size: 13px;
-  }
-  .alert-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
-  .alert-dot.red { background: var(--red); }
-  .alert-dot.orange { background: var(--orange); }
-  .alert-dot.green { background: var(--green); }
-  .alert-action { margin-left: auto; font-size: 11px; color: var(--gold); cursor: pointer; white-space: nowrap; }
-
-  /* TACHES JOUR */
-  .tasks { display: flex; flex-direction: column; gap: 8px; margin-bottom: 32px; }
-  .task-item {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 14px 16px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    font-size: 13px;
-    cursor: pointer;
-    transition: border-color 0.15s;
-  }
+  .tasks { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
+  .task-item { display: flex; align-items: center; gap: 14px; padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); font-size: 13px; cursor: pointer; }
   .task-item:hover { border-color: var(--gold); }
-  .task-check {
-    width: 16px; height: 16px;
-    border: 1px solid var(--muted);
-    flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.15s;
-  }
-  .task-item.done .task-check { background: var(--gold); border-color: var(--gold); }
+  .task-check { width: 16px; height: 16px; border: 1px solid var(--muted); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; }
+  .task-item.done .task-check { background: var(--gold); border-color: var(--gold); color: #000; }
   .task-item.done .task-text { color: var(--muted); text-decoration: line-through; }
   .task-text { flex: 1; }
-  .task-tag {
-    font-size: 9px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    padding: 3px 8px;
-    background: var(--surface2);
-    color: var(--muted);
-  }
-
-  /* ADD TASK */
-  .add-task {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 32px;
-  }
-  .add-task input {
-    flex: 1;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    padding: 12px 16px;
-    outline: none;
-    transition: border-color 0.2s;
-  }
+  .add-task { display: flex; gap: 8px; margin-bottom: 32px; }
+  .add-task input { flex: 1; background: var(--surface); border: 1px solid var(--border); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 12px 16px; outline: none; }
   .add-task input:focus { border-color: var(--gold); }
-  .add-task button {
-    background: var(--surface);
-    border: 1px solid var(--gold);
-    color: var(--gold);
-    font-family: 'Syne', sans-serif;
-    font-size: 11px;
-    letter-spacing: 2px;
-    padding: 12px 20px;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
+  .add-task button { background: var(--surface); border: 1px solid var(--gold); color: var(--gold); font-family: 'Syne', sans-serif; font-size: 11px; letter-spacing: 2px; padding: 12px 20px; cursor: pointer; }
   .add-task button:hover { background: var(--gold); color: #000; }
-
-  /* OBJECTIF MODAL */
-  .modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.85);
-    z-index: 100;
-    align-items: center;
-    justify-content: center;
-  }
+  .alert-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--surface); border: 1px solid var(--border); font-size: 13px; margin-bottom: 8px; }
+  .alert-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .alert-dot.red { background: var(--red); }
+  .alert-dot.green { background: var(--green); }
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 100; align-items: center; justify-content: center; }
   .modal-overlay.open { display: flex; }
-  .modal {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    padding: 40px;
-    width: 440px;
-    max-width: 95vw;
-  }
+  .modal { background: var(--surface); border: 1px solid var(--border); padding: 40px; width: 440px; max-width: 95vw; }
   .modal h3 { font-family: 'Syne', sans-serif; font-size: 16px; margin-bottom: 24px; color: var(--gold); }
   .modal label { display: block; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
-  .modal input {
-    width: 100%;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    padding: 12px 16px;
-    outline: none;
-    margin-bottom: 20px;
-  }
+  .modal input { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; padding: 12px 16px; outline: none; margin-bottom: 20px; }
   .modal input:focus { border-color: var(--gold); }
   .modal-btns { display: flex; gap: 10px; }
-  .btn-gold {
-    flex: 1; padding: 12px; background: var(--gold); border: none; color: #000;
-    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 11px;
-    letter-spacing: 2px; text-transform: uppercase; cursor: pointer;
-  }
-  .btn-cancel {
-    padding: 12px 20px; background: transparent; border: 1px solid var(--border);
-    color: var(--muted); font-family: 'DM Sans', sans-serif; font-size: 12px; cursor: pointer;
-  }
-  .btn-cancel:hover { border-color: var(--muted); color: var(--text); }
+  .btn-gold { flex: 1; padding: 12px; background: var(--gold); border: none; color: #000; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 11px; letter-spacing: 2px; cursor: pointer; }
+  .btn-cancel { padding: 12px 20px; background: transparent; border: 1px solid var(--border); color: var(--muted); font-size: 12px; cursor: pointer; }
 </style>
 </head>
 <body>
-
 <nav>
   <div class="nav-logo">DB STUDIO</div>
   <div class="nav-section">Principal</div>
@@ -296,9 +81,9 @@
   <div class="nav-section">Gestion</div>
   <a href="finances.html" class="nav-item"><span class="ico">◆</span> Finances</a>
   <a href="documents.html" class="nav-item"><span class="ico">▣</span> Documents</a>
-  <div class="nav-bottom">
-    <a class="nav-logout" onclick="logout()">← Déconnexion</a>
-  </div>
+  <div class="nav-section">Alter Ego</div>
+  <a href="alterego.html" class="nav-item"><span class="ico">◉</span> Mon Alter Ego</a>
+  <div class="nav-bottom"><a class="nav-logout" onclick="logout()">← Déconnexion</a></div>
 </nav>
 
 <main>
@@ -307,72 +92,43 @@
     <div class="date" id="dateDisplay"></div>
   </div>
 
-  <!-- MISSION DU JOUR -->
   <div class="mission-card">
     <div class="mission-label">⚡ Mission du jour</div>
     <div class="mission-text" id="missionText">Chargement...</div>
     <div class="mission-sub" id="missionSub"></div>
-    <button class="mission-btn" onclick="refreshMission()">Recentrer →</button>
   </div>
 
-  <!-- OBJECTIF CA -->
   <div class="obj-bar-wrap">
     <div class="obj-header">
       <div class="obj-label">Objectif CA — ce mois</div>
       <div class="obj-vals"><span id="caActuel">0</span> € / <span id="caObj">0</span> € <span id="caPct" style="color:var(--muted);font-size:11px"></span></div>
     </div>
     <div class="bar-bg"><div class="bar-fill" id="caBar" style="width:0%"></div></div>
-    <div style="margin-top:8px; font-size:11px; color:var(--muted); cursor:pointer;" onclick="document.getElementById('objModal').classList.add('open')">Modifier l'objectif →</div>
+    <div style="margin-top:8px;font-size:11px;color:var(--muted);cursor:pointer" onclick="document.getElementById('objModal').classList.add('open')">Modifier l'objectif →</div>
   </div>
 
-  <!-- STATS -->
   <div class="grid-4">
-    <div class="stat-card">
-      <div class="stat-label">Prospects actifs</div>
-      <div class="stat-val gold" id="nbProspects">0</div>
-      <div class="stat-sub">en cours de suivi</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Clients actifs</div>
-      <div class="stat-val green" id="nbClients">0</div>
-      <div class="stat-sub">abonnements en cours</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Factures en attente</div>
-      <div class="stat-val red" id="nbFactures">0</div>
-      <div class="stat-sub">à encaisser</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Projets en cours</div>
-      <div class="stat-val gold" id="nbProjets">0</div>
-      <div class="stat-sub">en construction</div>
-    </div>
+    <div class="stat-card"><div class="stat-label">Prospects</div><div class="stat-val gold" id="nbP">0</div><div class="stat-sub">en cours</div></div>
+    <div class="stat-card"><div class="stat-label">Clients actifs</div><div class="stat-val green" id="nbC">0</div><div class="stat-sub">abonnements</div></div>
+    <div class="stat-card"><div class="stat-label">Factures impayées</div><div class="stat-val red" id="nbF">0</div><div class="stat-sub">à encaisser</div></div>
+    <div class="stat-card"><div class="stat-label">Projets en cours</div><div class="stat-val gold" id="nbPr">0</div><div class="stat-sub">en construction</div></div>
   </div>
 
-  <!-- ALERTES -->
   <div class="section-title">Alertes</div>
-  <div class="alert-list" id="alertList">
-    <div class="alert-item">
-      <div class="alert-dot green"></div>
-      <span>Aucune alerte pour le moment.</span>
-    </div>
-  </div>
+  <div id="alertList"></div>
 
-  <!-- TACHES DU JOUR -->
   <div class="section-title">Tâches du jour</div>
   <div class="add-task">
     <input type="text" id="newTask" placeholder="Ajouter une tâche..." onkeydown="if(event.key==='Enter')addTask()">
     <button onclick="addTask()">+ Ajouter</button>
   </div>
   <div class="tasks" id="taskList"></div>
-
 </main>
 
-<!-- MODAL OBJECTIF -->
 <div class="modal-overlay" id="objModal">
   <div class="modal">
-    <h3>Définir l'objectif du mois</h3>
-    <label>CA cible (€)</label>
+    <h3>Objectif CA du mois</h3>
+    <label>Montant cible (€)</label>
     <input type="number" id="objInput" placeholder="Ex: 2000" min="0">
     <div class="modal-btns">
       <button class="btn-cancel" onclick="document.getElementById('objModal').classList.remove('open')">Annuler</button>
@@ -382,109 +138,90 @@
 </div>
 
 <script>
-  // Auth guard
+  const API = 'http://localhost:3000';
   if (!sessionStorage.getItem('auth')) window.location.href = 'index.html';
-
   function logout() { sessionStorage.clear(); window.location.href = 'index.html'; }
 
-  // Date
   const days = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
   const months = ['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
   const now = new Date();
   document.getElementById('dateDisplay').textContent = `${days[now.getDay()]} ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
 
-  // STATE
-  let state = JSON.parse(localStorage.getItem('dbstate') || '{}');
-  if (!state.tasks) state.tasks = [];
-  if (!state.caObj) state.caObj = 0;
-  if (!state.caActuel) state.caActuel = 0;
+  let tasks = JSON.parse(localStorage.getItem('tasks_dash') || '[]');
+  let caObj = parseInt(localStorage.getItem('caObj') || '0');
+  let stats = { prospects: 0, clients: 0, factures: 0, projets: 0, ca: 0 };
 
-  function save() { localStorage.setItem('dbstate', JSON.stringify(state)); }
-
-  // MISSION ENGINE
-  const missions = {
-    noProspect: {
-      text: "Tu as 0 prospect en cours. Ton seul travail aujourd'hui : trouver et contacter au moins 3 entreprises locales.",
-      sub: "Pas de prospection = pas de revenus. C'est aussi simple que ça. Ouvre Maps, identifie des commerces à Gap, envoie un message."
-    },
-    noClient: {
-      text: "Tu as des prospects mais aucun client signé. Relance chacun avec une deadline claire.",
-      sub: "Un prospect sans deadline ne signera jamais. Fixe une date limite à chaque contact ouvert."
-    },
-    factureImpayee: {
-      text: "Tu as des factures impayées. Relance aujourd'hui — chaque jour de retard coûte.",
-      sub: "Envoie un message direct, poli et ferme. L'argent est dû, tu n'as rien à justifier."
-    },
-    projetsEnCours: {
-      text: "Tu as des projets en cours. Avance la livraison — un client satisfait vite = une référence et un renouvellement.",
-      sub: "Concentre-toi sur les étapes bloquantes. Qu'est-ce qui empêche la livraison ? Règle ça aujourd'hui."
-    },
-    default: {
-      text: "Définis ton objectif du mois et commence à prospecter. C'est le point de départ de tout.",
-      sub: "Sans objectif chiffré, tu travailles sans direction. Fixe ton CA cible maintenant."
+  async function loadStats() {
+    try {
+      const [prospects, factures, abos, projets] = await Promise.all([
+        fetch(API+'/prospects').then(r=>r.json()),
+        fetch(API+'/factures').then(r=>r.json()),
+        fetch(API+'/abonnements').then(r=>r.json()),
+        fetch(API+'/projets').then(r=>r.json())
+      ]);
+      const mois = new Date().getMonth();
+      stats.prospects = prospects.filter(p => p.etape < 8).length;
+      stats.clients = prospects.filter(p => p.etape >= 8).length;
+      stats.factures = factures.filter(f => f.statut !== 'payee').length;
+      stats.projets = projets.filter(p => p.phase === 'construction').length;
+      stats.ca = factures.filter(f => f.statut === 'payee' && new Date(f.echeance).getMonth() === mois).reduce((s,f)=>s+Number(f.montant),0);
+      stats.montantImp = factures.filter(f=>f.statut!=='payee').reduce((s,f)=>s+Number(f.montant),0);
+      render();
+    } catch(e) {
+      document.getElementById('missionText').textContent = 'Serveur non connecté. Lance node server.js.';
     }
-  };
-
-  function refreshMission() {
-    const p = state.prospects || 0;
-    const c = state.clients || 0;
-    const f = state.facturesImpayees || 0;
-    const pr = state.projets || 0;
-    let m;
-    if (f > 0) m = missions.factureImpayee;
-    else if (p === 0) m = missions.noProspect;
-    else if (c === 0) m = missions.noClient;
-    else if (pr > 0) m = missions.projetsEnCours;
-    else m = missions.default;
-    document.getElementById('missionText').textContent = m.text;
-    document.getElementById('missionSub').textContent = m.sub;
   }
 
-  // CA
-  function updateCA() {
-    const actuel = state.caActuel || 0;
-    const obj = state.caObj || 0;
-    const pct = obj > 0 ? Math.min(100, Math.round((actuel / obj) * 100)) : 0;
-    document.getElementById('caActuel').textContent = actuel;
-    document.getElementById('caObj').textContent = obj;
-    document.getElementById('caPct').textContent = obj > 0 ? `(${pct}%)` : '';
+  function render() {
+    document.getElementById('nbP').textContent = stats.prospects;
+    document.getElementById('nbC').textContent = stats.clients;
+    document.getElementById('nbF').textContent = stats.factures;
+    document.getElementById('nbPr').textContent = stats.projets;
+    const pct = caObj > 0 ? Math.min(100, Math.round((stats.ca/caObj)*100)) : 0;
+    document.getElementById('caActuel').textContent = stats.ca.toLocaleString('fr-FR');
+    document.getElementById('caObj').textContent = caObj.toLocaleString('fr-FR');
+    document.getElementById('caPct').textContent = caObj > 0 ? `(${pct}%)` : '';
     document.getElementById('caBar').style.width = pct + '%';
+    renderMission();
+    renderAlerts();
+    renderTasks();
   }
 
-  function saveObj() {
-    const val = parseInt(document.getElementById('objInput').value);
-    if (!isNaN(val) && val >= 0) {
-      state.caObj = val;
-      save(); updateCA();
-      document.getElementById('objModal').classList.remove('open');
-    }
+  function renderMission() {
+    const s = stats;
+    const joursRest = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate() - now.getDate();
+    const pct = caObj > 0 ? Math.round((s.ca/caObj)*100) : 0;
+    let text, sub;
+    if (s.factures > 0) { text = `Relancer les factures impayées.`; sub = `${s.montantImp.toLocaleString('fr-FR')} € qui t'appartiennent déjà. Envoie une relance à chaque client concerné aujourd'hui.`; }
+    else if (s.prospects === 0 && s.clients === 0) { text = `Mission : prospecter aujourd'hui.`; sub = `0 prospect, 0 client, CA à 0€. Il reste ${joursRest} jours dans le mois. Google Maps, 5 commerces à Gap, un message court. Tu envoies aujourd'hui.`; }
+    else if (s.clients === 0) { text = `Convertir tes prospects en clients.`; sub = `${s.prospects} prospect(s) en cours, 0 signé. Relance chacun avec une deadline claire.`; }
+    else if (s.projets > 0) { text = `Avancer sur les projets en cours.`; sub = `${s.projets} site(s) en construction. Identifie le point bloquant et avance d'une étape aujourd'hui.`; }
+    else { text = `Consolider et développer.`; sub = `${s.clients} client(s) actif(s). Un prospect contacté aujourd'hui, un client qu'on s'assure qu'il est satisfait.`; }
+    document.getElementById('missionText').textContent = text;
+    document.getElementById('missionSub').textContent = sub;
   }
 
-  // STATS
-  function updateStats() {
-    document.getElementById('nbProspects').textContent = state.prospects || 0;
-    document.getElementById('nbClients').textContent = state.clients || 0;
-    document.getElementById('nbFactures').textContent = state.facturesImpayees || 0;
-    document.getElementById('nbProjets').textContent = state.projets || 0;
+  function renderAlerts() {
+    const list = document.getElementById('alertList');
+    list.innerHTML = '';
+    const alerts = [];
+    if (stats.factures > 0) alerts.push({ type: 'red', msg: `${stats.factures} facture(s) impayée(s) — ${stats.montantImp.toLocaleString('fr-FR')} € à récupérer` });
+    if (stats.prospects === 0) alerts.push({ type: 'red', msg: 'Aucun prospect en cours. Lance la prospection.' });
+    if (alerts.length === 0) alerts.push({ type: 'green', msg: 'Aucune alerte pour le moment.' });
+    alerts.forEach(a => {
+      list.innerHTML += `<div class="alert-item"><div class="alert-dot ${a.type}"></div><span>${a.msg}</span></div>`;
+    });
   }
 
-  // TASKS
   function renderTasks() {
     const list = document.getElementById('taskList');
     list.innerHTML = '';
-    if (state.tasks.length === 0) {
-      list.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:12px">Aucune tâche pour aujourd\'hui.</div>';
-      return;
-    }
-    state.tasks.forEach((t, i) => {
+    if (!tasks.length) { list.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:12px">Aucune tâche.</div>'; return; }
+    tasks.forEach((t,i) => {
       const div = document.createElement('div');
-      div.className = 'task-item' + (t.done ? ' done' : '');
-      div.innerHTML = `
-        <div class="task-check">${t.done ? '✓' : ''}</div>
-        <div class="task-text">${t.text}</div>
-        <span style="font-size:11px;color:var(--muted);cursor:pointer;" onclick="removeTask(${i})">✕</span>
-      `;
-      div.querySelector('.task-check').parentElement.addEventListener('click', () => toggleTask(i));
+      div.className = 'task-item' + (t.done?' done':'');
+      div.innerHTML = `<div class="task-check">${t.done?'✓':''}</div><div class="task-text">${t.text}</div><span style="font-size:11px;color:var(--muted);cursor:pointer" onclick="removeTask(${i})">✕</span>`;
+      div.querySelector('.task-check').addEventListener('click', ()=>toggleTask(i));
       list.appendChild(div);
     });
   }
@@ -493,26 +230,22 @@
     const inp = document.getElementById('newTask');
     const text = inp.value.trim();
     if (!text) return;
-    state.tasks.push({ text, done: false });
+    tasks.push({ text, done: false });
     inp.value = '';
-    save(); renderTasks();
+    localStorage.setItem('tasks_dash', JSON.stringify(tasks));
+    renderTasks();
   }
 
-  function toggleTask(i) {
-    state.tasks[i].done = !state.tasks[i].done;
-    save(); renderTasks();
+  function toggleTask(i) { tasks[i].done = !tasks[i].done; localStorage.setItem('tasks_dash', JSON.stringify(tasks)); renderTasks(); }
+  function removeTask(i) { tasks.splice(i,1); localStorage.setItem('tasks_dash', JSON.stringify(tasks)); renderTasks(); }
+
+  function saveObj() {
+    const val = parseInt(document.getElementById('objInput').value);
+    if (!isNaN(val)) { caObj = val; localStorage.setItem('caObj', caObj); render(); }
+    document.getElementById('objModal').classList.remove('open');
   }
 
-  function removeTask(i) {
-    state.tasks.splice(i, 1);
-    save(); renderTasks();
-  }
-
-  // INIT
-  refreshMission();
-  updateCA();
-  updateStats();
-  renderTasks();
+  loadStats();
 </script>
 </body>
 </html>
