@@ -7,12 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --gold: #C9A84C; --gold-dim: rgba(201,168,76,0.1);
-    --bg: #080808; --surface: #0f0f0f; --surface2: #161616;
-    --border: #1e1e1e; --text: #e8e8e8; --muted: #555;
-    --red: #c0392b; --green: #27ae60;
-  }
+  :root { --gold: #C9A84C; --gold-dim: rgba(201,168,76,0.1); --bg: #080808; --surface: #0f0f0f; --surface2: #161616; --border: #1e1e1e; --text: #e8e8e8; --muted: #555; --red: #c0392b; --green: #27ae60; }
   body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; display: flex; min-height: 100vh; overflow: hidden; }
   nav { width: 220px; min-height: 100vh; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 32px 0; position: fixed; top: 0; left: 0; bottom: 0; z-index: 10; }
   .nav-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 16px; color: var(--gold); letter-spacing: 3px; padding: 0 24px; margin-bottom: 40px; }
@@ -22,7 +17,7 @@
   .nav-item.active { color: var(--gold); border-left-color: var(--gold); background: rgba(201,168,76,0.05); }
   .nav-item .ico { font-size: 15px; width: 18px; text-align: center; }
   .nav-bottom { margin-top: auto; padding: 0 24px; }
-  .nav-logout { font-size: 11px; color: var(--muted); cursor: pointer; text-decoration: none; }
+  .nav-logout { font-size: 11px; color: var(--muted); cursor: pointer; }
   .nav-logout:hover { color: var(--red); }
   main { margin-left: 220px; flex: 1; display: flex; flex-direction: column; height: 100vh; }
   .ae-header { padding: 28px 40px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
@@ -30,7 +25,7 @@
   .ae-avatar { width: 44px; height: 44px; background: var(--gold-dim); border: 1px solid var(--gold); display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 16px; color: var(--gold); position: relative; }
   .ae-avatar::after { content: ''; position: absolute; bottom: -3px; right: -3px; width: 8px; height: 8px; background: var(--green); border: 2px solid var(--bg); border-radius: 50%; }
   .ae-name { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 18px; }
-  .ae-desc { font-size: 11px; color: var(--muted); letter-spacing: 1px; margin-top: 2px; }
+  .ae-desc { font-size: 11px; color: var(--muted); margin-top: 2px; }
   .header-actions { display: flex; gap: 10px; }
   .btn-sm { padding: 8px 16px; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; font-family: 'Syne', sans-serif; font-weight: 700; cursor: pointer; transition: all 0.15s; }
   .btn-sm.outline { background: transparent; border: 1px solid var(--border); color: var(--muted); }
@@ -112,7 +107,7 @@
       <div class="ae-avatar">AE</div>
       <div>
         <div class="ae-name">Alter Ego — DB Studio</div>
-        <div class="ae-desc">Ton partenaire stratégique · 100% local</div>
+        <div class="ae-desc">Connecté · Données réelles</div>
       </div>
     </div>
     <div class="header-actions">
@@ -122,10 +117,10 @@
   </div>
 
   <div class="context-banner">
-    <div class="ctx-item"><div class="ctx-dot"></div>Prospects : <span class="ctx-val" id="ctxP">0</span></div>
-    <div class="ctx-item"><div class="ctx-dot"></div>Clients : <span class="ctx-val" id="ctxC">0</span></div>
-    <div class="ctx-item"><div class="ctx-dot"></div>Impayées : <span class="ctx-val" id="ctxF">0</span></div>
-    <div class="ctx-item"><div class="ctx-dot"></div>CA : <span class="ctx-val" id="ctxCA">0 €</span></div>
+    <div class="ctx-item"><div class="ctx-dot"></div>Prospects : <span class="ctx-val" id="ctxP">—</span></div>
+    <div class="ctx-item"><div class="ctx-dot"></div>Clients : <span class="ctx-val" id="ctxC">—</span></div>
+    <div class="ctx-item"><div class="ctx-dot"></div>Impayées : <span class="ctx-val" id="ctxF">—</span></div>
+    <div class="ctx-item"><div class="ctx-dot"></div>CA : <span class="ctx-val" id="ctxCA">—</span></div>
     <div class="ctx-item"><div class="ctx-dot"></div>Objectif : <span class="ctx-val" id="ctxPct">— %</span></div>
   </div>
 
@@ -166,7 +161,7 @@
     <div class="form-row"><label>Vision long terme</label><textarea id="pVision" placeholder="Ce que tu veux construire dans 2-3 ans..."></textarea></div>
     <div class="form-row"><label>Tes forces</label><input type="text" id="pForces" placeholder="Ex: Design, technique, vision"></div>
     <div class="form-row"><label>Tes faiblesses</label><input type="text" id="pFaiblesses" placeholder="Ex: Prospection, consistance"></div>
-    <div class="form-row"><label>Ce qui te bloque</label><textarea id="pBlocage" placeholder="Ce qui t'empêche d'avancer en ce moment..."></textarea></div>
+    <div class="form-row"><label>Ce qui te bloque</label><textarea id="pBlocage" placeholder="Ce qui t'empêche d'avancer..."></textarea></div>
     <div class="form-row"><label>Pourquoi tu fais tout ça</label><textarea id="pPourquoi" placeholder="Ta raison profonde."></textarea></div>
     <div class="modal-btns">
       <button class="btn-cancel" onclick="document.getElementById('profilModal').classList.remove('open')">Annuler</button>
@@ -176,213 +171,231 @@
 </div>
 
 <script>
-if (!sessionStorage.getItem('auth')) window.location.href = 'index.html';
-function logout() { sessionStorage.clear(); window.location.href = 'index.html'; }
+  const API = 'http://localhost:3000';
+  if (!sessionStorage.getItem('auth')) window.location.href = 'index.html';
+  function logout() { sessionStorage.clear(); window.location.href = 'index.html'; }
 
-let profil = JSON.parse(localStorage.getItem('aeProfil') || '{}');
-const pick = a => a[Math.floor(Math.random()*a.length)];
+  let profil = {};
+  let S = {};
+  const pick = a => a[Math.floor(Math.random()*a.length)];
 
-function getS() {
-  const st = JSON.parse(localStorage.getItem('dbstate') || '{}');
-  const factures = JSON.parse(localStorage.getItem('factures') || '[]');
-  const abos = JSON.parse(localStorage.getItem('abos') || '[]');
-  const projets = JSON.parse(localStorage.getItem('projects') || '[]');
-  const mois = new Date().getMonth();
-  const ca = factures.filter(f => f.statut==='payee' && new Date(f.echeance).getMonth()===mois).reduce((s,f)=>s+Number(f.montant),0);
-  const caObj = Number(profil.caObj || st.caObj || 0);
-  const pct = caObj>0 ? Math.round((ca/caObj)*100) : 0;
-  const impayees = factures.filter(f=>f.statut!=='payee');
-  return {
-    prospects: st.prospects||0, clients: st.clients||0, projets: st.projets||0,
-    factImp: st.facturesImpayees||0, montantImp: impayees.reduce((s,f)=>s+Number(f.montant),0),
-    ca, caObj, pct,
-    abos: abos.length, aboAtt: abos.filter(a=>a.statut!=='payé').length,
-    enConst: projets.filter(p=>p.phase==='construction').length,
-    joursRest: new Date(new Date().getFullYear(),new Date().getMonth()+1,0).getDate()-new Date().getDate()
-  };
-}
-
-function updateCtx() {
-  const s = getS();
-  const set = (id,val,cls) => { const el=document.getElementById(id); el.textContent=val; el.className='ctx-val'+(cls?' '+cls:''); };
-  set('ctxP', s.prospects, s.prospects===0?'danger':'ok');
-  set('ctxC', s.clients, s.clients===0?'danger':'ok');
-  set('ctxF', s.factImp, s.factImp>0?'danger':'');
-  set('ctxCA', s.ca.toLocaleString('fr-FR')+' €', '');
-  set('ctxPct', s.caObj>0?s.pct+'%':'— %', s.pct>=80?'ok':s.pct>=40?'':'danger');
-}
-
-function respond(intent, txt) {
-  const s = getS(); const p = profil;
-  if (!intent) {
-    const t=(txt||'').toLowerCase();
-    if(t.match(/mission|aujourd|quoi faire|par quoi/)) intent='mission';
-    else if(t.match(/motiv|courage|boost|décourag|fatigue|moral/)) intent='boost';
-    else if(t.match(/perdu|recentr|priorit|sais pas|perdu|flou/)) intent='recentrer';
-    else if(t.match(/semaine|plan|cette semaine/)) intent='semaine';
-    else if(t.match(/coup|pied|secoue|fainéant|botte/)) intent='kick';
-    else if(t.match(/prospect|client|vendre|contact|démarche/)) intent='prospect';
-    else if(t.match(/finance|argent|facture|revenu|ca|chiffre|sous/)) intent='finances';
-    else if(t.match(/analys|bilan|état|situation|où j'en/)) intent='analyse';
-    else if(t.match(/kora|formation|académie/)) intent='kora';
-    else if(t.match(/nul|merde|incompétent|pas capable|incapable|honte/)) intent='doute';
-    else if(t.match(/bien|super|top|nickel|ça va|content|heureux/)) intent='positif';
-    else intent='libre';
+  async function loadState() {
+    try {
+      const [prospects, factures, abos, projets, p] = await Promise.all([
+        fetch(API+'/prospects').then(r=>r.json()),
+        fetch(API+'/factures').then(r=>r.json()),
+        fetch(API+'/abonnements').then(r=>r.json()),
+        fetch(API+'/projets').then(r=>r.json()),
+        fetch(API+'/profil').then(r=>r.json())
+      ]);
+      profil = p || {};
+      const mois = new Date().getMonth();
+      const impayees = factures.filter(f=>f.statut!=='payee');
+      const caObj = Number(profil.ca_obj || 0);
+      const ca = factures.filter(f=>f.statut==='payee'&&new Date(f.echeance).getMonth()===mois).reduce((s,f)=>s+Number(f.montant),0);
+      S = {
+        prospects: prospects.filter(p=>p.etape<8).length,
+        clients: prospects.filter(p=>p.etape>=8).length,
+        factImp: impayees.length,
+        montantImp: impayees.reduce((s,f)=>s+Number(f.montant),0),
+        projets: projets.filter(p=>p.phase==='construction').length,
+        ca, caObj,
+        pct: caObj>0 ? Math.round((ca/caObj)*100) : 0,
+        aboAtt: abos.filter(a=>a.statut!=='payé').length,
+        joursRest: new Date(new Date().getFullYear(),new Date().getMonth()+1,0).getDate()-new Date().getDate()
+      };
+      updateCtx();
+    } catch(e) { console.log('Erreur chargement état:', e); }
   }
 
-  if (intent==='mission') {
-    if (!p.caObj) return `Avant toute mission, remplis ton <span class="hi">⚙ Profil</span>. Je suis aveugle sans ton objectif et ta vision. Clique en haut à droite, 5 minutes, et je deviens vraiment utile.`;
-    if (s.factImp>0) return `Mission aujourd'hui : <span class="bad">relancer les impayés.</span><span class="sep"></span>T'as <span class="hi">${s.montantImp.toLocaleString('fr-FR')} €</span> qui traînent. Cet argent t'appartient déjà. Envoie un message direct à chaque client concerné — poli, ferme, sans justification. Une fois fait, tu passes à la prospection.`;
-    if (s.prospects===0 && s.clients===0) return `Mission aujourd'hui : <span class="hi">prospecter.</span><span class="sep"></span>CA à <span class="bad">0 €</span>, 0 prospect, 0 client. Il reste <span class="hi">${s.joursRest} jours</span> dans le mois. Rien d'autre ne compte avant d'avoir changé ça.\n\nGoogle Maps, 5 commerces à Gap sans site ou avec un site moche. Un message court. Tu envoies aujourd'hui. Pas demain.`;
-    if (s.prospects>0 && s.clients===0) return `Mission aujourd'hui : <span class="hi">convertir tes prospects.</span><span class="sep"></span>T'as <span class="hi">${s.prospects} prospect(s)</span> en cours, 0 signé. Il manque une relance ou une deadline claire.\n\nOuvre le CRM. Pour chaque contact inactif depuis 3+ jours, envoie un message avec une deadline. "Je garde ce tarif jusqu'à vendredi." Direct, efficace.`;
-    if (s.enConst>0) return `Mission aujourd'hui : <span class="hi">avancer sur les projets.</span><span class="sep"></span>${s.enConst} site(s) en construction. Un client livré vite = une référence + un renouvellement + la tête libre.\n\nIdentifie le point bloquant. Règle-le aujourd'hui. Une étape minimum.`;
-    if (s.pct<50 && s.joursRest<15) return `Mission aujourd'hui : <span class="bad">urgence CA.</span><span class="sep"></span>T'es à <span class="bad">${s.pct}%</span> de l'objectif, il reste ${s.joursRest} jours. Propose un upsell à un client existant — c'est plus rapide qu'un nouveau prospect. Puis tu prospectes.`;
-    return `T'es à <span class="ok">${s.pct}%</span> de l'objectif, ${s.clients} client(s) actif(s). La machine tourne.<span class="sep"></span>Mission : <span class="hi">consolider et développer.</span> Un prospect contacté aujourd'hui, un client qu'on s'assure qu'il est satisfait. Deux fronts en même temps.${p.p6mois?`\n\nCap 6 mois : <span class="hi">${p.p6mois}</span>. Chaque jour compte.`:''}`;
+  function updateCtx() {
+    const set = (id,val,cls) => { const el=document.getElementById(id); if(el){el.textContent=val; el.className='ctx-val'+(cls?' '+cls:'');} };
+    set('ctxP', S.prospects, S.prospects===0?'danger':'ok');
+    set('ctxC', S.clients, S.clients===0?'danger':'ok');
+    set('ctxF', S.factImp, S.factImp>0?'danger':'');
+    set('ctxCA', (S.ca||0).toLocaleString('fr-FR')+' €', '');
+    set('ctxPct', S.caObj>0?S.pct+'%':'— %', S.pct>=80?'ok':S.pct>=40?'':'danger');
   }
 
-  if (intent==='analyse') {
-    let m = `<strong>— Analyse DB Studio —</strong><span class="sep"></span>`;
-    m += `Prospects : <span class="${s.prospects>0?'ok':'bad'}">${s.prospects}</span> &nbsp;·&nbsp; Clients : <span class="${s.clients>0?'ok':'bad'}">${s.clients}</span> &nbsp;·&nbsp; Projets actifs : ${s.projets}<br>`;
-    if(s.caObj>0) m+=`CA ce mois : <span class="${s.pct>=50?'ok':'bad'}">${s.ca.toLocaleString('fr-FR')} € / ${s.caObj.toLocaleString('fr-FR')} € (${s.pct}%)</span><br>`;
-    if(s.factImp>0) m+=`<br><span class="bad">⚠ ${s.factImp} facture(s) impayée(s) — ${s.montantImp.toLocaleString('fr-FR')} € à récupérer</span><br>`;
-    if(s.aboAtt>0) m+=`<span class="bad">⚠ ${s.aboAtt} abonnement(s) en attente de paiement</span><br>`;
-    m+=`<span class="sep"></span><strong>Priorité :</strong><br>`;
-    if(s.factImp>0) m+=`→ <span class="bad">Relancer les impayés maintenant.</span>`;
-    else if(s.prospects===0) m+=`→ <span class="bad">0 prospect. Prospecte aujourd'hui.</span>`;
-    else if(s.clients===0) m+=`→ Convertir les prospects en clients.`;
-    else if(s.pct<50) m+=`→ CA insuffisant. Intensifier prospection ou upsell.`;
-    else m+=`→ <span class="ok">Situation stable. Maintenir et développer.</span>`;
-    if(!p.caObj) m+=`<span class="sep"></span><span class="bad">⚠ Profil incomplet. Remplis ⚙ Profil pour une analyse plus précise.</span>`;
-    return m;
+  function respond(intent, txt) {
+    if (!intent) {
+      const t=(txt||'').toLowerCase();
+      if(t.match(/mission|aujourd|quoi faire/)) intent='mission';
+      else if(t.match(/motiv|courage|boost|décourag|fatigue|moral/)) intent='boost';
+      else if(t.match(/perdu|recentr|priorit|sais pas|flou/)) intent='recentrer';
+      else if(t.match(/semaine|plan/)) intent='semaine';
+      else if(t.match(/coup|pied|secoue|fainéant/)) intent='kick';
+      else if(t.match(/prospect|client|vendre|contact/)) intent='prospect';
+      else if(t.match(/finance|argent|facture|revenu/)) intent='finances';
+      else if(t.match(/analys|bilan|état|situation/)) intent='analyse';
+      else if(t.match(/kora|formation/)) intent='kora';
+      else if(t.match(/nul|incompétent|pas capable|honte/)) intent='doute';
+      else if(t.match(/bien|super|top|nickel/)) intent='positif';
+      else intent='libre';
+    }
+
+    if (intent==='mission') {
+      if (!profil.ca_obj) return `Avant toute mission, remplis ton <span class="hi">⚙ Profil</span>. Je suis aveugle sans ton objectif et ta vision.`;
+      if (S.factImp>0) return `Mission aujourd'hui : <span class="bad">relancer les impayés.</span><span class="sep"></span><span class="hi">${S.montantImp.toLocaleString('fr-FR')} €</span> qui t'appartiennent. Envoie une relance ferme à chaque client concerné. Ensuite seulement tu passes à autre chose.`;
+      if (S.aboAtt>0) return `Mission : <span class="bad">relancer les abonnements en attente.</span><span class="sep"></span>${S.aboAtt} client(s) n'ont pas payé ce mois. Un message direct suffit.`;
+      if (S.prospects===0&&S.clients===0) return `Mission : <span class="hi">prospecter.</span><span class="sep"></span>CA à <span class="bad">0 €</span>, 0 prospect, 0 client. Il reste <span class="hi">${S.joursRest} jours</span>. Google Maps, 5 commerces à Gap, un message court. Tu envoies aujourd'hui.`;
+      if (S.clients===0) return `Mission : <span class="hi">convertir tes prospects.</span><span class="sep"></span>${S.prospects} prospect(s), 0 signé. Relance avec une deadline. "Je garde ce tarif jusqu'à vendredi."`;
+      if (S.projets>0) return `Mission : <span class="hi">avancer sur les projets.</span><span class="sep"></span>${S.projets} site(s) en construction. Identifie le blocage et avance d'une étape aujourd'hui.`;
+      if (S.pct<50&&S.joursRest<15) return `Mission : <span class="bad">urgence CA.</span><span class="sep"></span>T'es à <span class="bad">${S.pct}%</span>, il reste ${S.joursRest} jours. Propose un upsell à un client actif ou prospecte 5 nouveaux contacts aujourd'hui.`;
+      return `T'es à <span class="ok">${S.pct}%</span> de l'objectif. ${S.clients} client(s) actif(s).<span class="sep"></span>Mission : <span class="hi">consolider et développer.</span> Un prospect contacté, un client vérifié satisfait.${profil.objectif_6mois?`\n\nCap 6 mois : <span class="hi">${profil.objectif_6mois}</span>`:''}`; 
+    }
+
+    if (intent==='analyse') {
+      let m=`<strong>— Analyse DB Studio —</strong><span class="sep"></span>`;
+      m+=`Prospects : <span class="${S.prospects>0?'ok':'bad'}">${S.prospects}</span> &nbsp;·&nbsp; Clients : <span class="${S.clients>0?'ok':'bad'}">${S.clients}</span> &nbsp;·&nbsp; Projets : ${S.projets}<br>`;
+      if(S.caObj>0) m+=`CA : <span class="${S.pct>=50?'ok':'bad'}">${S.ca.toLocaleString('fr-FR')} € / ${S.caObj.toLocaleString('fr-FR')} € (${S.pct}%)</span><br>`;
+      if(S.factImp>0) m+=`<br><span class="bad">⚠ ${S.factImp} facture(s) impayée(s) — ${S.montantImp.toLocaleString('fr-FR')} €</span><br>`;
+      if(S.aboAtt>0) m+=`<span class="bad">⚠ ${S.aboAtt} abonnement(s) en attente</span><br>`;
+      m+=`<span class="sep"></span><strong>Priorité :</strong><br>`;
+      if(S.factImp>0) m+=`→ <span class="bad">Relancer les impayés maintenant.</span>`;
+      else if(S.prospects===0) m+=`→ <span class="bad">0 prospect. Prospecte aujourd'hui.</span>`;
+      else if(S.clients===0) m+=`→ Convertir les prospects en clients.`;
+      else if(S.pct<50) m+=`→ CA insuffisant. Intensifier prospection ou upsell.`;
+      else m+=`→ <span class="ok">Situation stable. Maintenir et développer.</span>`;
+      return m;
+    }
+
+    if (intent==='boost') return pick([
+      `T'as lancé deux projets en même temps à 22 ans, solo, sans filet. La majorité des gens réfléchissent encore à l'idée. Toi t'as déjà commencé.<span class="sep"></span>La fatigue que tu ressens c'est pas un signal d'arrêter. C'est le prix de construire quelque chose de réel.`,
+      profil.pourquoi ? `Tu fais tout ça parce que : "<span class="hi">${profil.pourquoi}</span>"<span class="sep"></span>Garde ça en tête. Pas demain. Maintenant.` : `Dis-moi pourquoi tu fais tout ça dans ⚙ Profil. C'est ce qui fait tenir les jours difficiles.`,
+      `DB Studio c'est pas juste une agence. C'est la première brique d'un écosystème. Kora derrière. L'intranet après. Tu joues sur plusieurs niveaux en même temps.<span class="sep"></span>Les jours difficiles font partie du prix.`
+    ]);
+
+    if (intent==='recentrer') {
+      if(S.prospects===0&&S.clients===0) return `Ce qui compte en ce moment : <span class="hi">une seule chose.</span><span class="sep"></span>Pas l'outil, pas Kora, pas la vidéo. <span class="hi">Trouver le premier client.</span> Tout le reste attend.`;
+      if(S.factImp>0) return `Ce qui est le plus important là : <span class="bad">récupérer l'argent qui t'est dû.</span><span class="sep"></span>${S.montantImp.toLocaleString('fr-FR')} € qui traînent. Relance aujourd'hui avant tout.`;
+      return `Ce qui compte vraiment :<br>1. <span class="hi">Prospects → Signature</span><br>2. <span class="hi">Livraison des projets</span><br>3. <span class="hi">Acquisition nouveaux prospects</span><span class="sep"></span>${profil.objectif_6mois?`Cap : <span class="hi">${profil.objectif_6mois}</span>`:'Définis ton cap 6 mois dans ⚙ Profil.'}`;
+    }
+
+    if (intent==='kick') return pick([
+      `T'as un outil complet, tu sais faire des sites, t'as une vision. Et t'as 0 client.\n\nC'est pas l'incompétence. C'est que t'as pas assez décroché le téléphone. <span class="bad">C'est aussi simple que ça.</span><span class="sep"></span>Aujourd'hui tu contactes quelqu'un. Un. C'est tout.`,
+      `Arrête de préparer. Commence à faire.\n\nChaque jour à "préparer" c'est un jour sans CA. <span class="bad">La prospection c'est inconfortable. C'est fait exprès.</span><span class="sep"></span>Ceux qui la font quand même sont ceux qui réussissent.`,
+      `T'as dit toi-même que tu fuyais tes responsabilités.<span class="sep"></span>Si t'as ouvert cet outil sans objectif pour les 2 prochaines heures, tu fuis encore. Ferme ça. Ouvre le CRM. Envoie un message.`
+    ]);
+
+    if (intent==='prospect') return `Comment prospecter avec DB Studio :\n\n<strong>1. Identifier</strong><br>Google Maps + "restaurant Gap", "hôtel Gap", "artisan Gap"... Sites moches ou absents = tes cibles.<span class="sep"></span><strong>2. Qualifier</strong><br>Vrai commerce ? Patron décideur ? Budget potentiel ?<span class="sep"></span><strong>3. Contacter</strong><br>"Bonjour, je développe des sites pour des entreprises locales à Gap. J'ai vu votre activité — un site peut vraiment vous aider à développer votre clientèle. Disponible 15 min pour en parler ?"<span class="sep"></span><strong>4. Relancer</strong><br>Pas de réponse après 3 jours = une relance. Une seule. Ensuite tu passes au suivant.<span class="sep"></span>Objectif : <span class="hi">5 contacts par jour</span>.`;
+
+    if (intent==='finances') {
+      let m=`<strong>— État financier —</strong><span class="sep"></span>`;
+      m+=`CA ce mois : <span class="${S.pct>=50?'ok':'bad'}">${S.ca.toLocaleString('fr-FR')} €</span>`;
+      if(S.caObj>0) m+=` / objectif <span class="hi">${S.caObj.toLocaleString('fr-FR')} €</span> (${S.pct}%)`;
+      if(S.factImp>0) m+=`<br><span class="bad">Impayées : ${S.factImp} — ${S.montantImp.toLocaleString('fr-FR')} € à récupérer</span>`;
+      if(S.aboAtt>0) m+=`<br><span class="bad">Abonnements en attente : ${S.aboAtt}</span>`;
+      m+=`<span class="sep"></span>`;
+      if(S.factImp>0) m+=`→ <span class="bad">Relancer les impayés en priorité.</span>`;
+      else if(S.ca===0) m+=`→ <span class="bad">0 € ce mois. Prospecte aujourd'hui.</span>`;
+      else m+=`→ ${S.pct>=80?'<span class="ok">Bonne situation.</span>':S.pct>=40?'Situation moyenne.':'<span class="bad">CA insuffisant.</span>'} ${S.joursRest} jours restants.`;
+      return m;
+    }
+
+    if (intent==='semaine') return `Plan de la semaine :\n\n<strong>Chaque jour :</strong><br>→ <span class="hi">5 prospects contactés</span> (tant que pas de client signé)<br>→ Avancer sur les projets<br>→ Ouvrir l'outil le matin, tâches cochées le soir<span class="sep"></span>${S.factImp>0?`→ <span class="bad">Relancer les ${S.factImp} impayé(s) aujourd'hui</span><br>`:''}${S.prospects>0&&S.clients===0?`→ <span class="hi">Relancer les prospects avec deadlines</span><br>`:''}${S.projets>0?`→ <span class="hi">Avancer d'au moins 2 étapes par projet</span><br>`:''}${profil.objectif_6mois?`<span class="sep"></span>Cap : <span class="hi">${profil.objectif_6mois}</span>`:''}`; 
+
+    if (intent==='kora') return `Kora c'est ta deuxième jambe. Mais right now, c'est DB Studio qui doit marcher en premier.<span class="sep"></span>Le process : tu buildes, tu documentes, ça devient une formation. C'est le bon process. Mais si tu penses à Kora parce que DB Studio te pèse — vérifie si c'est pas une fuite.`;
+
+    if (intent==='doute') return `Stop.\n\nT'es pas incompétent. T'as 22 ans, deux projets lancés, une maquette pro, une vision que la plupart n'ont pas après 5 ans.<span class="sep"></span>Ce que t'appelles incompétence c'est de l'inexpérience. Et l'inexpérience se règle avec : <span class="hi">l'action répétée.</span>\n\nDis-moi ce qui s'est passé.`;
+
+    if (intent==='positif') return pick([
+      `Bien. Capitalise. Un bon élan se perd vite. Qu'est-ce que tu fais là maintenant ?`,
+      `C'est le bon état d'esprit. Prospecte pendant que t'es dans cet élan.`
+    ]);
+
+    return pick([
+      `Dis-moi ce qui se passe — ce qui bloque, ce qui avance. Je m'adapte.`,
+      `Utilise les boutons rapides ou écris ce dont t'as besoin.`,
+      `Précise ta question. Je travaille avec du concret.`
+    ]);
   }
 
-  if (intent==='boost') return pick([
-    `T'as lancé deux projets en même temps à 22 ans, solo, sans équipe, sans filet. La majorité des gens réfléchissent encore à l'idée. Toi t'as déjà commencé.<span class="sep"></span>La fatigue que tu ressens c'est pas un signal d'arrêter. C'est le prix de construire quelque chose de réel. Chaque jour que tu tiens, tu prends de l'avance.`,
-    `DB Studio c'est pas juste une agence. C'est la première brique d'un écosystème que t'as imaginé seul. Kora derrière. L'intranet après. Tu joues sur plusieurs niveaux en même temps.<span class="sep"></span>Les jours difficiles font partie du prix. Ils sélectionnent. Ceux qui abandonnent là où tu tiens seront pas là à l'arrivée.`,
-    p.pourquoi ? `Tu fais tout ça parce que : "<span class="hi">${p.pourquoi}</span>"<span class="sep"></span>Garde ça en tête. Pas demain. Maintenant. C'est ça qui fait la différence entre tenir et lâcher.` : `Dis-moi pourquoi tu fais tout ça dans ⚙ Profil. Pas pour moi — pour toi. Les jours difficiles, c'est la seule chose qui tient vraiment.`,
-    `La maquette Napoléon c'est une preuve concrète de ta capacité. T'as créé quelque chose de professionnel sans client, sans validation externe. C'est du niveau.<span class="sep"></span>T'as juste pas encore converti. La conversion c'est une compétence qui vient avec la répétition. T'es au début, pas à la fin.`
-  ]);
-
-  if (intent==='recentrer') {
-    if(s.prospects===0 && s.clients===0) return `Ce qui est important en ce moment : <span class="hi">une seule chose.</span><span class="sep"></span>Pas l'outil, pas Kora, pas la vidéo, pas la formation. <span class="hi">Trouver ton premier client.</span>\n\nTout le reste sera utile quand la base sera là. Pour l'instant la base c'est le CA. Et le CA vient des clients. Et les clients viennent de la prospection.\n\nUne action. Maintenant.`;
-    if(s.factImp>0) return `Ce qui est le plus important là maintenant : <span class="bad">récupérer l'argent qui t'est dû.</span><span class="sep"></span>${s.montantImp.toLocaleString('fr-FR')} € qui traînent. Avant de penser à la suite, relance chaque client impayé aujourd'hui.`;
-    return `Ce qui compte vraiment pour DB Studio en ce moment :\n\n1. <span class="hi">Prospects → Signature</span><br>2. <span class="hi">Livraison des projets en cours</span><br>3. <span class="hi">Acquisition de nouveaux prospects</span><span class="sep"></span>${p.p6mois?`Cap 6 mois : <span class="hi">${p.p6mois}</span>. Chaque action doit servir ça.`:'Définis ton cap 6 mois dans ⚙ Profil.'}`;
+  function addMsg(role, html) {
+    const area=document.getElementById('chatArea'), typing=document.getElementById('typing');
+    const time=new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+    const d=document.createElement('div');
+    d.className='msg '+(role==='user'?'user':'ae');
+    d.innerHTML=`<div class="msg-avatar">${role==='user'?'Moi':'AE'}</div><div class="msg-content"><div class="msg-bubble">${html}</div><div class="msg-time">${time}</div></div>`;
+    area.insertBefore(d,typing);
+    area.scrollTop=area.scrollHeight;
   }
 
-  if (intent==='kick') return pick([
-    `T'as un outil complet, tu sais faire des sites, t'as une vision. Et t'as 0 client.\n\nC'est pas l'incompétence. C'est que t'as pas assez décroché ton téléphone. Pas envoyé assez de messages. <span class="bad">C'est aussi simple que ça.</span><span class="sep"></span>Aujourd'hui tu contactes quelqu'un. Un. C'est tout.`,
-    `Arrête de préparer. Commence à faire.\n\nChaque jour à "préparer le terrain" c'est un jour sans CA. L'outil parfait, la formation idéale — c'est du confort masqué en travail.<span class="sep"></span><span class="bad">La prospection c'est inconfortable. C'est fait exprès.</span> Ceux qui la font quand même, c'est eux qui réussissent.`,
-    `T'as dit toi-même que tu fuyais tes responsabilités. Là, maintenant, tu fais quoi ?<span class="sep"></span>Si t'as ouvert cet outil sans objectif concret pour les 2 prochaines heures, tu fuis encore. Ferme ça. Ouvre le CRM. Trouve un nom. Envoie un message.`
-  ]);
-
-  if (intent==='prospect') return `Comment prospecter avec DB Studio :\n\n<strong>1. Identifier</strong><br>Google Maps + "restaurant Gap", "hôtel Gap", "artisan Gap"... Tu cherches des boites sans site ou avec un site moche et daté.<span class="sep"></span><strong>2. Qualifier</strong><br>Vrai commerce ? Patron décideur ? Budget possible ?<span class="sep"></span><strong>3. Contacter</strong><br>"Bonjour, je développe des sites pour des entreprises locales à Gap. J'ai vu votre activité et je pense qu'un site peut vraiment vous aider à développer votre clientèle. Disponible pour en parler 15 min ?"<span class="sep"></span><strong>4. Relancer</strong><br>Pas de réponse après 3 jours = une relance. Une seule. Ensuite tu passes au suivant.<span class="sep"></span>Objectif : <span class="hi">5 contacts par jour</span> jusqu'à la signature.`;
-
-  if (intent==='finances') {
-    let m=`<strong>— État financier —</strong><span class="sep"></span>`;
-    m+=`CA ce mois : <span class="${s.pct>=50?'ok':'bad'}">${s.ca.toLocaleString('fr-FR')} €</span>`;
-    if(s.caObj>0) m+=` / objectif <span class="hi">${s.caObj.toLocaleString('fr-FR')} €</span> (${s.pct}%)`;
-    if(s.factImp>0) m+=`<br><span class="bad">Impayées : ${s.factImp} — ${s.montantImp.toLocaleString('fr-FR')} € à récupérer</span>`;
-    m+=`<br>Abonnements : <span class="hi">${s.abos-s.aboAtt}/${s.abos}</span>`;
-    if(s.aboAtt>0) m+=` <span class="bad">(${s.aboAtt} en attente)</span>`;
-    m+=`<span class="sep"></span>`;
-    if(s.factImp>0) m+=`→ <span class="bad">Relancer les impayés en priorité.</span>`;
-    else if(s.ca===0) m+=`→ <span class="bad">0 € ce mois. Prospecte aujourd'hui.</span>`;
-    else m+=`→ Situation ${s.pct>=80?'<span class="ok">bonne</span>':s.pct>=40?'moyenne':'<span class="bad">insuffisante</span>'}. ${s.joursRest} jours restants.`;
-    return m;
+  function showTyping(ms) {
+    return new Promise(r=>{
+      const t=document.getElementById('typing');
+      t.classList.add('show');
+      document.getElementById('chatArea').scrollTop=999999;
+      setTimeout(()=>{t.classList.remove('show');r();},ms);
+    });
   }
 
-  if (intent==='semaine') return `Plan de la semaine :\n\n<strong>Chaque jour :</strong><br>→ <span class="hi">5 prospects contactés</span> (tant que pas de client signé)<br>→ Avancer sur les projets en cours<br>→ Ouvrir cet outil le matin, tâches cochées le soir<span class="sep"></span><strong>Cette semaine :</strong><br>${s.factImp>0?`→ <span class="bad">Relancer les ${s.factImp} impayé(s) dès aujourd'hui</span><br>`:''}${s.prospects>0&&s.clients===0?`→ <span class="hi">Relancer tous les prospects avec une deadline</span><br>`:''}${s.enConst>0?`→ <span class="hi">Avancer d'au moins 2 étapes sur chaque projet</span><br>`:''}${s.caObj>0&&s.pct<60?`→ <span class="bad">CA à ${s.pct}% — intensifier prospection ou upsell</span><br>`:''}<span class="sep"></span>${p.p6mois?`Cap : <span class="hi">${p.p6mois}</span>. Chaque action cette semaine doit servir ça.`:'Définis ton objectif 6 mois dans ⚙ Profil.'}`;
+  async function go(intent) {
+    const labels={mission:'Mission du jour',analyse:'Analyse globale',boost:'Boost motivation',recentrer:'Recentrer',semaine:'Plan semaine',kick:'Coup de pied au cul',prospect:'Comment prospecter ?',finances:'État finances'};
+    addMsg('user',labels[intent]||intent);
+    await loadState();
+    await showTyping(600+Math.random()*600);
+    addMsg('ae',respond(intent,''));
+  }
 
-  if (intent==='kora') return `Kora c'est ta deuxième jambe. Mais right now, c'est DB Studio qui doit marcher en premier.\n\nLe process que t'as défini : tu buildes, tu documentes, ça devient une formation. C'est le bon process.<span class="sep"></span>Mais si tu penses à Kora parce que DB Studio te pèse — vérifie ça avant de basculer. C'est peut-être une fuite.`;
+  async function fromInput() {
+    const inp=document.getElementById('userInput');
+    const txt=inp.value.trim();
+    if(!txt) return;
+    inp.value=''; inp.style.height='auto';
+    addMsg('user',txt);
+    await loadState();
+    await showTyping(700+Math.random()*700);
+    addMsg('ae',respond(null,txt));
+  }
 
-  if (intent==='doute') return `Stop.\n\nT'es pas incompétent. T'as 22 ans, deux projets lancés, une maquette professionnelle, une vision d'écosystème que la plupart n'ont pas après 5 ans.<span class="sep"></span>Ce que t'appelles incompétence c'est de l'inexpérience. Et l'inexpérience se règle avec une seule chose : <span class="hi">l'action répétée.</span>\n\nDis-moi ce qui s'est passé concrètement.`;
+  async function openProfil() {
+    const p = await fetch(API+'/profil').then(r=>r.json()).catch(()=>({}));
+    document.getElementById('pCA').value=p.ca_obj||'';
+    document.getElementById('p6m').value=p.objectif_6mois||'';
+    document.getElementById('pVision').value=p.vision||'';
+    document.getElementById('pForces').value=p.forces||'';
+    document.getElementById('pFaiblesses').value=p.faiblesses||'';
+    document.getElementById('pBlocage').value=p.blocage||'';
+    document.getElementById('pPourquoi').value=p.pourquoi||'';
+    document.getElementById('profilModal').classList.add('open');
+  }
 
-  if (intent==='positif') return pick([
-    `Bien. Maintenant capitalise dessus. Un bon élan se perd vite si t'en fais rien. Qu'est-ce que tu vas faire là maintenant ?`,
-    `C'est le bon état d'esprit. Garde-le et prospecte pendant que t'es dans cet élan.`,
-    `${s.prospects===0?`Parfait. Transforme ça en action. Contacte un prospect là maintenant.`:`C'est ça l'état dans lequel tu dois prospecter. Fonce.`}`
-  ]);
+  async function saveProfil() {
+    await fetch(API+'/profil', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        ca_obj: document.getElementById('pCA').value,
+        objectif_6mois: document.getElementById('p6m').value,
+        vision: document.getElementById('pVision').value,
+        forces: document.getElementById('pForces').value,
+        faiblesses: document.getElementById('pFaiblesses').value,
+        blocage: document.getElementById('pBlocage').value,
+        pourquoi: document.getElementById('pPourquoi').value
+      })
+    });
+    document.getElementById('profilModal').classList.remove('open');
+    clearChat();
+  }
 
-  return pick([
-    `Dis-moi exactement ce qui se passe — ce qui bloque, ce qui avance, ce que tu ressens. Je m'adapte.`,
-    `Utilise les boutons rapides ou écris ce dont t'as besoin. Mission, analyse, boost, plan — je suis là pour ça.`,
-    `Précise ta question. Je travaille avec du concret.`
-  ]);
-}
+  function clearChat() {
+    const area=document.getElementById('chatArea'),typing=document.getElementById('typing');
+    while(area.firstChild&&area.firstChild!==typing) area.removeChild(area.firstChild);
+    welcome();
+  }
 
-function addMsg(role, html) {
-  const area=document.getElementById('chatArea'), typing=document.getElementById('typing');
-  const time=new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
-  const d=document.createElement('div');
-  d.className='msg '+(role==='user'?'user':'ae');
-  d.innerHTML=`<div class="msg-avatar">${role==='user'?'Moi':'AE'}</div><div class="msg-content"><div class="msg-bubble">${html}</div><div class="msg-time">${time}</div></div>`;
-  area.insertBefore(d,typing);
-  area.scrollTop=area.scrollHeight;
-}
+  async function welcome() {
+    await loadState();
+    await showTyping(900);
+    if(!profil.ca_obj&&!profil.vision) {
+      addMsg('ae',`Je suis ton alter ego. Pour être vraiment utile, j'ai besoin de te connaître.<span class="sep"></span>Clique sur <span class="hi">⚙ Profil</span> en haut à droite. Objectif CA, vision, blocages, pourquoi tu fais tout ça. 5 minutes.`);
+    } else {
+      addMsg('ae', respond('analyse',''));
+    }
+  }
 
-function showTyping(ms) {
-  return new Promise(r=>{
-    const t=document.getElementById('typing');
-    t.classList.add('show');
-    document.getElementById('chatArea').scrollTop=999999;
-    setTimeout(()=>{t.classList.remove('show');r();},ms);
-  });
-}
-
-async function go(intent) {
-  const labels={mission:'Mission du jour',analyse:'Analyse globale',boost:'Boost motivation',recentrer:'Recentrer',semaine:'Plan semaine',kick:'Coup de pied au cul',prospect:'Comment prospecter ?',finances:'État finances'};
-  addMsg('user',labels[intent]||intent);
-  await showTyping(600+Math.random()*600);
-  addMsg('ae',respond(intent,''));
-  updateCtx();
-}
-
-async function fromInput() {
-  const inp=document.getElementById('userInput');
-  const txt=inp.value.trim();
-  if(!txt) return;
-  inp.value=''; inp.style.height='auto';
-  addMsg('user',txt);
-  await showTyping(700+Math.random()*700);
-  addMsg('ae',respond(null,txt));
-  updateCtx();
-}
-
-function openProfil() {
-  document.getElementById('pCA').value=profil.caObj||'';
-  document.getElementById('p6m').value=profil.p6mois||'';
-  document.getElementById('pVision').value=profil.vision||'';
-  document.getElementById('pForces').value=profil.forces||'';
-  document.getElementById('pFaiblesses').value=profil.faiblesses||'';
-  document.getElementById('pBlocage').value=profil.blocage||'';
-  document.getElementById('pPourquoi').value=profil.pourquoi||'';
-  document.getElementById('profilModal').classList.add('open');
-}
-
-function saveProfil() {
-  profil={caObj:document.getElementById('pCA').value,p6mois:document.getElementById('p6m').value,vision:document.getElementById('pVision').value,forces:document.getElementById('pForces').value,faiblesses:document.getElementById('pFaiblesses').value,blocage:document.getElementById('pBlocage').value,pourquoi:document.getElementById('pPourquoi').value};
-  localStorage.setItem('aeProfil',JSON.stringify(profil));
-  let st=JSON.parse(localStorage.getItem('dbstate')||'{}');
-  if(profil.caObj){st.caObj=Number(profil.caObj);localStorage.setItem('dbstate',JSON.stringify(st));}
-  document.getElementById('profilModal').classList.remove('open');
-  clearChat();
-}
-
-function clearChat() {
-  const area=document.getElementById('chatArea'),typing=document.getElementById('typing');
-  while(area.firstChild&&area.firstChild!==typing) area.removeChild(area.firstChild);
   welcome();
-}
-
-async function welcome() {
-  await showTyping(900);
-  if(!profil.caObj&&!profil.vision) addMsg('ae',`Je suis ton alter ego. Pour être vraiment utile, j'ai besoin de te connaître.<span class="sep"></span>Clique sur <span class="hi">⚙ Profil</span> en haut à droite. Mets ton objectif CA, ta vision, ce qui te bloque. 5 minutes. Ça change tout à ce que je peux faire pour toi.`);
-  else addMsg('ae',respond('analyse',''));
-  updateCtx();
-}
-
-updateCtx();
-welcome();
 </script>
 </body>
 </html>

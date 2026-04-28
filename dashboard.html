@@ -43,8 +43,13 @@
   .stat-val.gold { color: var(--gold); }
   .stat-val.red { color: var(--red); }
   .section-title { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; }
+  .alert-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--surface); border: 1px solid var(--border); font-size: 13px; margin-bottom: 8px; }
+  .alert-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .alert-dot.red { background: var(--red); }
+  .alert-dot.orange { background: var(--orange); }
+  .alert-dot.green { background: var(--green); }
   .tasks { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
-  .task-item { display: flex; align-items: center; gap: 14px; padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); font-size: 13px; cursor: pointer; }
+  .task-item { display: flex; align-items: center; gap: 14px; padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); font-size: 13px; cursor: pointer; transition: border-color 0.15s; }
   .task-item:hover { border-color: var(--gold); }
   .task-check { width: 16px; height: 16px; border: 1px solid var(--muted); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; }
   .task-item.done .task-check { background: var(--gold); border-color: var(--gold); color: #000; }
@@ -55,10 +60,6 @@
   .add-task input:focus { border-color: var(--gold); }
   .add-task button { background: var(--surface); border: 1px solid var(--gold); color: var(--gold); font-family: 'Syne', sans-serif; font-size: 11px; letter-spacing: 2px; padding: 12px 20px; cursor: pointer; }
   .add-task button:hover { background: var(--gold); color: #000; }
-  .alert-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--surface); border: 1px solid var(--border); font-size: 13px; margin-bottom: 8px; }
-  .alert-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
-  .alert-dot.red { background: var(--red); }
-  .alert-dot.green { background: var(--green); }
   .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 100; align-items: center; justify-content: center; }
   .modal-overlay.open { display: flex; }
   .modal { background: var(--surface); border: 1px solid var(--border); padding: 40px; width: 440px; max-width: 95vw; }
@@ -115,7 +116,7 @@
   </div>
 
   <div class="section-title">Alertes</div>
-  <div id="alertList"></div>
+  <div id="alertList" style="margin-bottom:32px"></div>
 
   <div class="section-title">Tâches du jour</div>
   <div class="add-task">
@@ -142,61 +143,66 @@
   if (!sessionStorage.getItem('auth')) window.location.href = 'index.html';
   function logout() { sessionStorage.clear(); window.location.href = 'index.html'; }
 
+  const now = new Date();
   const days = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
   const months = ['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
-  const now = new Date();
   document.getElementById('dateDisplay').textContent = `${days[now.getDay()]} ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
 
-  let tasks = JSON.parse(localStorage.getItem('tasks_dash') || '[]');
   let caObj = parseInt(localStorage.getItem('caObj') || '0');
-  let stats = { prospects: 0, clients: 0, factures: 0, projets: 0, ca: 0 };
+  let stats = {};
 
-  async function loadStats() {
+  async function loadAll() {
     try {
-      const [prospects, factures, abos, projets] = await Promise.all([
+      const [prospects, factures, abos, projets, taches] = await Promise.all([
         fetch(API+'/prospects').then(r=>r.json()),
         fetch(API+'/factures').then(r=>r.json()),
         fetch(API+'/abonnements').then(r=>r.json()),
-        fetch(API+'/projets').then(r=>r.json())
+        fetch(API+'/projets').then(r=>r.json()),
+        fetch(API+'/taches-dashboard').then(r=>r.json())
       ]);
-      const mois = new Date().getMonth();
-      stats.prospects = prospects.filter(p => p.etape < 8).length;
-      stats.clients = prospects.filter(p => p.etape >= 8).length;
-      stats.factures = factures.filter(f => f.statut !== 'payee').length;
-      stats.projets = projets.filter(p => p.phase === 'construction').length;
-      stats.ca = factures.filter(f => f.statut === 'payee' && new Date(f.echeance).getMonth() === mois).reduce((s,f)=>s+Number(f.montant),0);
-      stats.montantImp = factures.filter(f=>f.statut!=='payee').reduce((s,f)=>s+Number(f.montant),0);
-      render();
+      const mois = now.getMonth();
+      const impayees = factures.filter(f=>f.statut!=='payee');
+      stats = {
+        prospects: prospects.filter(p=>p.etape<8).length,
+        clients: prospects.filter(p=>p.etape>=8).length,
+        factures: impayees.length,
+        montantImp: impayees.reduce((s,f)=>s+Number(f.montant),0),
+        projets: projets.filter(p=>p.phase==='construction').length,
+        ca: factures.filter(f=>f.statut==='payee'&&new Date(f.echeance).getMonth()===mois).reduce((s,f)=>s+Number(f.montant),0),
+        aboAtt: abos.filter(a=>a.statut!=='payé').length,
+        impayeesDetail: impayees
+      };
+      render(taches);
     } catch(e) {
-      document.getElementById('missionText').textContent = 'Serveur non connecté. Lance node server.js.';
+      document.getElementById('missionText').textContent = 'Serveur non connecté. Lance ~/dbstudio/start.sh';
     }
   }
 
-  function render() {
+  function render(taches) {
     document.getElementById('nbP').textContent = stats.prospects;
     document.getElementById('nbC').textContent = stats.clients;
     document.getElementById('nbF').textContent = stats.factures;
     document.getElementById('nbPr').textContent = stats.projets;
-    const pct = caObj > 0 ? Math.min(100, Math.round((stats.ca/caObj)*100)) : 0;
+    const pct = caObj>0 ? Math.min(100,Math.round((stats.ca/caObj)*100)) : 0;
     document.getElementById('caActuel').textContent = stats.ca.toLocaleString('fr-FR');
     document.getElementById('caObj').textContent = caObj.toLocaleString('fr-FR');
-    document.getElementById('caPct').textContent = caObj > 0 ? `(${pct}%)` : '';
-    document.getElementById('caBar').style.width = pct + '%';
+    document.getElementById('caPct').textContent = caObj>0 ? `(${pct}%)` : '';
+    document.getElementById('caBar').style.width = pct+'%';
     renderMission();
     renderAlerts();
-    renderTasks();
+    renderTasks(taches);
   }
 
   function renderMission() {
-    const s = stats;
-    const joursRest = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate() - now.getDate();
-    const pct = caObj > 0 ? Math.round((s.ca/caObj)*100) : 0;
+    const joursRest = new Date(now.getFullYear(),now.getMonth()+1,0).getDate()-now.getDate();
+    const pct = caObj>0 ? Math.round((stats.ca/caObj)*100) : 0;
     let text, sub;
-    if (s.factures > 0) { text = `Relancer les factures impayées.`; sub = `${s.montantImp.toLocaleString('fr-FR')} € qui t'appartiennent déjà. Envoie une relance à chaque client concerné aujourd'hui.`; }
-    else if (s.prospects === 0 && s.clients === 0) { text = `Mission : prospecter aujourd'hui.`; sub = `0 prospect, 0 client, CA à 0€. Il reste ${joursRest} jours dans le mois. Google Maps, 5 commerces à Gap, un message court. Tu envoies aujourd'hui.`; }
-    else if (s.clients === 0) { text = `Convertir tes prospects en clients.`; sub = `${s.prospects} prospect(s) en cours, 0 signé. Relance chacun avec une deadline claire.`; }
-    else if (s.projets > 0) { text = `Avancer sur les projets en cours.`; sub = `${s.projets} site(s) en construction. Identifie le point bloquant et avance d'une étape aujourd'hui.`; }
-    else { text = `Consolider et développer.`; sub = `${s.clients} client(s) actif(s). Un prospect contacté aujourd'hui, un client qu'on s'assure qu'il est satisfait.`; }
+    if (stats.factures>0) { text='Relancer les factures impayées.'; sub=`${stats.montantImp.toLocaleString('fr-FR')} € qui t'appartiennent. Envoie une relance à chaque client concerné aujourd'hui.`; }
+    else if (stats.aboAtt>0) { text='Relancer les abonnements en attente.'; sub=`${stats.aboAtt} client(s) n'ont pas encore payé leur abonnement ce mois.`; }
+    else if (stats.prospects===0&&stats.clients===0) { text='Mission : prospecter aujourd\'hui.'; sub=`0 prospect, 0 client. Il reste ${joursRest} jours. Google Maps, 5 commerces à Gap, un message court. Aujourd'hui.`; }
+    else if (stats.clients===0) { text='Convertir tes prospects en clients.'; sub=`${stats.prospects} prospect(s) en cours, 0 signé. Relance avec une deadline claire.`; }
+    else if (stats.projets>0) { text='Avancer sur les projets en cours.'; sub=`${stats.projets} site(s) en construction. Identifie le point bloquant et avance d'une étape.`; }
+    else { text='Consolider et développer.'; sub=`${stats.clients} client(s) actif(s). Un prospect contacté aujourd'hui, un client satisfait vérifié.`; }
     document.getElementById('missionText').textContent = text;
     document.getElementById('missionSub').textContent = sub;
   }
@@ -205,47 +211,61 @@
     const list = document.getElementById('alertList');
     list.innerHTML = '';
     const alerts = [];
-    if (stats.factures > 0) alerts.push({ type: 'red', msg: `${stats.factures} facture(s) impayée(s) — ${stats.montantImp.toLocaleString('fr-FR')} € à récupérer` });
-    if (stats.prospects === 0) alerts.push({ type: 'red', msg: 'Aucun prospect en cours. Lance la prospection.' });
-    if (alerts.length === 0) alerts.push({ type: 'green', msg: 'Aucune alerte pour le moment.' });
+    if (stats.factures>0) {
+      alerts.push({type:'red', msg:`⚠ ${stats.factures} facture(s) impayée(s) — ${stats.montantImp.toLocaleString('fr-FR')} € à récupérer`});
+      stats.impayeesDetail.forEach(f => {
+        const jours = Math.floor((new Date()-new Date(f.echeance))/(1000*60*60*24));
+        if(jours>0) alerts.push({type:'orange', msg:`${f.client} — ${Number(f.montant).toLocaleString('fr-FR')} € en retard de ${jours} jour(s)`});
+      });
+    }
+    if (stats.aboAtt>0) alerts.push({type:'orange', msg:`${stats.aboAtt} abonnement(s) en attente de paiement ce mois`});
+    if (stats.prospects===0) alerts.push({type:'red', msg:'Aucun prospect en cours. Lance la prospection.'});
+    if (alerts.length===0) alerts.push({type:'green', msg:'Aucune alerte. Tout est en ordre.'});
     alerts.forEach(a => {
       list.innerHTML += `<div class="alert-item"><div class="alert-dot ${a.type}"></div><span>${a.msg}</span></div>`;
     });
   }
 
-  function renderTasks() {
+  async function renderTasks(taches) {
     const list = document.getElementById('taskList');
     list.innerHTML = '';
-    if (!tasks.length) { list.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:12px">Aucune tâche.</div>'; return; }
-    tasks.forEach((t,i) => {
+    if (!taches||!taches.length) { list.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:12px">Aucune tâche pour aujourd\'hui.</div>'; return; }
+    taches.forEach(t => {
       const div = document.createElement('div');
-      div.className = 'task-item' + (t.done?' done':'');
-      div.innerHTML = `<div class="task-check">${t.done?'✓':''}</div><div class="task-text">${t.text}</div><span style="font-size:11px;color:var(--muted);cursor:pointer" onclick="removeTask(${i})">✕</span>`;
-      div.querySelector('.task-check').addEventListener('click', ()=>toggleTask(i));
+      div.className = 'task-item'+(t.done?' done':'');
+      div.innerHTML = `<div class="task-check">${t.done?'✓':''}</div><div class="task-text">${t.texte}</div><span style="font-size:11px;color:var(--muted);cursor:pointer" onclick="delTask(${t.id})">✕</span>`;
+      div.querySelector('.task-check').addEventListener('click', ()=>toggleTask(t.id, !t.done));
       list.appendChild(div);
     });
   }
 
-  function addTask() {
+  async function addTask() {
     const inp = document.getElementById('newTask');
-    const text = inp.value.trim();
-    if (!text) return;
-    tasks.push({ text, done: false });
+    const texte = inp.value.trim();
+    if (!texte) return;
+    await fetch(API+'/taches-dashboard', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({texte})});
     inp.value = '';
-    localStorage.setItem('tasks_dash', JSON.stringify(tasks));
-    renderTasks();
+    loadAll();
   }
 
-  function toggleTask(i) { tasks[i].done = !tasks[i].done; localStorage.setItem('tasks_dash', JSON.stringify(tasks)); renderTasks(); }
-  function removeTask(i) { tasks.splice(i,1); localStorage.setItem('tasks_dash', JSON.stringify(tasks)); renderTasks(); }
+  async function toggleTask(id, done) {
+    await fetch(API+'/taches-dashboard/'+id, {method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({done})});
+    loadAll();
+  }
+
+  async function delTask(id) {
+    await fetch(API+'/taches-dashboard/'+id, {method:'DELETE'});
+    loadAll();
+  }
 
   function saveObj() {
     const val = parseInt(document.getElementById('objInput').value);
-    if (!isNaN(val)) { caObj = val; localStorage.setItem('caObj', caObj); render(); }
+    if (!isNaN(val)) { caObj=val; localStorage.setItem('caObj',caObj); }
     document.getElementById('objModal').classList.remove('open');
+    loadAll();
   }
 
-  loadStats();
+  loadAll();
 </script>
 </body>
 </html>
