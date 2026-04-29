@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DB Studio — Réseaux Sociaux</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --gold: #C9A84C; --bg: #080808; --surface: #0f0f0f; --surface2: #161616; --border: #1e1e1e; --text: #e8e8e8; --muted: #555; --green: #27ae60; --red: #c0392b; --orange: #e67e22; --insta: #E1306C; --tiktok: #69C9D0; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; display: flex; min-height: 100vh; }
+  nav { width: 220px; min-height: 100vh; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 32px 0; position: fixed; top: 0; left: 0; bottom: 0; }
+  .nav-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 16px; color: var(--gold); letter-spacing: 3px; padding: 0 24px; margin-bottom: 40px; }
+  .nav-section { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); padding: 0 24px; margin-bottom: 8px; margin-top: 20px; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 24px; font-size: 13px; color: var(--muted); text-decoration: none; transition: all 0.15s; border-left: 2px solid transparent; }
+  .nav-item:hover { color: var(--text); background: var(--surface2); }
+  .nav-item.active { color: var(--gold); border-left-color: var(--gold); background: rgba(201,168,76,0.05); }
+  .nav-item .ico { font-size: 15px; width: 18px; text-align: center; }
+  .nav-bottom { margin-top: auto; padding: 0 24px; }
+  .nav-logout { font-size: 11px; color: var(--muted); cursor: pointer; }
+  .nav-logout:hover { color: var(--red); }
+  main { margin-left: 220px; flex: 1; padding: 40px; }
+  .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 40px; }
+  .page-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 24px; }
+  .top-actions { display: flex; gap: 10px; }
+  .btn-gold { padding: 12px 24px; background: var(--gold); border: none; color: #000; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 11px; letter-spacing: 2px; cursor: pointer; }
+  .btn-gold:hover { background: #d9b55c; }
+  .btn-outline { padding: 12px 24px; background: transparent; border: 1px solid var(--gold); color: var(--gold); font-family: 'Syne', sans-serif; font-weight: 700; font-size: 11px; letter-spacing: 2px; cursor: pointer; }
+
+  /* TABS */
+  .tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 32px; }
+  .tab { padding: 12px 24px; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.15s; }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* COMPARAISON CARDS */
+  .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 32px; }
+  .network-card { background: var(--surface); border: 1px solid var(--border); padding: 28px; }
+  .network-card.insta { border-top: 3px solid var(--insta); }
+  .network-card.tiktok { border-top: 3px solid var(--tiktok); }
+  .network-name { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+  .network-name .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot.insta { background: var(--insta); }
+  .dot.tiktok { background: var(--tiktok); }
+  .stat-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .stat-row:last-child { border-bottom: none; }
+  .stat-row .label { color: var(--muted); font-size: 11px; }
+  .stat-row .value { font-family: 'Syne', sans-serif; font-weight: 700; }
+  .stat-row .trend { font-size: 11px; }
+  .trend.up { color: var(--green); }
+  .trend.down { color: var(--red); }
+  .trend.flat { color: var(--muted); }
+  .score-badge { display: inline-block; padding: 6px 16px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 18px; margin-top: 16px; }
+  .score-badge.insta { background: rgba(225,48,108,0.15); color: var(--insta); border: 1px solid rgba(225,48,108,0.3); }
+  .score-badge.tiktok { background: rgba(105,201,208,0.15); color: var(--tiktok); border: 1px solid rgba(105,201,208,0.3); }
+
+  /* ANALYSE */
+  .analyse-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 32px; }
+  .analyse-card { background: var(--surface); border: 1px solid var(--border); padding: 20px; }
+  .analyse-title { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; }
+  .analyse-item { font-size: 13px; color: var(--text); padding: 6px 0; border-bottom: 1px solid var(--border); }
+  .analyse-item:last-child { border-bottom: none; }
+  .analyse-item.good::before { content: '✓ '; color: var(--green); }
+  .analyse-item.bad::before { content: '✗ '; color: var(--red); }
+  .analyse-item.tip::before { content: '→ '; color: var(--gold); }
+
+  /* SECTION TITLE */
+  .section-title { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; margin-top: 32px; }
+
+  /* POSTS GRID */
+  .posts-grid { display: flex; flex-direction: column; gap: 10px; margin-bottom: 32px; }
+  .post-item { background: var(--surface); border: 1px solid var(--border); padding: 18px 20px; display: flex; align-items: flex-start; gap: 16px; transition: border-color 0.15s; }
+  .post-item:hover { border-color: var(--gold); }
+  .post-network { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+  .post-network.instagram { background: rgba(225,48,108,0.15); color: var(--insta); border: 1px solid rgba(225,48,108,0.3); }
+  .post-network.tiktok { background: rgba(105,201,208,0.15); color: var(--tiktok); border: 1px solid rgba(105,201,208,0.3); }
+  .post-network.les-deux { background: rgba(201,168,76,0.15); color: var(--gold); border: 1px solid rgba(201,168,76,0.3); }
+  .post-body { flex: 1; }
+  .post-title { font-weight: 600; font-size: 13px; margin-bottom: 4px; }
+  .post-content { font-size: 12px; color: var(--muted); line-height: 1.6; margin-bottom: 8px; }
+  .post-meta { display: flex; gap: 12px; font-size: 11px; color: var(--muted); }
+  .badge-type { padding: 2px 8px; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; }
+  .badge-type.reel { background: rgba(225,48,108,0.15); color: var(--insta); border: 1px solid rgba(225,48,108,0.3); }
+  .badge-type.video { background: rgba(105,201,208,0.15); color: var(--tiktok); border: 1px solid rgba(105,201,208,0.3); }
+  .badge-type.carousel { background: rgba(201,168,76,0.15); color: var(--gold); border: 1px solid rgba(201,168,76,0.3); }
+  .badge-type.story { background: rgba(155,89,182,0.15); color: #9b59b6; border: 1px solid rgba(155,89,182,0.3); }
+  .badge-statut { padding: 2px 8px; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; }
+  .badge-statut.idee { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
+  .badge-statut.planifie { background: rgba(39,174,96,0.15); color: var(--green); border: 1px solid rgba(39,174,96,0.3); }
+  .badge-statut.publie { background: rgba(201,168,76,0.15); color: var(--gold); border: 1px solid rgba(201,168,76,0.3); }
+  .post-actions { display: flex; flex-direction: column; gap: 6px; align-items: flex-end; }
+  .action-link { font-size: 11px; color: var(--gold); cursor: pointer; }
+  .action-link.muted { color: var(--muted); }
+
+  /* HISTORIQUE */
+  table { width: 100%; border-collapse: collapse; }
+  th { text-align: left; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); padding: 10px 14px; border-bottom: 1px solid var(--border); }
+  td { padding: 12px 14px; border-bottom: 1px solid var(--border); font-size: 12px; }
+  tr:hover td { background: var(--surface); }
+
+  /* MODAL */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.88); z-index: 100; align-items: center; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--surface); border: 1px solid var(--border); width: 540px; max-width: 95vw; max-height: 90vh; overflow-y: auto; padding: 40px; }
+  .modal h3 { font-family: 'Syne', sans-serif; font-size: 18px; margin-bottom: 24px; color: var(--gold); }
+  .form-row { margin-bottom: 16px; }
+  .form-row label { display: block; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 7px; }
+  .form-row input, .form-row select, .form-row textarea { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 11px 14px; outline: none; transition: border-color 0.2s; }
+  .form-row input:focus, .form-row select:focus, .form-row textarea:focus { border-color: var(--gold); }
+  .form-row select option { background: var(--surface); }
+  .form-row textarea { min-height: 100px; resize: vertical; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .modal-btns { display: flex; gap: 10px; margin-top: 20px; }
+  .btn-cancel { padding: 12px 20px; background: transparent; border: 1px solid var(--border); color: var(--muted); font-size: 12px; cursor: pointer; }
+
+  /* STRATÉGIE */
+  .strategie-card { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--gold); padding: 24px; margin-bottom: 16px; }
+  .strategie-title { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--gold); margin-bottom: 10px; }
+  .strategie-body { font-size: 13px; color: #aaa; line-height: 1.7; }
+
+  .empty-state { text-align: center; padding: 48px; color: var(--muted); font-size: 13px; }
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-logo">DB STUDIO</div>
+  <div class="nav-section">Principal</div>
+  <a href="dashboard.html" class="nav-item"><span class="ico">⬛</span> Dashboard</a>
+  <a href="crm.html" class="nav-item"><span class="ico">◈</span> Prospects & Clients</a>
+  <a href="projets.html" class="nav-item"><span class="ico">◇</span> Projets</a>
+  <div class="nav-section">Gestion</div>
+  <a href="finances.html" class="nav-item"><span class="ico">◆</span> Finances</a>
+  <a href="documents.html" class="nav-item"><span class="ico">▣</span> Documents</a>
+  <div class="nav-section">Marketing</div>
+  <a href="reseaux.html" class="nav-item active"><span class="ico">◎</span> Réseaux Sociaux</a>
+  <div class="nav-section">Alter Ego</div>
+  <a href="alterego.html" class="nav-item"><span class="ico">◉</span> Mon Alter Ego</a>
+  <div class="nav-bottom"><a class="nav-logout" onclick="logout()">← Déconnexion</a></div>
+</nav>
+
+<main>
+  <div class="top-bar">
+    <div class="page-title">Réseaux Sociaux</div>
+    <div class="top-actions">
+      <button class="btn-outline" onclick="openStats()">+ Stats semaine</button>
+      <button class="btn-gold" onclick="openPost()">+ Idée de post</button>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('analyse',this)">Analyse</div>
+    <div class="tab" onclick="switchTab('contenu',this)">Contenu & Calendrier</div>
+    <div class="tab" onclick="switchTab('strategie',this)">Stratégie</div>
+    <div class="tab" onclick="switchTab('historique',this)">Historique</div>
+  </div>
+
+  <!-- ANALYSE -->
+  <div class="tab-content active" id="tab-analyse">
+    <div class="compare-grid" id="compareGrid">
+      <div class="network-card insta">
+        <div class="network-name"><div class="dot insta"></div>Instagram</div>
+        <div id="instaStats"><div class="empty-state">Aucune donnée.<br>Ajoute tes stats de la semaine.</div></div>
+      </div>
+      <div class="network-card tiktok">
+        <div class="network-name"><div class="dot tiktok"></div>TikTok</div>
+        <div id="tiktokStats"><div class="empty-state">Aucune donnée.<br>Ajoute tes stats de la semaine.</div></div>
+      </div>
+    </div>
+
+    <div class="analyse-grid" id="analyseGrid" style="display:none">
+      <div class="analyse-card">
+        <div class="analyse-title">Points forts</div>
+        <div id="pointsForts"></div>
+      </div>
+      <div class="analyse-card">
+        <div class="analyse-title">Points faibles</div>
+        <div id="pointsFaibles"></div>
+      </div>
+      <div class="analyse-card">
+        <div class="analyse-title">Meilleur réseau</div>
+        <div id="meilleureReseau"></div>
+      </div>
+      <div class="analyse-card">
+        <div class="analyse-title">Recommandations</div>
+        <div id="recommandations"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENU -->
+  <div class="tab-content" id="tab-contenu">
+    <div class="section-title">Idées & Calendrier éditorial</div>
+    <div class="posts-grid" id="postsGrid">
+      <div class="empty-state">Aucun post planifié. Crée ta première idée de contenu.</div>
+    </div>
+  </div>
+
+  <!-- STRATÉGIE -->
+  <div class="tab-content" id="tab-strategie">
+    <div class="section-title">Stratégie générée selon tes données</div>
+    <div id="strategieContent">
+      <div class="empty-state">Ajoute des stats pour générer une stratégie personnalisée.</div>
+    </div>
+  </div>
+
+  <!-- HISTORIQUE -->
+  <div class="tab-content" id="tab-historique">
+    <div class="section-title">Historique des stats</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Réseau</th><th>Semaine</th><th>Abonnés</th><th>+Nouveaux</th>
+          <th>Vues</th><th>Engagement</th><th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="historiqueTable"></tbody>
+    </table>
+  </div>
+</main>
+
+<!-- MODAL STATS -->
+<div class="modal-overlay" id="statsModal">
+  <div class="modal">
+    <h3>Stats de la semaine</h3>
+    <div class="form-row">
+      <label>Réseau</label>
+      <select id="sReseau">
+        <option value="Instagram">Instagram</option>
+        <option value="TikTok">TikTok</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <label>Semaine du (lundi)</label>
+      <input type="date" id="sSemaine">
+    </div>
+    <div class="form-grid">
+      <div class="form-row"><label>Abonnés total</label><input type="number" id="sAbonnes" placeholder="0"></div>
+      <div class="form-row"><label>Nouveaux abonnés</label><input type="number" id="sNouveaux" placeholder="0"></div>
+      <div class="form-row"><label>Vues totales</label><input type="number" id="sVues" placeholder="0"></div>
+      <div class="form-row"><label>Portée</label><input type="number" id="sPortee" placeholder="0"></div>
+      <div class="form-row"><label>Likes</label><input type="number" id="sLikes" placeholder="0"></div>
+      <div class="form-row"><label>Commentaires</label><input type="number" id="sCommentaires" placeholder="0"></div>
+      <div class="form-row"><label>Partages</label><input type="number" id="sPartages" placeholder="0"></div>
+    </div>
+    <div class="form-row"><label>Meilleur post de la semaine</label><input type="text" id="sMeilleur" placeholder="Description du post qui a le mieux performé"></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModals()">Annuler</button>
+      <button class="btn-gold" onclick="saveStats()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL POST -->
+<div class="modal-overlay" id="postModal">
+  <div class="modal">
+    <h3>Nouvelle idée de post</h3>
+    <div class="form-grid">
+      <div class="form-row">
+        <label>Réseau</label>
+        <select id="pReseau">
+          <option value="Instagram">Instagram</option>
+          <option value="TikTok">TikTok</option>
+          <option value="Les deux">Les deux</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>Type</label>
+        <select id="pType">
+          <option value="reel">Reel</option>
+          <option value="video">Vidéo TikTok</option>
+          <option value="carousel">Carousel</option>
+          <option value="story">Story</option>
+          <option value="post">Post classique</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row"><label>Titre / Idée</label><input type="text" id="pTitre" placeholder="Ex: Avant/Après refonte site hôtel"></div>
+    <div class="form-row"><label>Contenu / Script</label><textarea id="pContenu" placeholder="Le texte du post, le script de la vidéo, les points clés à aborder..."></textarea></div>
+    <div class="form-grid">
+      <div class="form-row">
+        <label>Statut</label>
+        <select id="pStatut">
+          <option value="idee">Idée</option>
+          <option value="planifie">Planifié</option>
+          <option value="publie">Publié</option>
+        </select>
+      </div>
+      <div class="form-row"><label>Date prévue</label><input type="date" id="pDate"></div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModals()">Annuler</button>
+      <button class="btn-gold" onclick="savePost()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const API = 'http://localhost:3000';
+  if (!sessionStorage.getItem('auth')) window.location.href = 'index.html';
+  function logout() { sessionStorage.clear(); window.location.href = 'index.html'; }
+
+  let allStats = [];
+  let allPosts = [];
+
+  async function loadAll() {
+    try {
+      [allStats, allPosts] = await Promise.all([
+        fetch(API+'/stats-reseaux').then(r=>r.json()),
+        fetch(API+'/posts').then(r=>r.json())
+      ]);
+      renderAnalyse();
+      renderPosts();
+      renderHistorique();
+      renderStrategie();
+    } catch(e) { console.log('Erreur:', e); }
+  }
+
+  function getLatest(reseau) {
+    return allStats.filter(s=>s.reseau===reseau).sort((a,b)=>new Date(b.semaine)-new Date(a.semaine))[0];
+  }
+
+  function getPrev(reseau) {
+    const sorted = allStats.filter(s=>s.reseau===reseau).sort((a,b)=>new Date(b.semaine)-new Date(a.semaine));
+    return sorted[1];
+  }
+
+  function engagement(s) {
+    if (!s || !s.vues || s.vues===0) return 0;
+    return (((Number(s.likes)||0) + (Number(s.commentaires)||0) + (Number(s.partages)||0)) / Number(s.vues) * 100).toFixed(2);
+  }
+
+  function trend(curr, prev, field) {
+    if (!prev) return '';
+    const diff = Number(curr[field]||0) - Number(prev[field]||0);
+    if (diff > 0) return `<span class="trend up">▲ +${diff.toLocaleString('fr-FR')}</span>`;
+    if (diff < 0) return `<span class="trend down">▼ ${diff.toLocaleString('fr-FR')}</span>`;
+    return `<span class="trend flat">→ stable</span>`;
+  }
+
+  function renderNetworkStats(reseau, containerId, cls) {
+    const latest = getLatest(reseau);
+    const prev = getPrev(reseau);
+    const container = document.getElementById(containerId);
+    if (!latest) { container.innerHTML = '<div class="empty-state">Aucune donnée.<br>Ajoute tes stats.</div>'; return; }
+    const eng = engagement(latest);
+    const engClass = eng >= 3 ? 'up' : eng >= 1 ? 'flat' : 'down';
+    container.innerHTML = `
+      <div class="stat-row"><span class="label">Abonnés</span><span class="value">${Number(latest.abonnes).toLocaleString('fr-FR')} ${trend(latest,prev,'abonnes')}</span></div>
+      <div class="stat-row"><span class="label">Nouveaux cette semaine</span><span class="value" style="color:var(--green)">+${Number(latest.nouveaux_abonnes||0).toLocaleString('fr-FR')}</span></div>
+      <div class="stat-row"><span class="label">Vues</span><span class="value">${Number(latest.vues||0).toLocaleString('fr-FR')} ${trend(latest,prev,'vues')}</span></div>
+      <div class="stat-row"><span class="label">Portée</span><span class="value">${Number(latest.portee||0).toLocaleString('fr-FR')}</span></div>
+      <div class="stat-row"><span class="label">Likes</span><span class="value">${Number(latest.likes||0).toLocaleString('fr-FR')}</span></div>
+      <div class="stat-row"><span class="label">Commentaires</span><span class="value">${Number(latest.commentaires||0).toLocaleString('fr-FR')}</span></div>
+      <div class="stat-row"><span class="label">Partages</span><span class="value">${Number(latest.partages||0).toLocaleString('fr-FR')}</span></div>
+      <div class="stat-row"><span class="label">Taux d'engagement</span><span class="value"><span class="trend ${engClass}">${eng}%</span></span></div>
+      ${latest.meilleur_post ? `<div style="margin-top:12px;font-size:11px;color:var(--muted)">🏆 Meilleur post : <span style="color:var(--text)">${latest.meilleur_post}</span></div>` : ''}
+      <div class="score-badge ${cls}">${scoreReseau(reseau)}/10</div>
+    `;
+  }
+
+  function scoreReseau(reseau) {
+    const latest = getLatest(reseau);
+    if (!latest) return '—';
+    let score = 5;
+    const eng = parseFloat(engagement(latest));
+    if (eng >= 5) score += 2;
+    else if (eng >= 3) score += 1;
+    else if (eng < 1) score -= 2;
+    if (Number(latest.nouveaux_abonnes) >= 50) score += 1;
+    else if (Number(latest.nouveaux_abonnes) >= 20) score += 0.5;
+    if (Number(latest.vues) >= 10000) score += 1;
+    else if (Number(latest.vues) >= 1000) score += 0.5;
+    const prev = getPrev(reseau);
+    if (prev && Number(latest.abonnes) > Number(prev.abonnes)) score += 0.5;
+    return Math.min(10, Math.max(0, score)).toFixed(1);
+  }
+
+  function renderAnalyse() {
+    renderNetworkStats('Instagram', 'instaStats', 'insta');
+    renderNetworkStats('TikTok', 'tiktokStats', 'tiktok');
+    const instaLatest = getLatest('Instagram');
+    const tiktokLatest = getLatest('TikTok');
+    if (!instaLatest && !tiktokLatest) return;
+    document.getElementById('analyseGrid').style.display = 'grid';
+    const instaScore = parseFloat(scoreReseau('Instagram')) || 0;
+    const tiktokScore = parseFloat(scoreReseau('TikTok')) || 0;
+    const instaEng = parseFloat(engagement(instaLatest)) || 0;
+    const tiktokEng = parseFloat(engagement(tiktokLatest)) || 0;
+
+    // Points forts
+    const forts = [];
+    if (instaEng >= 3) forts.push(`<div class="analyse-item good">Bon engagement Instagram (${instaEng}%)</div>`);
+    if (tiktokEng >= 3) forts.push(`<div class="analyse-item good">Bon engagement TikTok (${tiktokEng}%)</div>`);
+    if (instaLatest && Number(instaLatest.nouveaux_abonnes) >= 20) forts.push(`<div class="analyse-item good">Croissance Instagram positive</div>`);
+    if (tiktokLatest && Number(tiktokLatest.nouveaux_abonnes) >= 20) forts.push(`<div class="analyse-item good">Croissance TikTok positive</div>`);
+    if (forts.length === 0) forts.push('<div class="analyse-item">Pas encore assez de données</div>');
+    document.getElementById('pointsForts').innerHTML = forts.join('');
+
+    // Points faibles
+    const faibles = [];
+    if (instaEng < 1) faibles.push(`<div class="analyse-item bad">Engagement Instagram faible (${instaEng}%)</div>`);
+    if (tiktokEng < 1) faibles.push(`<div class="analyse-item bad">Engagement TikTok faible (${tiktokEng}%)</div>`);
+    if (instaLatest && Number(instaLatest.nouveaux_abonnes) < 5) faibles.push(`<div class="analyse-item bad">Croissance Instagram lente</div>`);
+    if (tiktokLatest && Number(tiktokLatest.nouveaux_abonnes) < 5) faibles.push(`<div class="analyse-item bad">Croissance TikTok lente</div>`);
+    if (faibles.length === 0) faibles.push('<div class="analyse-item good">Aucun point faible majeur détecté</div>');
+    document.getElementById('pointsFaibles').innerHTML = faibles.join('');
+
+    // Meilleur réseau
+    const meilleur = instaScore >= tiktokScore ? 'Instagram' : 'TikTok';
+    const meilleurScore = Math.max(instaScore, tiktokScore);
+    document.getElementById('meilleureReseau').innerHTML = `
+      <div class="analyse-item good">${meilleur} performe mieux (${meilleurScore}/10)</div>
+      <div class="analyse-item tip">Concentre 70% de ton énergie sur ${meilleur}</div>
+      <div class="analyse-item tip">Garde ${meilleur === 'Instagram' ? 'TikTok' : 'Instagram'} actif mais secondaire</div>`;
+
+    // Recommandations
+    const reco = [];
+    if (instaEng < 2 && tiktokEng < 2) reco.push('<div class="analyse-item tip">Poste plus régulièrement — min. 3x/semaine</div>');
+    if (instaLatest && Number(instaLatest.vues) < 500) reco.push('<div class="analyse-item tip">Utilise plus de hashtags locaux Gap/PACA</div>');
+    reco.push('<div class="analyse-item tip">Montre les coulisses de tes créations de sites</div>');
+    reco.push('<div class="analyse-item tip">Poste des avant/après de tes maquettes</div>');
+    reco.push('<div class="analyse-item tip">Cible les commerces locaux dans tes vidéos</div>');
+    document.getElementById('recommandations').innerHTML = reco.join('');
+  }
+
+  function renderPosts() {
+    const grid = document.getElementById('postsGrid');
+    if (!allPosts.length) { grid.innerHTML = '<div class="empty-state">Aucun post planifié.</div>'; return; }
+    grid.innerHTML = '';
+    allPosts.forEach(p => {
+      const reseauClass = p.reseau === 'Instagram' ? 'instagram' : p.reseau === 'TikTok' ? 'tiktok' : 'les-deux';
+      const reseauLabel = p.reseau === 'Instagram' ? 'IG' : p.reseau === 'TikTok' ? 'TT' : '⊕';
+      const div = document.createElement('div');
+      div.className = 'post-item';
+      div.innerHTML = `
+        <div class="post-network ${reseauClass}">${reseauLabel}</div>
+        <div class="post-body">
+          <div class="post-title">${p.titre||'Sans titre'}</div>
+          <div class="post-content">${p.contenu||'—'}</div>
+          <div class="post-meta">
+            <span class="badge-type ${p.type}">${p.type||'post'}</span>
+            <span class="badge-statut ${p.statut}">${p.statut}</span>
+            ${p.date_prevue ? `<span>📅 ${new Date(p.date_prevue).toLocaleDateString('fr-FR')}</span>` : ''}
+          </div>
+        </div>
+        <div class="post-actions">
+          ${p.statut !== 'publie' ? `<span class="action-link" onclick="publierPost(${p.id})">Publié ✓</span>` : ''}
+          <span class="action-link muted" onclick="delPost(${p.id})">Suppr.</span>
+        </div>`;
+      grid.appendChild(div);
+    });
+  }
+
+  function renderHistorique() {
+    const tbody = document.getElementById('historiqueTable');
+    if (!allStats.length) { tbody.innerHTML = '<tr><td colspan="7" style="color:var(--muted);padding:24px;font-size:12px">Aucune donnée.</td></tr>'; return; }
+    tbody.innerHTML = '';
+    allStats.forEach(s => {
+      const eng = engagement(s);
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><strong style="color:${s.reseau==='Instagram'?'var(--insta)':'var(--tiktok)'}">${s.reseau}</strong></td>
+        <td style="color:var(--muted)">${new Date(s.semaine).toLocaleDateString('fr-FR')}</td>
+        <td>${Number(s.abonnes).toLocaleString('fr-FR')}</td>
+        <td style="color:var(--green)">+${Number(s.nouveaux_abonnes||0)}</td>
+        <td>${Number(s.vues||0).toLocaleString('fr-FR')}</td>
+        <td><span class="trend ${parseFloat(eng)>=3?'up':parseFloat(eng)>=1?'flat':'down'}">${eng}%</span></td>
+        <td><span style="font-size:11px;color:var(--muted);cursor:pointer" onclick="delStats(${s.id})">Suppr.</span></td>`;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function renderStrategie() {
+    const container = document.getElementById('strategieContent');
+    const instaLatest = getLatest('Instagram');
+    const tiktokLatest = getLatest('TikTok');
+    if (!instaLatest && !tiktokLatest) { container.innerHTML = '<div class="empty-state">Ajoute des stats pour générer une stratégie.</div>'; return; }
+    const instaScore = parseFloat(scoreReseau('Instagram')) || 0;
+    const tiktokScore = parseFloat(scoreReseau('TikTok')) || 0;
+    const meilleur = instaScore >= tiktokScore ? 'Instagram' : 'TikTok';
+
+    container.innerHTML = `
+      <div class="strategie-card">
+        <div class="strategie-title">Priorité réseau</div>
+        <div class="strategie-body">${meilleur} est ton réseau principal en ce moment (${Math.max(instaScore,tiktokScore)}/10). Concentre 70% de ta production de contenu dessus. L'autre réseau reste actif mais avec moins de fréquence.</div>
+      </div>
+      <div class="strategie-card">
+        <div class="strategie-title">Contenu à créer pour DB Studio</div>
+        <div class="strategie-body">
+          <b>Avant/Après</b> — Montre une refonte de site. C'est le contenu qui convertit le mieux pour une agence web.<br><br>
+          <b>Coulisses</b> — Filme-toi pendant que tu codes ou que tu présentes une maquette. Authentique et efficace.<br><br>
+          <b>Éducation locale</b> — "Pourquoi votre commerce à Gap a besoin d'un site en 2026" — cible directement ta clientèle.<br><br>
+          <b>Témoignages</b> — Dès que t'as un client, filme sa réaction face à son nouveau site.
+        </div>
+      </div>
+      <div class="strategie-card">
+        <div class="strategie-title">Fréquence conseillée</div>
+        <div class="strategie-body">
+          Instagram : 4-5 posts/semaine (2 reels, 2 carousels, 1 story quotidienne)<br>
+          TikTok : 3-4 vidéos/semaine<br><br>
+          La régularité prime sur la quantité. Mieux vaut 3 posts de qualité que 7 posts moyens.
+        </div>
+      </div>
+      <div class="strategie-card">
+        <div class="strategie-title">Objectif lié au business</div>
+        <div class="strategie-body">Chaque post doit servir un objectif : générer des DMs de prospects locaux. Termine chaque vidéo par un appel à l'action clair — "Ton commerce à Gap mérite mieux, contacte-moi en DM."</div>
+      </div>`;
+  }
+
+  function switchTab(name, el) {
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('tab-'+name).classList.add('active');
+  }
+
+  function openStats() {
+    document.getElementById('sSemaine').value = new Date().toISOString().split('T')[0];
+    document.getElementById('statsModal').classList.add('open');
+  }
+
+  function openPost() {
+    document.getElementById('pDate').value = new Date().toISOString().split('T')[0];
+    document.getElementById('postModal').classList.add('open');
+  }
+
+  function closeModals() {
+    document.getElementById('statsModal').classList.remove('open');
+    document.getElementById('postModal').classList.remove('open');
+  }
+
+  async function saveStats() {
+    const body = {
+      reseau: document.getElementById('sReseau').value,
+      semaine: document.getElementById('sSemaine').value,
+      abonnes: document.getElementById('sAbonnes').value||0,
+      nouveaux_abonnes: document.getElementById('sNouveaux').value||0,
+      vues: document.getElementById('sVues').value||0,
+      portee: document.getElementById('sPortee').value||0,
+      likes: document.getElementById('sLikes').value||0,
+      commentaires: document.getElementById('sCommentaires').value||0,
+      partages: document.getElementById('sPartages').value||0,
+      meilleur_post: document.getElementById('sMeilleur').value
+    };
+    await fetch(API+'/stats-reseaux', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    closeModals(); loadAll();
+  }
+
+  async function savePost() {
+    const body = {
+      reseau: document.getElementById('pReseau').value,
+      titre: document.getElementById('pTitre').value,
+      contenu: document.getElementById('pContenu').value,
+      type: document.getElementById('pType').value,
+      statut: document.getElementById('pStatut').value,
+      date_prevue: document.getElementById('pDate').value
+    };
+    await fetch(API+'/posts', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    closeModals(); loadAll();
+  }
+
+  async function publierPost(id) {
+    await fetch(API+'/posts/'+id, {method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({statut:'publie',contenu:''})});
+    loadAll();
+  }
+
+  async function delPost(id) {
+    if(!confirm('Supprimer ?')) return;
+    await fetch(API+'/posts/'+id, {method:'DELETE'});
+    loadAll();
+  }
+
+  async function delStats(id) {
+    if(!confirm('Supprimer ?')) return;
+    await fetch(API+'/stats-reseaux/'+id, {method:'DELETE'});
+    loadAll();
+  }
+
+  loadAll();
+</script>
+</body>
+</html>
