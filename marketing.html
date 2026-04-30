@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DB Studio — Marketing</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --gold: #C9A84C; --bg: #080808; --surface: #0f0f0f; --surface2: #161616; --border: #1e1e1e; --text: #e8e8e8; --muted: #555; --green: #27ae60; --red: #c0392b; --orange: #e67e22; --insta: #E1306C; --tiktok: #69C9D0; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; display: flex; min-height: 100vh; }
+  nav { width: 220px; min-height: 100vh; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 32px 0; position: fixed; top: 0; left: 0; bottom: 0; }
+  .nav-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 16px; color: var(--gold); letter-spacing: 3px; padding: 0 24px; margin-bottom: 40px; }
+  .nav-section { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); padding: 0 24px; margin-bottom: 8px; margin-top: 20px; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 24px; font-size: 13px; color: var(--muted); text-decoration: none; transition: all 0.15s; border-left: 2px solid transparent; }
+  .nav-item:hover { color: var(--text); background: var(--surface2); }
+  .nav-item.active { color: var(--gold); border-left-color: var(--gold); background: rgba(201,168,76,0.05); }
+  .nav-item .ico { font-size: 15px; width: 18px; text-align: center; }
+  .nav-bottom { margin-top: auto; padding: 0 24px; }
+  .nav-logout { font-size: 11px; color: var(--muted); cursor: pointer; }
+  .nav-logout:hover { color: var(--red); }
+  main { margin-left: 220px; flex: 1; padding: 40px; }
+  .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 40px; }
+  .page-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 24px; }
+  .tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 32px; }
+  .tab { padding: 12px 24px; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.15s; }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+  .section-title { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; margin-top: 32px; }
+  .section-title:first-child { margin-top: 0; }
+
+  /* GÉNÉRATEUR */
+  .generator-grid { display: grid; grid-template-columns: 360px 1fr; gap: 24px; }
+  .generator-panel { background: var(--surface); border: 1px solid var(--border); padding: 28px; }
+  .generator-title { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--gold); margin-bottom: 20px; letter-spacing: 1px; }
+  .form-row { margin-bottom: 16px; }
+  .form-row label { display: block; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 7px; }
+  .form-row select, .form-row input, .form-row textarea { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 11px 14px; outline: none; transition: border-color 0.2s; }
+  .form-row select:focus, .form-row input:focus, .form-row textarea:focus { border-color: var(--gold); }
+  .form-row select option { background: var(--surface); }
+  .form-row textarea { min-height: 80px; resize: vertical; }
+  .btn-gold { width: 100%; padding: 14px; background: var(--gold); border: none; color: #000; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; margin-top: 8px; transition: background 0.2s; }
+  .btn-gold:hover { background: #d9b55c; }
+  .btn-outline { padding: 10px 20px; background: transparent; border: 1px solid var(--gold); color: var(--gold); font-family: 'Syne', sans-serif; font-weight: 700; font-size: 11px; letter-spacing: 2px; cursor: pointer; transition: all 0.15s; }
+  .btn-outline:hover { background: var(--gold); color: #000; }
+  .btn-muted { padding: 10px 20px; background: transparent; border: 1px solid var(--border); color: var(--muted); font-size: 11px; cursor: pointer; transition: all 0.15s; }
+  .btn-muted:hover { border-color: var(--muted); color: var(--text); }
+
+  /* RÉSULTATS */
+  .results-panel { display: flex; flex-direction: column; gap: 16px; }
+  .result-card { background: var(--surface); border: 1px solid var(--border); border-left: 2px solid var(--gold); padding: 24px; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+  .result-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .result-label { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); }
+  .result-actions { display: flex; gap: 8px; }
+  .result-body { font-size: 13px; line-height: 1.8; color: var(--text); white-space: pre-wrap; }
+  .result-network { display: flex; gap: 6px; margin-top: 12px; }
+  .network-tag { padding: 3px 10px; font-size: 10px; letter-spacing: 1px; }
+  .network-tag.ig { background: rgba(225,48,108,0.15); color: var(--insta); border: 1px solid rgba(225,48,108,0.3); }
+  .network-tag.tt { background: rgba(105,201,208,0.15); color: var(--tiktok); border: 1px solid rgba(105,201,208,0.3); }
+  .empty-results { background: var(--surface); border: 1px solid var(--border); padding: 48px; text-align: center; color: var(--muted); font-size: 13px; }
+  .generating { display: none; background: var(--surface); border: 1px solid var(--border); padding: 32px; text-align: center; }
+  .generating.show { display: block; }
+  .gen-dots { display: inline-flex; gap: 6px; margin-top: 12px; }
+  .gen-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); animation: pulse 1.2s infinite; }
+  .gen-dot:nth-child(2) { animation-delay: 0.2s; }
+  .gen-dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes pulse { 0%,60%,100% { opacity:0.2; } 30% { opacity:1; } }
+
+  /* TENDANCES */
+  .trends-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px,1fr)); gap: 16px; margin-bottom: 32px; }
+  .trend-card { background: var(--surface); border: 1px solid var(--border); padding: 24px; }
+  .trend-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
+  .trend-name { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; }
+  .trend-hot { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; padding: 3px 10px; }
+  .trend-hot.chaud { background: rgba(192,57,43,0.15); color: var(--red); border: 1px solid rgba(192,57,43,0.3); }
+  .trend-hot.montant { background: rgba(201,168,76,0.15); color: var(--gold); border: 1px solid rgba(201,168,76,0.3); }
+  .trend-hot.stable { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
+  .trend-desc { font-size: 12px; color: var(--muted); line-height: 1.6; margin-bottom: 12px; }
+  .trend-apply { font-size: 12px; color: var(--text); line-height: 1.6; padding: 10px 14px; background: var(--surface2); border-left: 2px solid var(--gold); }
+
+  /* STRATÉGIE HEBDO */
+  .semaine-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 8px; margin-bottom: 24px; }
+  .jour-card { background: var(--surface); border: 1px solid var(--border); padding: 14px 10px; text-align: center; }
+  .jour-name { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .jour-content { font-size: 11px; color: var(--text); line-height: 1.5; }
+  .jour-network { font-size: 10px; margin-top: 6px; }
+  .jour-network.ig { color: var(--insta); }
+  .jour-network.tt { color: var(--tiktok); }
+  .jour-network.off { color: var(--muted); }
+
+  /* CTA LIBRARY */
+  .cta-grid { display: flex; flex-direction: column; gap: 10px; }
+  .cta-item { background: var(--surface); border: 1px solid var(--border); padding: 18px 20px; display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+  .cta-item:hover { border-color: var(--gold); }
+  .cta-text { font-size: 13px; line-height: 1.6; flex: 1; }
+  .cta-tag { font-size: 9px; letter-spacing: 1px; text-transform: uppercase; padding: 2px 8px; white-space: nowrap; }
+  .cta-tag.prospect { background: rgba(201,168,76,0.15); color: var(--gold); border: 1px solid rgba(201,168,76,0.3); }
+  .cta-tag.fidelisation { background: rgba(39,174,96,0.15); color: var(--green); border: 1px solid rgba(39,174,96,0.3); }
+  .cta-tag.notoriete { background: rgba(41,128,185,0.15); color: #2980b9; border: 1px solid rgba(41,128,185,0.3); }
+  .copy-btn { font-size: 11px; color: var(--muted); cursor: pointer; white-space: nowrap; padding: 4px 10px; border: 1px solid var(--border); transition: all 0.15s; }
+  .copy-btn:hover { border-color: var(--gold); color: var(--gold); }
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-logo">DB STUDIO</div>
+  <div class="nav-section">Principal</div>
+  <a href="dashboard.html" class="nav-item"><span class="ico">⬛</span> Dashboard</a>
+  <a href="crm.html" class="nav-item"><span class="ico">◈</span> Prospects & Clients</a>
+  <a href="projets.html" class="nav-item"><span class="ico">◇</span> Projets</a>
+  <div class="nav-section">Gestion</div>
+  <a href="finances.html" class="nav-item"><span class="ico">◆</span> Finances</a>
+  <a href="documents.html" class="nav-item"><span class="ico">▣</span> Documents</a>
+  <div class="nav-section">Marketing</div>
+  <a href="reseaux.html" class="nav-item"><span class="ico">◎</span> Réseaux Sociaux</a>
+  <a href="marketing.html" class="nav-item active"><span class="ico">✦</span> Cerveau Marketing</a>
+  <div class="nav-section">Alter Ego</div>
+  <a href="alterego.html" class="nav-item"><span class="ico">◉</span> Mon Alter Ego</a>
+  <div class="nav-bottom"><a class="nav-logout" onclick="logout()">← Déconnexion</a></div>
+</nav>
+
+<main>
+  <div class="top-bar">
+    <div class="page-title">Cerveau Marketing</div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('generateur',this)">Générateur de contenu</div>
+    <div class="tab" onclick="switchTab('tendances',this)">Tendances</div>
+    <div class="tab" onclick="switchTab('strategie',this)">Plan semaine</div>
+    <div class="tab" onclick="switchTab('cta',this)">Bibliothèque CTA</div>
+  </div>
+
+  <!-- GÉNÉRATEUR -->
+  <div class="tab-content active" id="tab-generateur">
+    <div class="generator-grid">
+      <div class="generator-panel">
+        <div class="generator-title">⚡ Générer du contenu</div>
+        <div class="form-row">
+          <label>Type de contenu</label>
+          <select id="gType">
+            <option value="script_video">Script vidéo (Reel/TikTok)</option>
+            <option value="carousel">Carousel Instagram</option>
+            <option value="post_texte">Post texte + caption</option>
+            <option value="story">Story interactive</option>
+            <option value="hook">Accroche / Hook uniquement</option>
+            <option value="cta">Call to action uniquement</option>
+            <option value="prospection">Message de prospection DM</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label>Réseau cible</label>
+          <select id="gReseau">
+            <option value="instagram">Instagram</option>
+            <option value="tiktok">TikTok</option>
+            <option value="les_deux">Les deux</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label>Cible</label>
+          <select id="gCible">
+            <option value="restaurant">Restaurant / Bar / Café</option>
+            <option value="hotel">Hôtel / Hébergement</option>
+            <option value="artisan">Artisan / BTP</option>
+            <option value="commerce">Commerce de proximité</option>
+            <option value="liberal">Professionnel libéral</option>
+            <option value="entrepreneur">Entrepreneur / Startup</option>
+            <option value="general">Tout entrepreneur local</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label>Objectif</label>
+          <select id="gObjectif">
+            <option value="prospect">Générer des prospects / DMs</option>
+            <option value="notoriete">Augmenter la notoriété</option>
+            <option value="confiance">Créer de la confiance</option>
+            <option value="viral">Maximiser la viralité</option>
+            <option value="conversion">Convertir en client</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label>Contexte optionnel</label>
+          <textarea id="gContexte" placeholder="Ex: Je veux montrer une refonte de site pour un restaurant... ou une promo spéciale... ou un avant/après..."></textarea>
+        </div>
+        <button class="btn-gold" onclick="generer()">Générer →</button>
+        <button class="btn-muted" style="width:100%;margin-top:8px" onclick="genererMultiple()">Générer 3 variations →</button>
+      </div>
+
+      <div>
+        <div class="generating" id="generatingIndicator">
+          <div style="color:var(--muted);font-size:13px">Génération en cours...</div>
+          <div class="gen-dots"><div class="gen-dot"></div><div class="gen-dot"></div><div class="gen-dot"></div></div>
+        </div>
+        <div class="results-panel" id="resultsPanel">
+          <div class="empty-results">Configure tes paramètres et clique sur Générer.<br>Le contenu sera adapté à ta cible et tes objectifs.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TENDANCES -->
+  <div class="tab-content" id="tab-tendances">
+    <div class="section-title">Tendances actuelles — Agence web & Marketing digital</div>
+    <div class="trends-grid" id="trendsGrid"></div>
+  </div>
+
+  <!-- PLAN SEMAINE -->
+  <div class="tab-content" id="tab-strategie">
+    <div class="section-title">Plan de contenu — cette semaine</div>
+    <div class="semaine-grid" id="semaineGrid"></div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--gold);padding:24px;margin-top:8px">
+      <div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--gold);margin-bottom:12px">Règle d'or</div>
+      <div style="font-size:13px;color:#aaa;line-height:1.8">
+        Chaque post doit avoir <strong style="color:var(--text)">un seul objectif</strong> et <strong style="color:var(--text)">un seul call to action</strong>.<br>
+        80% de contenu à valeur ajoutée (éducation, coulisses, before/after) → 20% de contenu commercial.<br>
+        La régularité bat la perfection. Un post moyen publié vaut mieux qu'un post parfait jamais publié.
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA LIBRARY -->
+  <div class="tab-content" id="tab-cta">
+    <div class="section-title">Bibliothèque de Call to Action — DB Studio</div>
+    <div class="cta-grid" id="ctaGrid"></div>
+  </div>
+</main>
+
+<script>
+  if (!sessionStorage.getItem('auth')) window.location.href = 'index.html';
+  function logout() { sessionStorage.clear(); window.location.href = 'index.html'; }
+
+  function switchTab(name, el) {
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('tab-'+name).classList.add('active');
+  }
+
+  // ── BASE DE CONNAISSANCE MARKETING ───────────────────────────────────────────
+
+  const HOOKS = {
+    restaurant: [
+      "Votre restaurant mérite plus que 3 étoiles Google — il mérite d'être trouvé.",
+      "Pendant que vos concurrents attendent les clients, vous pouvez aller les chercher.",
+      "Un client qui cherche où manger ce soir à Gap — est-ce qu'il vous trouve ?",
+      "Le meilleur restaurant de Gap que personne ne connaît encore... c'est peut-être le vôtre.",
+    ],
+    hotel: [
+      "Les voyageurs réservent en ligne avant même d'arriver en ville. Êtes-vous visible ?",
+      "Votre hôtel a 4 étoiles. Votre présence en ligne en a-t-elle autant ?",
+      "Booking prend 15% de commission. Un site direct prend 0%.",
+      "Chaque nuit non réservée en direct, c'est de l'argent donné à une plateforme.",
+    ],
+    artisan: [
+      "Votre travail est exceptionnel. Est-ce que vos futurs clients peuvent le voir ?",
+      "Les artisans de demain ont un site. Ceux d'hier attendent le bouche-à-oreille.",
+      "Votre portfolio mérite d'être vu. Pas juste par vos voisins.",
+      "Quand un client cherche un artisan à Gap, il tape sur Google. Pas dans l'annuaire.",
+    ],
+    commerce: [
+      "Votre boutique est ouverte 8h/jour. Votre site vitrine, 24h/24.",
+      "Les commerces qui survivent en 2026 ont tous un point commun : ils sont visibles en ligne.",
+      "Vos clients fidèles vous connaissent. Vos futurs clients, eux, vous cherchent en ligne.",
+      "Une vitrine physique attire les passants. Une vitrine digitale attire toute la région.",
+    ],
+    liberal: [
+      "Vos patients / clients cherchent un professionnel en ligne avant d'appeler.",
+      "La confiance se construit avant le premier rendez-vous. Votre site en est la preuve.",
+      "Un cabinet sans présence en ligne en 2026, c'est comme une carte de visite sans numéro.",
+      "Vos concurrents ont déjà un site. Votre expertise mérite d'être aussi visible que la leur.",
+    ],
+    entrepreneur: [
+      "Une idée sans visibilité, c'est une idée que personne ne verra jamais.",
+      "Le premier reflexe de vos investisseurs : chercher votre site. Qu'est-ce qu'ils trouvent ?",
+      "Vous avez lancé votre business. Maintenant laissez votre site travailler pour vous.",
+      "Chaque jour sans site, c'est un jour où vos concurrents prennent votre place.",
+    ],
+    general: [
+      "En 2026, ne pas avoir de site c'est comme ne pas exister.",
+      "Votre business mérite d'être trouvé par les gens qui en ont besoin.",
+      "Pendant que vous lisez ça, quelqu'un cherche exactement ce que vous proposez.",
+      "Un site pro ne coûte pas cher. Ne pas en avoir coûte des clients chaque jour.",
+    ]
+  };
+
+  const SCRIPTS = {
+    script_video: {
+      prospect: (cible, contexte) => {
+        const hook = pick(HOOKS[cible] || HOOKS.general);
+        return `🎬 SCRIPT VIDÉO — 30-60 secondes
+
+HOOK (3 premières secondes) :
+"${hook}"
+
+DÉVELOPPEMENT (15-20 sec) :
+Chez DB Studio, on crée des sites vitrine professionnels pour les ${CIBLES_LABEL[cible]} qui n'ont pas le temps de s'occuper de leur présence en ligne.
+${contexte ? `\n${contexte}\n` : ''}
+On s'occupe de tout : design, hébergement, référencement local.
+Vous gardez votre temps pour votre vrai métier.
+
+PREUVE SOCIALE (5-10 sec) :
+[Montrer une maquette ou un avant/après de site client]
+
+CALL TO ACTION (5 sec) :
+"Vous avez un projet ? Envoyez-moi un message en DM. 
+Premier échange gratuit, réponse en 24h."
+
+📌 NOTES DE TOURNAGE :
+- Parler face caméra, ton professionnel et posé
+- Montrer des exemples concrets de sites créés
+- Filmer en lumière naturelle si possible
+- Sous-titres obligatoires (80% des vidéos vues sans son)`;
+      },
+      notoriete: (cible, contexte) => `🎬 SCRIPT VIDÉO COULISSES — 30-45 secondes
+
+HOOK :
+"Vous vous demandez ce que fait réellement un créateur de sites web ? Je vous montre."
+
+DÉVELOPPEMENT :
+[Filmer l'écran pendant la création d'une maquette]
+"En ce moment je travaille sur le site d'un ${CIBLES_LABEL[cible]} local.
+${contexte || 'Du brief initial à la mise en ligne, voici comment ça se passe.'}
+
+Étape 1 : Comprendre le business et les objectifs du client.
+Étape 2 : Créer une maquette sur-mesure.
+Étape 3 : Développement, hébergement, référencement.
+Résultat : un site qui génère de vrais clients."
+
+CALL TO ACTION :
+"Curieux de voir ce qu'on pourrait faire pour votre business ? DM ouvert."`,
+    },
+    carousel: {
+      prospect: (cible, contexte) => `📱 CAROUSEL INSTAGRAM — 6 slides
+
+SLIDE 1 — ACCROCHE :
+"${pick(HOOKS[cible] || HOOKS.general)}"
+[Image : contraste avant/après d'un site]
+
+SLIDE 2 — LE PROBLÈME :
+"${PROBLEME[cible] || PROBLEME.general}"
+[Image : écran avec site moche ou absent]
+
+SLIDE 3 — LA SOLUTION :
+"DB Studio crée votre site vitrine professionnel.
+Design moderne • Hébergement inclus • SEO local"
+[Image : maquette propre et moderne]
+
+SLIDE 4 — CE QUE VOUS OBTENEZ :
+✓ Site livré en 7-14 jours
+✓ Visible sur Google Maps
+✓ Optimisé mobile
+✓ Support mensuel inclus
+[Image : liste visuelle]
+
+SLIDE 5 — TARIFS :
+"À partir de 400€ — sans abonnement caché"
+[Image : tableau de prix simple]
+
+SLIDE 6 — CALL TO ACTION :
+"Votre site vitrine professionnel vous attend.
+DM ou lien en bio → Devis gratuit en 24h"
+[Image : logo DB Studio + contact]`,
+      confiance: (cible, contexte) => `📱 CAROUSEL — BEFORE/AFTER
+
+SLIDE 1 — ACCROCHE :
+"Ce ${CIBLES_LABEL[cible]} avait un problème. On l'a réglé en 10 jours."
+
+SLIDE 2 — AVANT :
+[Screenshot site avant - flou ou reconstitution]
+"Site daté, non mobile, invisible sur Google"
+
+SLIDES 3-4 — PROCESSUS :
+"Voici comment on a travaillé :"
+• Analyse des besoins et de la concurrence
+• Maquette validée ensemble
+• Développement et mise en ligne
+
+SLIDE 5 — APRÈS :
+[Screenshot du nouveau site]
+"Résultat : +X visites/mois, top 3 Google local"
+
+SLIDE 6 — CTA :
+"Votre site mérite la même transformation.
+DM pour un diagnostic gratuit."`,
+    },
+    post_texte: {
+      prospect: (cible, contexte) => `📝 POST TEXTE + CAPTION
+
+TEXTE DU POST :
+${pick(HOOKS[cible] || HOOKS.general)}
+
+${contexte || `Un ${CIBLES_LABEL[cible]} sans site vitrine professionnel laisse ses futurs clients partir chez la concurrence.`}
+
+Chez DB Studio, on crée des sites vitrine sur-mesure pour les entrepreneurs locaux qui veulent être pris au sérieux en ligne.
+
+✓ Design professionnel adapté à votre image
+✓ Référencement local Google inclus  
+✓ Hébergement et maintenance gérés
+✓ Livraison en 7 à 14 jours
+
+📩 Premier échange gratuit — DM ou lien en bio.
+
+HASHTAGS SUGGÉRÉS :
+#WebDesign #SiteInternet #Gap05 #HautesAlpes #AgenceWeb #MarketingDigital #EntrepreneurLocal #VisibiliteEnLigne #CreationSite #PME`,
+    },
+    hook: {
+      prospect: (cible) => `🪝 5 HOOKS POUR ${CIBLES_LABEL[cible].toUpperCase()}
+
+1. "${HOOKS[cible]?.[0] || HOOKS.general[0]}"
+
+2. "${HOOKS[cible]?.[1] || HOOKS.general[1]}"
+
+3. "${HOOKS[cible]?.[2] || HOOKS.general[2]}"
+
+4. "${HOOKS[cible]?.[3] || HOOKS.general[3]}"
+
+5. "Savez-vous combien de clients vous perdez chaque mois sans site professionnel ?"
+
+💡 CONSEIL : Les 3 premières secondes décident si la personne reste. 
+Testez chaque hook sur une vidéo différente et analysez lequel génère le plus de vues complètes.`,
+    },
+    prospection: {
+      prospect: (cible, contexte) => `💬 MESSAGE DE PROSPECTION DM
+
+VERSION 1 — Directe :
+"Bonjour [Prénom],
+
+Je suis tombé sur votre ${CIBLES_LABEL[cible]} et j'ai remarqué que votre présence en ligne pourrait être optimisée.
+
+Je suis Val, créateur de sites vitrine professionnels pour les entrepreneurs locaux à Gap.
+
+Est-ce que vous seriez disponible pour un échange de 15 minutes cette semaine ? Je vous partage quelques idées sans engagement.
+
+Cordialement,
+Val — DB Studio"
+
+---
+
+VERSION 2 — Valeur d'abord :
+"Bonjour [Prénom],
+
+J'ai analysé rapidement la présence en ligne de votre ${CIBLES_LABEL[cible]} et j'ai identifié 3 points qui freinent votre visibilité sur Google.
+
+Je serais ravi de vous les partager gratuitement.
+
+Disponible cette semaine ?"
+
+---
+
+VERSION 3 — Après avoir vu leur contenu :
+"Bonjour [Prénom],
+
+Votre contenu est vraiment qualitatif — mais sans site pour convertir vos abonnés en clients, vous laissez de l'argent sur la table.
+
+On peut régler ça. DM ?"`,
+    },
+    cta: {
+      prospect: () => `📣 10 CALL TO ACTION POUR DB STUDIO
+
+1. "DM ouvert pour un diagnostic gratuit de votre présence en ligne."
+
+2. "Votre devis gratuit en 24h — lien en bio."
+
+3. "Envoyez-moi 'SITE' en DM et je vous envoie notre portfolio."
+
+4. "Premier échange sans engagement — répondez à ce post."
+
+5. "Combien de clients perdez-vous chaque jour ? DM pour le savoir."
+
+6. "Votre site vitrine professionnel à partir de 400€ — DM pour en savoir plus."
+
+7. "Commentez 'INFO' et je vous envoie notre guide gratuit."
+
+8. "Suivez notre compte pour voir toutes nos créations de sites locaux."
+
+9. "Taguez un entrepreneur qui a besoin d'un site professionnel. 👇"
+
+10. "Sauvegardez ce post — vous en aurez besoin quand vous serez prêt."`,
+    },
+    story: {
+      prospect: (cible) => `📲 STORY INTERACTIVE
+
+STORY 1 — QUESTION :
+"Avez-vous un site professionnel ?" 
+[Sondage : Oui ✓ / Pas encore ✗]
+
+STORY 2 — RÉPONSE SI NON :
+"Vous n'êtes pas seul. 
+60% des ${CIBLES_LABEL[cible]} n'ont pas de site à jour.
+On peut changer ça. 👇"
+[Lien : DM]
+
+STORY 3 — PREUVE :
+[Screenshot d'une création récente]
+"Dernier site livré cette semaine."
+
+STORY 4 — CTA :
+"Votre tour ? 
+Répondez à cette story pour un devis gratuit."`,
+    }
+  };
+
+  const PROBLEME = {
+    restaurant: "La plupart des restaurants de la région ont soit un site daté, soit aucun site. Résultat : leurs futurs clients les trouvent pas sur Google et vont ailleurs.",
+    hotel: "Les voyageurs comparent les hôtels en ligne avant de réserver. Un hôtel sans site ou avec un site non optimisé perd des réservations directes chaque jour.",
+    artisan: "Le bouche-à-oreille ne suffit plus. Les clients cherchent d'abord en ligne, comparent, puis contactent. Sans site vous n'existez pas dans cette phase.",
+    commerce: "Vos concurrents en ligne volent vos clients locaux. Un site vitrine simple vous remet dans la course.",
+    liberal: "La confiance se construit avant le premier rendez-vous. Un site professionnel est votre meilleure carte de visite.",
+    entrepreneur: "Sans présence en ligne, votre business reste invisible pour 80% de vos clients potentiels.",
+    general: "En 2026, ne pas avoir de présence en ligne c'est offrir vos clients à vos concurrents."
+  };
+
+  const CIBLES_LABEL = {
+    restaurant: 'restaurant / café',
+    hotel: 'hôtel',
+    artisan: 'artisan',
+    commerce: 'commerce',
+    liberal: 'professionnel libéral',
+    entrepreneur: 'entrepreneur',
+    general: 'entrepreneur local'
+  };
+
+  const pick = a => a[Math.floor(Math.random()*a.length)];
+
+  function generer() {
+    const type = document.getElementById('gType').value;
+    const reseau = document.getElementById('gReseau').value;
+    const cible = document.getElementById('gCible').value;
+    const objectif = document.getElementById('gObjectif').value;
+    const contexte = document.getElementById('gContexte').value.trim();
+
+    document.getElementById('generatingIndicator').classList.add('show');
+    document.getElementById('resultsPanel').innerHTML = '';
+
+    setTimeout(() => {
+      document.getElementById('generatingIndicator').classList.remove('show');
+      const contenu = generateContent(type, reseau, cible, objectif, contexte);
+      afficherResultat(contenu, type, reseau, 1);
+    }, 800 + Math.random()*600);
+  }
+
+  function genererMultiple() {
+    const type = document.getElementById('gType').value;
+    const reseau = document.getElementById('gReseau').value;
+    const cible = document.getElementById('gCible').value;
+    const objectif = document.getElementById('gObjectif').value;
+    const contexte = document.getElementById('gContexte').value.trim();
+
+    document.getElementById('generatingIndicator').classList.add('show');
+    document.getElementById('resultsPanel').innerHTML = '';
+
+    setTimeout(() => {
+      document.getElementById('generatingIndicator').classList.remove('show');
+      for (let i = 1; i <= 3; i++) {
+        const contenu = generateContent(type, reseau, cible, objectif, contexte);
+        afficherResultat(contenu, type, reseau, i);
+      }
+    }, 1200 + Math.random()*800);
+  }
+
+  function generateContent(type, reseau, cible, objectif, contexte) {
+    const typeScripts = SCRIPTS[type];
+    if (!typeScripts) return "Type de contenu non supporté.";
+    const objScript = typeScripts[objectif] || typeScripts[Object.keys(typeScripts)[0]];
+    if (!objScript) return "Objectif non supporté pour ce type.";
+    return objScript(cible, contexte);
+  }
+
+  function afficherResultat(contenu, type, reseau, num) {
+    const panel = document.getElementById('resultsPanel');
+    const networkTags = reseau === 'instagram' ? '<span class="network-tag ig">Instagram</span>' :
+                        reseau === 'tiktok' ? '<span class="network-tag tt">TikTok</span>' :
+                        '<span class="network-tag ig">Instagram</span><span class="network-tag tt">TikTok</span>';
+    const card = document.createElement('div');
+    card.className = 'result-card';
+    card.innerHTML = `
+      <div class="result-header">
+        <div class="result-label">Variation ${num}</div>
+        <div class="result-actions">
+          <button class="copy-btn" onclick="copyContent(this)">Copier</button>
+          <button class="copy-btn" onclick="saveToCalendar(this)" style="border-color:var(--gold);color:var(--gold)">→ Calendrier</button>
+        </div>
+      </div>
+      <div class="result-body">${contenu}</div>
+      <div class="result-network">${networkTags}</div>`;
+    panel.appendChild(card);
+  }
+
+  function copyContent(btn) {
+    const text = btn.closest('.result-card').querySelector('.result-body').textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = 'Copié ✓';
+      setTimeout(() => btn.textContent = 'Copier', 2000);
+    });
+  }
+
+  function saveToCalendar(btn) {
+    const text = btn.closest('.result-card').querySelector('.result-body').textContent;
+    const reseau = document.getElementById('gReseau').value;
+    const type = document.getElementById('gType').value;
+    localStorage.setItem('pendingPost', JSON.stringify({contenu: text, reseau, type}));
+    window.location.href = 'reseaux.html';
+  }
+
+  // ── TENDANCES ─────────────────────────────────────────────────────────────────
+  const TENDANCES = [
+    {
+      nom: "Before/After de sites web",
+      status: "chaud",
+      desc: "Les vidéos montrant la transformation d'un site avant/après cartonnent sur tous les réseaux. Temps de visionnage élevé, fort taux de sauvegarde.",
+      apply: "Filme un écran split — site moche à gauche, ta création à droite. 15 secondes suffisent."
+    },
+    {
+      nom: "Coulisses de création",
+      status: "chaud",
+      desc: "Screen recording du process de design + voix off. Les gens sont fascinés par 'comment c'est fait'. Crédibilité maximale.",
+      apply: "Enregistre ton écran pendant que tu conçois une maquette. Explique tes choix en voix off."
+    },
+    {
+      nom: "Chiffres locaux chocs",
+      status: "montant",
+      desc: "'X% des commerces à Gap n'ont pas de site à jour' — les stats locales créent de la proximité et un sentiment d'urgence.",
+      apply: "Utilise des données réelles ou estimées sur ton secteur géographique. Hyper ciblé = hyper engageant."
+    },
+    {
+      nom: "Témoignage client face caméra",
+      status: "chaud",
+      desc: "Le format le plus crédible qui existe. Un client satisfait qui parle de son expérience bat n'importe quelle pub.",
+      apply: "Dès ton premier client, filme 30 secondes de réaction devant son nouveau site. Or pur."
+    },
+    {
+      nom: "Série éducative en plusieurs épisodes",
+      status: "montant",
+      desc: "'Pourquoi votre site perd des clients — Partie 1/5'. Crée une audience fidèle qui revient pour la suite.",
+      apply: "Décompose 'les erreurs d'un site vitrine' en 5 vidéos courtes. Une par semaine."
+    },
+    {
+      nom: "Réponse aux idées reçues",
+      status: "montant",
+      desc: "'Non, un site vitrine ne coûte pas 5000€' — briser les mythes génère beaucoup de partages et de commentaires.",
+      apply: "Liste les 3 idées reçues sur la création de sites et démontes-les une par une."
+    },
+    {
+      nom: "POV — Je suis créateur de sites",
+      status: "stable",
+      desc: "Format TikTok/Reel : 'POV : vous demandez un devis pour votre site et...' — humour professionnel, très partageable.",
+      apply: "Montre une journée type, un échange avec un client satisfait, ou les coulisses d'une livraison."
+    },
+    {
+      nom: "Audit de site en live",
+      status: "montant",
+      desc: "Prendre un site existant (avec permission) et montrer en vidéo ce qui ne va pas. Expert positioning immédiat.",
+      apply: "Contacte un commerce local, propose un audit vidéo gratuit en échange d'une mention. Contenu + prospection."
+    },
+    {
+      nom: "Contenu ultra-local",
+      status: "chaud",
+      desc: "Mentionner Gap, les Hautes-Alpes, des adresses connues localement. L'algorithme booste le contenu géolocalisé.",
+      apply: "Utilise les hashtags locaux, mentionne la ville, filme des endroits reconnaissables si possible."
+    },
+  ];
+
+  function renderTendances() {
+    const grid = document.getElementById('trendsGrid');
+    grid.innerHTML = '';
+    TENDANCES.forEach(t => {
+      grid.innerHTML += `
+        <div class="trend-card">
+          <div class="trend-header">
+            <div class="trend-name">${t.nom}</div>
+            <span class="trend-hot ${t.status}">${t.status === 'chaud' ? '🔥 Chaud' : t.status === 'montant' ? '📈 Montant' : '→ Stable'}</span>
+          </div>
+          <div class="trend-desc">${t.desc}</div>
+          <div class="trend-apply"><strong>Comment l'appliquer :</strong> ${t.apply}</div>
+        </div>`;
+    });
+  }
+
+  // ── PLAN SEMAINE ──────────────────────────────────────────────────────────────
+  const PLAN_SEMAINE = [
+    { jour: 'Lun', content: 'Reel coulisses création', network: 'ig', label: 'Instagram' },
+    { jour: 'Mar', content: 'Vidéo TikTok — conseil pro', network: 'tt', label: 'TikTok' },
+    { jour: 'Mer', content: 'Carousel Instagram before/after', network: 'ig', label: 'Instagram' },
+    { jour: 'Jeu', content: 'Vidéo TikTok — tendance locale', network: 'tt', label: 'TikTok' },
+    { jour: 'Ven', content: 'Reel prospection + CTA fort', network: 'ig', label: 'Instagram' },
+    { jour: 'Sam', content: 'Story interactive sondage', network: 'ig', label: 'Instagram' },
+    { jour: 'Dim', content: 'Repos — planifier la semaine suivante', network: 'off', label: '—' },
+  ];
+
+  function renderSemaine() {
+    const grid = document.getElementById('semaineGrid');
+    grid.innerHTML = '';
+    PLAN_SEMAINE.forEach(j => {
+      grid.innerHTML += `
+        <div class="jour-card">
+          <div class="jour-name">${j.jour}</div>
+          <div class="jour-content">${j.content}</div>
+          <div class="jour-network ${j.network}">${j.label}</div>
+        </div>`;
+    });
+  }
+
+  // ── CTA LIBRARY ───────────────────────────────────────────────────────────────
+  const CTAS = [
+    { text: "Vous avez un projet de site ? DM ouvert — premier échange gratuit et sans engagement.", tag: "prospect" },
+    { text: "Envoyez-moi 'DEVIS' en DM et recevez votre tarif personnalisé en 24h.", tag: "prospect" },
+    { text: "Diagnostic gratuit de votre présence en ligne — répondez à ce post pour en profiter.", tag: "prospect" },
+    { text: "Votre site vitrine professionnel à partir de 400€ tout inclus. DM pour en savoir plus.", tag: "prospect" },
+    { text: "Taguez un entrepreneur local qui mérite un meilleur site. 👇", tag: "notoriete" },
+    { text: "Sauvegardez ce post — vous en aurez besoin quand vous serez prêt à passer à l'étape suivante.", tag: "notoriete" },
+    { text: "Suivez notre compte pour voir toutes nos créations de sites locaux chaque semaine.", tag: "notoriete" },
+    { text: "Partagez à un commerçant local qui a besoin de booster sa présence en ligne.", tag: "notoriete" },
+    { text: "Client depuis 6 mois et déjà +40% de contacts en ligne. Votre tour ? Lien en bio.", tag: "fidelisation" },
+    { text: "Votre site est en ligne. Maintenant on l'optimise chaque mois pour qu'il travaille encore plus pour vous.", tag: "fidelisation" },
+    { text: "Résultat de la semaine : 1 client livré, 3 prospects en discussion. La machine tourne. 💪", tag: "notoriete" },
+    { text: "Commentez 'INFO' et je vous envoie notre guide 'Les 5 erreurs qui tuent votre visibilité en ligne'.", tag: "prospect" },
+  ];
+
+  function renderCTA() {
+    const grid = document.getElementById('ctaGrid');
+    grid.innerHTML = '';
+    CTAS.forEach((c, i) => {
+      grid.innerHTML += `
+        <div class="cta-item">
+          <div class="cta-text">${c.text}</div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+            <span class="cta-tag ${c.tag}">${c.tag}</span>
+            <button class="copy-btn" onclick="copyCTA(${i})">Copier</button>
+          </div>
+        </div>`;
+    });
+  }
+
+  function copyCTA(i) {
+    navigator.clipboard.writeText(CTAS[i].text).then(() => {
+      const btns = document.querySelectorAll('#ctaGrid .copy-btn');
+      btns[i].textContent = 'Copié ✓';
+      setTimeout(() => btns[i].textContent = 'Copier', 2000);
+    });
+  }
+
+  // INIT
+  renderTendances();
+  renderSemaine();
+  renderCTA();
+</script>
+</body>
+</html>
