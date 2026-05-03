@@ -9,7 +9,7 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root { --gold: #C9A84C; --bg: #080808; --surface: #0f0f0f; --surface2: #161616; --border: #1e1e1e; --text: #e8e8e8; --muted: #555; --green: #27ae60; --red: #c0392b; --orange: #e67e22; }
   body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; display: flex; min-height: 100vh; }
-  nav { width: 220px; min-height: 100vh; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 32px 0; position: fixed; top: 0; left: 0; bottom: 0; }
+  nav { width: 220px; height: 100vh; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 32px 0; position: fixed; top: 0; left: 0; bottom: 0; overflow-y: auto; }
   .nav-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 16px; color: var(--gold); letter-spacing: 3px; padding: 0 24px; margin-bottom: 40px; }
   .nav-section { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); padding: 0 24px; margin-bottom: 8px; margin-top: 20px; }
   .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 24px; font-size: 13px; color: var(--muted); text-decoration: none; transition: all 0.15s; border-left: 2px solid transparent; }
@@ -96,6 +96,17 @@
     <div class="date" id="dateDisplay"></div>
   </div>
 
+  <div style="background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--red);padding:20px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between">
+    <div>
+      <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--red);margin-bottom:6px">🎯 Prospection du jour</div>
+      <div style="font-family:Syne,sans-serif;font-size:22px;font-weight:800" id="compteurProspection">0 / 5</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:4px" id="compteurMsg">Aucun prospect contacté aujourd'hui</div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button onclick="incrementProspection()" style="padding:10px 20px;background:var(--gold);border:none;color:#000;font-family:Syne,sans-serif;font-weight:700;font-size:11px;letter-spacing:2px;cursor:pointer">+1 Contact</button>
+      <button onclick="resetProspection()" style="padding:10px 14px;background:transparent;border:1px solid var(--border);color:var(--muted);font-size:11px;cursor:pointer">Reset</button>
+    </div>
+  </div>
   <div class="mission-card">
     <div class="mission-label">⚡ Mission du jour</div>
     <div class="mission-text" id="missionText">Chargement...</div>

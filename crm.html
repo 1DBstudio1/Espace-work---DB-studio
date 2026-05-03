@@ -9,7 +9,7 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root { --gold: #C9A84C; --bg: #080808; --surface: #0f0f0f; --surface2: #161616; --border: #1e1e1e; --text: #e8e8e8; --muted: #555; --green: #27ae60; --red: #c0392b; --orange: #e67e22; --blue: #2980b9; }
   body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; display: flex; min-height: 100vh; }
-  nav { width: 220px; min-height: 100vh; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 32px 0; position: fixed; top: 0; left: 0; bottom: 0; }
+  nav { width: 220px; height: 100vh; overflow-y: auto; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 32px 0; position: fixed; top: 0; left: 0; bottom: 0; }
   .nav-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 16px; color: var(--gold); letter-spacing: 3px; padding: 0 24px; margin-bottom: 40px; }
   .nav-section { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); padding: 0 24px; margin-bottom: 8px; margin-top: 20px; }
   .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 24px; font-size: 13px; color: var(--muted); text-decoration: none; transition: all 0.15s; border-left: 2px solid transparent; }
@@ -33,21 +33,44 @@
   .badge.s3,.badge.s4,.badge.s5 { background: rgba(230,126,34,0.15); color: var(--orange); border: 1px solid rgba(230,126,34,0.3); }
   .badge.s6,.badge.s7 { background: rgba(155,89,182,0.15); color: #9b59b6; border: 1px solid rgba(155,89,182,0.3); }
   .badge.s8,.badge.s9,.badge.s10,.badge.s11,.badge.s12,.badge.s13,.badge.s14,.badge.s15,.badge.s16 { background: rgba(39,174,96,0.15); color: var(--green); border: 1px solid rgba(39,174,96,0.3); }
-  .badge.perdu { background: rgba(192,57,43,0.15); color: var(--red); border: 1px solid rgba(192,57,43,0.3); }
   .action-link { font-size: 11px; color: var(--gold); cursor: pointer; margin-right: 12px; }
+  .action-link.red { color: var(--muted); }
+
+  /* DRAWER */
   .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 100; align-items: flex-start; justify-content: flex-end; }
   .modal-overlay.open { display: flex; }
-  .drawer { background: var(--surface); border-left: 1px solid var(--border); width: 480px; max-width: 95vw; height: 100vh; overflow-y: auto; padding: 40px 32px; }
-  .drawer h3 { font-family: 'Syne', sans-serif; font-size: 18px; margin-bottom: 24px; }
+  .drawer { background: var(--surface); border-left: 1px solid var(--border); width: 520px; max-width: 95vw; height: 100vh; overflow-y: auto; padding: 32px; }
+  .drawer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+  .drawer-title { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; }
+  .drawer-close { background: none; border: none; color: var(--muted); font-size: 20px; cursor: pointer; }
+  .tabs-small { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
+  .tab-s { padding: 8px 16px; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+  .tab-s.active { color: var(--gold); border-bottom-color: var(--gold); }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
   .form-row { margin-bottom: 16px; }
   .form-row label { display: block; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 7px; }
-  .form-row input, .form-row select, .form-row textarea { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 11px 14px; outline: none; }
+  .form-row input, .form-row select, .form-row textarea { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 11px 14px; outline: none; transition: border-color 0.2s; }
   .form-row input:focus, .form-row select:focus, .form-row textarea:focus { border-color: var(--gold); }
   .form-row select option { background: var(--surface); }
   .form-row textarea { min-height: 80px; resize: vertical; }
-  .drawer-btns { display: flex; gap: 10px; margin-top: 24px; }
+  .drawer-btns { display: flex; gap: 10px; margin-top: 20px; }
   .btn-cancel { padding: 12px 20px; background: transparent; border: 1px solid var(--border); color: var(--muted); font-size: 12px; cursor: pointer; }
-  .loading { text-align: center; color: var(--muted); padding: 40px; font-size: 13px; }
+  .btn-cancel:hover { border-color: var(--muted); }
+
+  /* GÉNÉRATEUR MESSAGE */
+  .msg-generator { background: var(--surface2); border: 1px solid var(--border); padding: 20px; margin-bottom: 16px; }
+  .msg-gen-title { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; }
+  .msg-gen-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+  .msg-gen-options select { background: var(--bg); border: 1px solid var(--border); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 12px; padding: 9px 12px; outline: none; width: 100%; }
+  .btn-generate { width: 100%; padding: 11px; background: transparent; border: 1px solid var(--gold); color: var(--gold); font-family: 'Syne', sans-serif; font-weight: 700; font-size: 11px; letter-spacing: 2px; cursor: pointer; margin-bottom: 12px; transition: all 0.15s; }
+  .btn-generate:hover { background: var(--gold); color: #000; }
+  .msg-output { background: var(--bg); border: 1px solid var(--border); padding: 14px; font-size: 13px; line-height: 1.7; color: var(--text); white-space: pre-wrap; display: none; margin-bottom: 10px; min-height: 80px; }
+  .msg-output.show { display: block; }
+  .msg-actions { display: flex; gap: 8px; }
+  .btn-copy { flex: 1; padding: 9px; background: var(--gold); border: none; color: #000; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 10px; letter-spacing: 2px; cursor: pointer; }
+  .btn-regen { padding: 9px 16px; background: transparent; border: 1px solid var(--border); color: var(--muted); font-size: 11px; cursor: pointer; }
+  .btn-regen:hover { border-color: var(--gold); color: var(--gold); }
 </style>
 </head>
 <body>
@@ -73,37 +96,111 @@
     <div class="page-title">Prospects & Clients</div>
     <button class="btn-gold" onclick="openDrawer()">+ Nouveau prospect</button>
   </div>
-  <div id="loadingMsg" class="loading">Chargement...</div>
+  <div id="loadingMsg" style="color:var(--muted);font-size:13px;padding:40px">Chargement...</div>
   <table id="crmTable" style="display:none">
-    <thead><tr><th>Contact</th><th>Entreprise</th><th>Étape</th><th>Tél</th><th>Notes</th><th>Actions</th></tr></thead>
+    <thead><tr><th>Contact</th><th>Entreprise</th><th>Secteur</th><th>Étape</th><th>Actions</th></tr></thead>
     <tbody id="tableBody"></tbody>
   </table>
 </main>
 
+<!-- DRAWER FICHE PROSPECT -->
 <div class="modal-overlay" id="drawer">
   <div class="drawer">
-    <h3 id="drawerTitle">Nouveau prospect</h3>
-    <div class="form-row"><label>Nom</label><input type="text" id="fNom" placeholder="Jean Dupont"></div>
-    <div class="form-row"><label>Entreprise</label><input type="text" id="fEntreprise" placeholder="Commerce / Boite"></div>
-    <div class="form-row"><label>Téléphone</label><input type="tel" id="fTel" placeholder="+33 6 ..."></div>
-    <div class="form-row"><label>Email</label><input type="email" id="fEmail" placeholder="contact@exemple.com"></div>
-    <div class="form-row"><label>Étape</label>
-      <select id="fEtape">
-        <option value="0">1 — Identification</option><option value="1">2 — Qualification</option>
-        <option value="2">3 — Prise de contact</option><option value="3">4 — Rendez-vous</option>
-        <option value="4">5 — Maquette</option><option value="5">6 — Proposition</option>
-        <option value="6">7 — Relances</option><option value="7">8 — Négociation</option>
-        <option value="8">9 — Signé</option><option value="9">10 — Onboarding</option>
-        <option value="10">11 — Construction</option><option value="11">12 — Validation client</option>
-        <option value="12">13 — Livraison</option><option value="13">14 — Formation client</option>
-        <option value="14">15 — Maintenance</option><option value="15">16 — Upsell</option>
-        <option value="16">17 — Renouvellement</option>
-      </select>
+    <div class="drawer-header">
+      <div class="drawer-title" id="drawerTitle">Nouveau prospect</div>
+      <button class="drawer-close" onclick="closeDrawer()">✕</button>
     </div>
-    <div class="form-row"><label>Notes</label><textarea id="fNotes" placeholder="Besoins, remarques..."></textarea></div>
-    <div class="drawer-btns">
-      <button class="btn-cancel" onclick="closeDrawer()">Annuler</button>
-      <button class="btn-gold" onclick="saveProspect()">Enregistrer</button>
+
+    <div class="tabs-small">
+      <div class="tab-s active" onclick="switchTab('infos',this)">Infos</div>
+      <div class="tab-s" onclick="switchTab('message',this)">Message</div>
+      <div class="tab-s" onclick="switchTab('etape',this)">Étape</div>
+    </div>
+
+    <!-- INFOS -->
+    <div class="tab-content active" id="tab-infos">
+      <div class="form-row"><label>Nom du contact</label><input type="text" id="fNom" placeholder="Jean Dupont"></div>
+      <div class="form-row"><label>Entreprise</label><input type="text" id="fEntreprise" placeholder="Hôtel / Restaurant / ..."></div>
+      <div class="form-row"><label>Secteur</label>
+        <select id="fSecteur">
+          <option value="restaurant">Restaurant / Bar / Café</option>
+          <option value="hotel">Hôtel / Hébergement</option>
+          <option value="artisan">Artisan / BTP</option>
+          <option value="commerce">Commerce de proximité</option>
+          <option value="liberal">Professionnel libéral</option>
+          <option value="entrepreneur">Entrepreneur</option>
+          <option value="nettoyage">Nettoyage / Entretien</option>
+          <option value="beaute">Beauté / Bien-être</option>
+          <option value="autre">Autre</option>
+        </select>
+      </div>
+      <div class="form-row"><label>Téléphone</label><input type="tel" id="fTel" placeholder="+33 6 ..."></div>
+      <div class="form-row"><label>Email</label><input type="email" id="fEmail" placeholder="contact@exemple.com"></div>
+      <div class="form-row"><label>Notes</label><textarea id="fNotes" placeholder="Besoins, observations, infos utiles..."></textarea></div>
+      <div class="drawer-btns">
+        <button class="btn-cancel" onclick="closeDrawer()">Annuler</button>
+        <button class="btn-gold" onclick="saveProspect()">Enregistrer</button>
+      </div>
+    </div>
+
+    <!-- MESSAGE -->
+    <div class="tab-content" id="tab-message">
+      <div class="msg-generator">
+        <div class="msg-gen-title">⚡ Générateur de message personnalisé</div>
+        <div class="msg-gen-options">
+          <select id="msgCanal">
+            <option value="whatsapp">WhatsApp</option>
+            <option value="instagram">DM Instagram</option>
+            <option value="email">Email</option>
+            <option value="sms">SMS</option>
+          </select>
+          <select id="msgType">
+            <option value="premier">Premier contact</option>
+            <option value="relance">Relance</option>
+            <option value="devis">Proposition devis</option>
+            <option value="maquette">Présentation maquette</option>
+            <option value="urgence">Urgence / Deadline</option>
+          </select>
+        </div>
+        <button class="btn-generate" onclick="genererMessage()">Générer le message →</button>
+        <div class="msg-output" id="msgOutput"></div>
+        <div class="msg-actions" id="msgActions" style="display:none">
+          <button class="btn-copy" onclick="copierMessage()">Copier</button>
+          <button class="btn-regen" onclick="genererMessage()">↻ Regénérer</button>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--muted);line-height:1.6">
+        Le message est généré selon le nom du prospect, son secteur et le type de contact. Modifie les infos dans l'onglet "Infos" pour des messages plus précis.
+      </div>
+    </div>
+
+    <!-- ÉTAPE -->
+    <div class="tab-content" id="tab-etape">
+      <div class="form-row"><label>Étape actuelle</label>
+        <select id="fEtape">
+          <option value="0">1 — Identification</option>
+          <option value="1">2 — Qualification</option>
+          <option value="2">3 — Prise de contact</option>
+          <option value="3">4 — Rendez-vous</option>
+          <option value="4">5 — Maquette</option>
+          <option value="5">6 — Proposition</option>
+          <option value="6">7 — Relances</option>
+          <option value="7">8 — Négociation</option>
+          <option value="8">9 — Signé</option>
+          <option value="9">10 — Onboarding</option>
+          <option value="10">11 — Construction</option>
+          <option value="11">12 — Validation client</option>
+          <option value="12">13 — Livraison</option>
+          <option value="13">14 — Formation client</option>
+          <option value="14">15 — Maintenance</option>
+          <option value="15">16 — Upsell</option>
+          <option value="16">17 — Renouvellement</option>
+        </select>
+      </div>
+      <div class="drawer-btns">
+        <button class="btn-cancel" onclick="closeDrawer()">Annuler</button>
+        <button class="btn-gold" onclick="saveProspect()">Enregistrer</button>
+      </div>
     </div>
   </div>
 </div>
@@ -115,9 +212,69 @@
 
   const ETAPES = ['Identification','Qualification','Prise de contact','Rendez-vous','Maquette','Proposition','Relances','Négociation','Signé','Onboarding','Construction','Validation','Livraison','Formation','Maintenance','Upsell','Renouvellement'];
 
+  const SECTEURS = { restaurant:'restaurant / café', hotel:'hôtel', artisan:'artisan', commerce:'commerce', liberal:'professionnel libéral', entrepreneur:'entrepreneur', nettoyage:'entreprise de nettoyage', beaute:'institut de beauté / spa', autre:'entreprise' };
+
   let data = [];
   let editId = null;
 
+  // ── MESSAGES ──────────────────────────────────────────────────────────────
+  const MESSAGES = {
+    whatsapp: {
+      premier: (nom, secteur) => `Bonjour ${nom || '[Prénom]'},\n\nJe suis Val, créateur de sites web professionnels pour les ${SECTEURS[secteur]||'entreprises'} locaux à Gap.\n\nJ'ai remarqué votre activité et je pense qu'une présence en ligne optimisée pourrait vraiment booster votre clientèle.\n\nSeriez-vous disponible pour un échange de 15 minutes cette semaine ? Je vous présente ce qu'on pourrait faire ensemble, sans engagement.\n\nBelle journée,\nVal — DB Studio\n📱 06 28 52 74 01`,
+      relance: (nom, secteur) => `Bonjour ${nom || '[Prénom]'},\n\nJe me permets de revenir vers vous suite à mon précédent message.\n\nJe comprends que vous soyez occupé — c'est justement pour ça que DB Studio existe : pour que votre ${SECTEURS[secteur]||'activité'} soit visible en ligne sans que vous ayez à vous en occuper.\n\nUn simple échange de 15 min suffit. Disponible cette semaine ?\n\nVal — DB Studio`,
+      devis: (nom, secteur) => `Bonjour ${nom || '[Prénom]'},\n\nSuite à notre échange, je vous transmets notre proposition pour votre ${SECTEURS[secteur]||'activité'}.\n\n→ Site vitrine professionnel sur-mesure\n→ Livraison en 7 à 14 jours\n→ Hébergement & maintenance inclus\n→ Devis gratuit sans engagement\n\nLe lien pour consulter nos offres : https://1dbstudio1.github.io/Site-Web-DB-studio/\n\nJe reste disponible pour toute question.\n\nVal — DB Studio`,
+      maquette: (nom, secteur) => `Bonjour ${nom || '[Prénom]'},\n\nBonne nouvelle — j'ai préparé une première maquette de votre futur site !\n\nElle reflète l'identité de votre ${SECTEURS[secteur]||'activité'} et met en valeur vos points forts. Je vous la présente quand vous voulez, en moins de 20 minutes.\n\nDisponible cette semaine ?\n\nVal — DB Studio`,
+      urgence: (nom, secteur) => `Bonjour ${nom || '[Prénom]'},\n\nJe souhaitais vous informer que notre offre de lancement -25% pour les premiers clients des Hautes-Alpes se termine bientôt.\n\nC'est l'opportunité idéale pour lancer votre présence en ligne à moindre coût.\n\nUne réponse avant vendredi me permettrait de vous garantir ce tarif.\n\nVal — DB Studio\n📱 06 28 52 74 01`,
+    },
+    instagram: {
+      premier: (nom, secteur) => `Bonjour ${nom || ''},\n\nJe suis tombé sur votre profil et j'ai vu votre ${SECTEURS[secteur]||'activité'} — vraiment beau travail.\n\nJe crée des sites web pros pour les entrepreneurs locaux à Gap. Je pense qu'on pourrait faire quelque chose de bien ensemble.\n\nUn échange rapide cette semaine ? 🙌\n\nVal — DB Studio`,
+      relance: (nom, secteur) => `Bonjour ${nom || ''},\n\nJe me permets de repasser 👋\n\nSi votre ${SECTEURS[secteur]||'activité'} n'a pas encore de site professionnel, c'est le bon moment. On livre en 48h pour certaines offres.\n\nToujours dispo pour en parler !`,
+      devis: (nom, secteur) => `Bonjour ${nom || ''},\n\nComme promis, voici le lien vers nos offres :\n👉 https://1dbstudio1.github.io/Site-Web-DB-studio/\n\nOn a une offre spéciale ${SECTEURS[secteur]||''} qui devrait vous correspondre.\n\nDites-moi ce que vous en pensez 🙂`,
+      maquette: (nom, secteur) => `Bonjour ${nom || ''},\n\nJ'ai préparé une première idée de site pour votre ${SECTEURS[secteur]||'activité'} 🎨\n\nVous voulez voir ? Je vous envoie ça dès qu'on confirme un créneau.`,
+      urgence: (nom, secteur) => `Bonjour ${nom || ''},\n\nOffre de lancement -25% sur les sites sur-mesure — bientôt terminée ⏳\n\nIdéal pour lancer votre ${SECTEURS[secteur]||'activité'} en ligne à moindre coût. Réponse avant vendredi ?`,
+    },
+    email: {
+      premier: (nom, secteur) => `Objet : Votre présence en ligne — DB Studio\n\nBonjour ${nom || '[Prénom]'},\n\nJe suis Val, fondateur de DB Studio, agence web basée à Gap spécialisée dans la création de sites pour les ${SECTEURS[secteur]||'entreprises'} locaux.\n\nEn analysant les ${SECTEURS[secteur]||'entreprises'} de notre région, j'ai identifié une opportunité réelle pour votre activité : une présence en ligne professionnelle qui convertit vos visiteurs en clients.\n\nNous proposons :\n• Sites vitrines sur-mesure livrés en 7 à 14 jours\n• Référencement local Google inclus\n• Maintenance et hébergement assurés chaque mois\n\nSeriez-vous disponible pour un échange de 20 minutes cette semaine ?\n\nCordialement,\nVal\nDB Studio — Gap, Hautes-Alpes\n📱 06 28 52 74 01\n🌐 https://1dbstudio1.github.io/Site-Web-DB-studio/`,
+      relance: (nom, secteur) => `Objet : Re : Votre présence en ligne\n\nBonjour ${nom || '[Prénom]'},\n\nJe me permets de revenir vers vous suite à mon message de la semaine dernière.\n\nJe comprends que votre agenda soit chargé. Si toutefois vous souhaitez explorer comment un site professionnel pourrait développer votre ${SECTEURS[secteur]||'activité'}, je reste disponible.\n\nUn appel de 15 minutes suffit pour faire le point.\n\nCordialement,\nVal — DB Studio`,
+      devis: (nom, secteur) => `Objet : Votre devis DB Studio\n\nBonjour ${nom || '[Prénom]'},\n\nSuite à notre échange, je vous transmets notre proposition adaptée à votre ${SECTEURS[secteur]||'activité'}.\n\nVous trouverez nos offres détaillées sur :\nhttps://1dbstudio1.github.io/Site-Web-DB-studio/\n\nJe suis disponible pour affiner cette proposition selon vos besoins spécifiques.\n\nCordialement,\nVal — DB Studio\n📱 06 28 52 74 01`,
+      maquette: (nom, secteur) => `Objet : Votre maquette est prête — DB Studio\n\nBonjour ${nom || '[Prénom]'},\n\nJ'ai le plaisir de vous annoncer que la maquette de votre futur site est prête.\n\nElle a été conçue spécifiquement pour votre ${SECTEURS[secteur]||'activité'} et reflète votre image professionnelle.\n\nQuand seriez-vous disponible pour une présentation de 20 minutes ?\n\nCordialement,\nVal — DB Studio`,
+      urgence: (nom, secteur) => `Objet : Offre de lancement -25% — Derniers jours\n\nBonjour ${nom || '[Prénom]'},\n\nNotre offre de lancement -25% sur les sites sur-mesure se termine vendredi.\n\nC'est l'opportunité idéale pour votre ${SECTEURS[secteur]||'activité'} de lancer une présence en ligne professionnelle à moindre coût.\n\nUne confirmation avant vendredi vous garantit ce tarif préférentiel.\n\nCordialement,\nVal — DB Studio\n📱 06 28 52 74 01`,
+    },
+    sms: {
+      premier: (nom, secteur) => `Bonjour ${nom || ''}, je suis Val de DB Studio à Gap. Je crée des sites web pour les ${SECTEURS[secteur]||'entreprises'} locaux. Votre activité mérite une belle vitrine en ligne. Dispo pour en parler 15 min ? 📱`,
+      relance: (nom, secteur) => `Bonjour ${nom || ''}, Val de DB Studio. Je reviens vers vous pour votre ${SECTEURS[secteur]||'activité'}. Toujours dispo pour un échange rapide si vous êtes intéressé 🙂`,
+      devis: (nom, secteur) => `Bonjour ${nom || ''}, Val — DB Studio. Voici nos offres : https://1dbstudio1.github.io/Site-Web-DB-studio/ Dites-moi ce qui vous correspond !`,
+      maquette: (nom, secteur) => `Bonjour ${nom || ''}, Val — DB Studio. Votre maquette est prête ! Quand êtes-vous dispo pour la voir ? Ça prend 20 min max 🎨`,
+      urgence: (nom, secteur) => `Bonjour ${nom || ''}, Val — DB Studio. Offre -25% sur vos sites sur-mesure, termine vendredi. Réponse avant vendredi pour en bénéficier ? 📱 06 28 52 74 01`,
+    }
+  };
+
+  const pick = a => a[Math.floor(Math.random()*a.length)];
+
+  function genererMessage() {
+    const nom = document.getElementById('fNom').value.trim().split(' ')[0];
+    const secteur = document.getElementById('fSecteur').value;
+    const canal = document.getElementById('msgCanal').value;
+    const type = document.getElementById('msgType').value;
+    const fn = MESSAGES[canal]?.[type];
+    if (!fn) return;
+    const msg = fn(nom, secteur);
+    const out = document.getElementById('msgOutput');
+    out.textContent = msg;
+    out.classList.add('show');
+    document.getElementById('msgActions').style.display = 'flex';
+  }
+
+  function copierMessage() {
+    const txt = document.getElementById('msgOutput').textContent;
+    navigator.clipboard.writeText(txt).then(() => {
+      const btn = document.querySelector('.btn-copy');
+      btn.textContent = 'Copié ✓';
+      setTimeout(() => btn.textContent = 'Copier', 2000);
+    });
+  }
+
+  // ── CRM ───────────────────────────────────────────────────────────────────
   async function load() {
     try {
       data = await fetch(API+'/prospects').then(r=>r.json());
@@ -125,48 +282,65 @@
       document.getElementById('crmTable').style.display = 'table';
       render();
     } catch(e) {
-      document.getElementById('loadingMsg').textContent = 'Erreur de connexion au serveur. Lance node server.js.';
+      document.getElementById('loadingMsg').textContent = 'Serveur non connecté.';
     }
   }
 
   function render() {
     const tbody = document.getElementById('tableBody');
     tbody.innerHTML = '';
-    if (!data.length) { tbody.innerHTML = '<tr><td colspan="6" style="color:var(--muted);padding:24px;font-size:12px">Aucun prospect. Clique sur + pour commencer.</td></tr>'; return; }
+    if (!data.length) { tbody.innerHTML = '<tr><td colspan="5" style="color:var(--muted);padding:24px;font-size:12px">Aucun prospect. Clique sur + pour commencer.</td></tr>'; return; }
     data.forEach(p => {
-      const etapeLabel = ETAPES[p.etape] || '—';
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td><strong>${p.nom}</strong></td>
         <td>${p.entreprise||'—'}</td>
-        <td><span class="badge s${p.etape}">${etapeLabel}</span></td>
-        <td style="color:var(--muted);font-size:12px">${p.tel||'—'}</td>
-        <td style="color:var(--muted);font-size:12px;max-width:200px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">${p.notes||'—'}</td>
+        <td style="color:var(--muted);font-size:11px">${p.secteur||'—'}</td>
+        <td><span class="badge s${p.etape}">${ETAPES[p.etape]||'—'}</span></td>
         <td>
           <span class="action-link" onclick="openDrawer(${p.id})">Modifier</span>
-          <span class="action-link" style="color:var(--muted)" onclick="del(${p.id})">Suppr.</span>
+          <span class="action-link" onclick="openDrawer(${p.id}, 'message')">Message</span>
+          <span class="action-link red" onclick="del(${p.id})">Suppr.</span>
         </td>`;
       tbody.appendChild(tr);
     });
   }
 
-  function openDrawer(id) {
+  function switchTab(name, el) {
+    document.querySelectorAll('.tab-s').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('tab-'+name).classList.add('active');
+    if (name === 'message') {
+      document.getElementById('msgOutput').classList.remove('show');
+      document.getElementById('msgActions').style.display = 'none';
+    }
+  }
+
+  function openDrawer(id, tab) {
     editId = id || null;
     if (id) {
       const p = data.find(x=>x.id===id);
       document.getElementById('drawerTitle').textContent = p.nom;
       document.getElementById('fNom').value = p.nom;
       document.getElementById('fEntreprise').value = p.entreprise||'';
+      document.getElementById('fSecteur').value = p.secteur||'autre';
       document.getElementById('fTel').value = p.tel||'';
       document.getElementById('fEmail').value = p.email||'';
-      document.getElementById('fEtape').value = p.etape;
       document.getElementById('fNotes').value = p.notes||'';
+      document.getElementById('fEtape').value = p.etape||0;
     } else {
       document.getElementById('drawerTitle').textContent = 'Nouveau prospect';
       ['fNom','fEntreprise','fTel','fEmail','fNotes'].forEach(i=>document.getElementById(i).value='');
       document.getElementById('fEtape').value = 0;
     }
     document.getElementById('drawer').classList.add('open');
+    if (tab) {
+      const tabEl = document.querySelector(`.tab-s[onclick*="${tab}"]`);
+      if (tabEl) switchTab(tab, tabEl);
+    } else {
+      switchTab('infos', document.querySelector('.tab-s'));
+    }
   }
 
   function closeDrawer() { document.getElementById('drawer').classList.remove('open'); }
@@ -175,6 +349,7 @@
     const body = {
       nom: document.getElementById('fNom').value.trim(),
       entreprise: document.getElementById('fEntreprise').value.trim(),
+      secteur: document.getElementById('fSecteur').value,
       tel: document.getElementById('fTel').value.trim(),
       email: document.getElementById('fEmail').value.trim(),
       etape: parseInt(document.getElementById('fEtape').value),
@@ -183,8 +358,7 @@
     if (!body.nom) return;
     if (editId) await fetch(API+'/prospects/'+editId, {method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
     else await fetch(API+'/prospects', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-    closeDrawer();
-    load();
+    closeDrawer(); load();
   }
 
   async function del(id) {
@@ -192,6 +366,9 @@
     await fetch(API+'/prospects/'+id, {method:'DELETE'});
     load();
   }
+
+  // Ajouter secteur dans la table PostgreSQL si nécessaire
+  fetch(API+'/prospects').catch(()=>{});
 
   load();
 </script>
