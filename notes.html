@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DB Studio — Notes</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --gold: #C9A84C; --bg: #080808; --surface: #0f0f0f; --surface2: #161616; --border: #1e1e1e; --text: #e8e8e8; --muted: #555; --green: #27ae60; --red: #c0392b; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; display: flex; min-height: 100vh; }
+  nav { width: 220px; height: 100vh; overflow-y: auto; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 32px 0; position: fixed; top: 0; left: 0; bottom: 0; }
+  .nav-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 16px; color: var(--gold); letter-spacing: 3px; padding: 0 24px; margin-bottom: 40px; }
+  .nav-section { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); padding: 0 24px; margin-bottom: 8px; margin-top: 20px; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 24px; font-size: 13px; color: var(--muted); text-decoration: none; transition: all 0.15s; border-left: 2px solid transparent; }
+  .nav-item:hover { color: var(--text); background: var(--surface2); }
+  .nav-item.active { color: var(--gold); border-left-color: var(--gold); background: rgba(201,168,76,0.05); }
+  .nav-item .ico { font-size: 15px; width: 18px; text-align: center; }
+  .nav-bottom { margin-top: auto; padding: 0 24px; }
+  .nav-logout { font-size: 11px; color: var(--muted); cursor: pointer; }
+  .nav-logout:hover { color: var(--red); }
+  main { margin-left: 220px; flex: 1; padding: 40px; }
+  .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; }
+  .page-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 24px; }
+  .quick-input { display: flex; gap: 10px; margin-bottom: 32px; }
+  .quick-input textarea { flex: 1; background: var(--surface); border: 1px solid var(--border); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; padding: 16px; outline: none; resize: none; height: 80px; transition: border-color 0.2s; }
+  .quick-input textarea:focus { border-color: var(--gold); }
+  .quick-input textarea::placeholder { color: var(--muted); }
+  .quick-actions { display: flex; flex-direction: column; gap: 8px; }
+  .btn-add { padding: 14px 20px; background: var(--gold); border: none; color: #000; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 11px; letter-spacing: 2px; cursor: pointer; }
+  .btn-add:hover { background: #d9b55c; }
+  .filter-bar { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+  .filter-btn { padding: 6px 16px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); font-size: 11px; cursor: pointer; transition: all 0.15s; }
+  .filter-btn:hover { border-color: var(--gold); color: var(--gold); }
+  .filter-btn.active { border-color: var(--gold); color: var(--gold); background: rgba(201,168,76,0.05); }
+  .tag-select { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  .tag-btn { padding: 4px 12px; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; border: 1px solid var(--border); color: var(--muted); background: transparent; transition: all 0.15s; }
+  .tag-btn.selected { border-color: var(--gold); color: var(--gold); background: rgba(201,168,76,0.1); }
+  .notes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px,1fr)); gap: 16px; }
+  .note-card { background: var(--surface); border: 1px solid var(--border); padding: 20px; position: relative; transition: border-color 0.15s; }
+  .note-card:hover { border-color: var(--gold); }
+  .note-tag { display: inline-block; padding: 2px 10px; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
+  .note-tag.idee { background: rgba(201,168,76,0.15); color: var(--gold); border: 1px solid rgba(201,168,76,0.3); }
+  .note-tag.client { background: rgba(39,174,96,0.15); color: var(--green); border: 1px solid rgba(39,174,96,0.3); }
+  .note-tag.tache { background: rgba(41,128,185,0.15); color: #2980b9; border: 1px solid rgba(41,128,185,0.3); }
+  .note-tag.urgent { background: rgba(192,57,43,0.15); color: var(--red); border: 1px solid rgba(192,57,43,0.3); }
+  .note-tag.general { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
+  .note-text { font-size: 13px; line-height: 1.7; color: var(--text); white-space: pre-wrap; word-break: break-word; }
+  .note-date { font-size: 10px; color: var(--muted); margin-top: 12px; }
+  .note-del { position: absolute; top: 12px; right: 12px; background: none; border: none; color: var(--muted); cursor: pointer; font-size: 14px; opacity: 0; transition: opacity 0.15s; }
+  .note-card:hover .note-del { opacity: 1; }
+  .note-del:hover { color: var(--red); }
+  .search-bar { width: 100%; background: var(--surface); border: 1px solid var(--border); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 12px 16px; outline: none; margin-bottom: 20px; transition: border-color 0.2s; }
+  .search-bar:focus { border-color: var(--gold); }
+  .search-bar::placeholder { color: var(--muted); }
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-logo">DB STUDIO</div>
+  <div class="nav-section">Principal</div>
+  <a href="dashboard.html" class="nav-item"><span class="ico">⬛</span> Dashboard</a>
+  <a href="crm.html" class="nav-item"><span class="ico">◈</span> Prospects & Clients</a>
+  <a href="projets.html" class="nav-item"><span class="ico">◇</span> Projets</a>
+  <div class="nav-section">Gestion</div>
+  <a href="finances.html" class="nav-item"><span class="ico">◆</span> Finances</a>
+  <a href="documents.html" class="nav-item"><span class="ico">▣</span> Documents</a>
+  <div class="nav-section">Marketing</div>
+  <a href="reseaux.html" class="nav-item"><span class="ico">◎</span> Réseaux Sociaux</a>
+  <a href="marketing.html" class="nav-item"><span class="ico">✦</span> Cerveau Marketing</a>
+  <div class="nav-section">Business</div>
+  <a href="stratege.html" class="nav-item"><span class="ico">◆</span> Stratège</a>
+  <a href="notes.html" class="nav-item active"><span class="ico">✎</span> Notes rapides</a>
+  <div class="nav-section">Alter Ego</div>
+  <a href="alterego.html" class="nav-item"><span class="ico">◉</span> Mon Alter Ego</a>
+  <div class="nav-bottom"><a class="nav-logout" onclick="logout()">← Déconnexion</a></div>
+</nav>
+
+<main>
+  <div class="top-bar">
+    <div class="page-title">Notes rapides</div>
+    <div style="font-size:12px;color:var(--muted)" id="nbNotes">0 note(s)</div>
+  </div>
+
+  <div class="quick-input">
+    <div style="flex:1">
+      <textarea id="noteInput" placeholder="Capture une idée, un retour client, une tâche... Entrée pour valider." onkeydown="if(event.key==='Enter'&&event.ctrlKey)addNote()"></textarea>
+      <div class="tag-select">
+        <button class="tag-btn selected" data-tag="general" onclick="selectTag(this)">Général</button>
+        <button class="tag-btn" data-tag="idee" onclick="selectTag(this)">💡 Idée</button>
+        <button class="tag-btn" data-tag="client" onclick="selectTag(this)">👤 Client</button>
+        <button class="tag-btn" data-tag="tache" onclick="selectTag(this)">✓ Tâche</button>
+        <button class="tag-btn" data-tag="urgent" onclick="selectTag(this)">🔴 Urgent</button>
+      </div>
+    </div>
+    <div class="quick-actions">
+      <button class="btn-add" onclick="addNote()">+ Ajouter</button>
+    </div>
+  </div>
+
+  <input type="text" class="search-bar" placeholder="Rechercher dans les notes..." oninput="renderNotes(this.value)">
+
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="setFilter('tous',this)">Toutes</button>
+    <button class="filter-btn" onclick="setFilter('urgent',this)">🔴 Urgent</button>
+    <button class="filter-btn" onclick="setFilter('idee',this)">💡 Idées</button>
+    <button class="filter-btn" onclick="setFilter('client',this)">👤 Client</button>
+    <button class="filter-btn" onclick="setFilter('tache',this)">✓ Tâches</button>
+    <button class="filter-btn" onclick="setFilter('general',this)">Général</button>
+  </div>
+
+  <div class="notes-grid" id="notesGrid"></div>
+</main>
+
+<script>
+  if (!sessionStorage.getItem('auth')) window.location.href = 'index.html';
+  function logout() { sessionStorage.clear(); window.location.href = 'index.html'; }
+
+  let notes = JSON.parse(localStorage.getItem('notes_rapides') || '[]');
+  let currentFilter = 'tous';
+  let currentTag = 'general';
+
+  function save() { localStorage.setItem('notes_rapides', JSON.stringify(notes)); }
+
+  function selectTag(btn) {
+    document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    currentTag = btn.dataset.tag;
+  }
+
+  function setFilter(f, btn) {
+    currentFilter = f;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderNotes(document.querySelector('.search-bar').value);
+  }
+
+  function addNote() {
+    const text = document.getElementById('noteInput').value.trim();
+    if (!text) return;
+    notes.unshift({ id: Date.now(), text, tag: currentTag, date: new Date().toLocaleDateString('fr-FR', {day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) });
+    document.getElementById('noteInput').value = '';
+    save();
+    renderNotes('');
+  }
+
+  function delNote(id) {
+    notes = notes.filter(n => n.id !== id);
+    save();
+    renderNotes(document.querySelector('.search-bar').value);
+  }
+
+  function renderNotes(search = '') {
+    const grid = document.getElementById('notesGrid');
+    let filtered = notes;
+    if (currentFilter !== 'tous') filtered = filtered.filter(n => n.tag === currentFilter);
+    if (search) filtered = filtered.filter(n => n.text.toLowerCase().includes(search.toLowerCase()));
+    document.getElementById('nbNotes').textContent = notes.length + ' note(s)';
+    grid.innerHTML = '';
+    if (!filtered.length) { grid.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:24px">Aucune note.</div>'; return; }
+    filtered.forEach(n => {
+      const div = document.createElement('div');
+      div.className = 'note-card';
+      div.innerHTML = `
+        <span class="note-tag ${n.tag}">${n.tag}</span>
+        <div class="note-text">${n.text}</div>
+        <div class="note-date">${n.date}</div>
+        <button class="note-del" onclick="delNote(${n.id})">✕</button>`;
+      grid.appendChild(div);
+    });
+  }
+
+  document.getElementById('noteInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); addNote(); }
+  });
+
+  renderNotes();
+</script>
+</body>
+</html>

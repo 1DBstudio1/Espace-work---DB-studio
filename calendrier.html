@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DB Studio — Calendrier</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --gold: #C9A84C; --bg: #080808; --surface: #0f0f0f; --surface2: #161616; --border: #1e1e1e; --text: #e8e8e8; --muted: #555; --green: #27ae60; --red: #c0392b; --orange: #e67e22; --blue: #2980b9; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; display: flex; min-height: 100vh; }
+  nav { width: 220px; height: 100vh; overflow-y: auto; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 32px 0; position: fixed; top: 0; left: 0; bottom: 0; }
+  .nav-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 16px; color: var(--gold); letter-spacing: 3px; padding: 0 24px; margin-bottom: 40px; }
+  .nav-section { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); padding: 0 24px; margin-bottom: 8px; margin-top: 20px; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 24px; font-size: 13px; color: var(--muted); text-decoration: none; transition: all 0.15s; border-left: 2px solid transparent; }
+  .nav-item:hover { color: var(--text); background: var(--surface2); }
+  .nav-item.active { color: var(--gold); border-left-color: var(--gold); background: rgba(201,168,76,0.05); }
+  .nav-item .ico { font-size: 15px; width: 18px; text-align: center; }
+  .nav-bottom { margin-top: auto; padding: 0 24px; }
+  .nav-logout { font-size: 11px; color: var(--muted); cursor: pointer; }
+  .nav-logout:hover { color: var(--red); }
+  main { margin-left: 220px; flex: 1; padding: 40px; }
+  .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; }
+  .page-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 24px; }
+  .btn-gold { padding: 11px 20px; background: var(--gold); border: none; color: #000; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 11px; letter-spacing: 2px; cursor: pointer; }
+  .btn-gold:hover { background: #d9b55c; }
+  .cal-header { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+  .cal-nav { padding: 8px 14px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); cursor: pointer; font-size: 16px; transition: all 0.15s; }
+  .cal-nav:hover { border-color: var(--gold); color: var(--gold); }
+  .cal-month { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; min-width: 200px; text-align: center; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+  .cal-day-header { text-align: center; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); padding: 8px 0; }
+  .cal-day { background: var(--surface); border: 1px solid var(--border); min-height: 100px; padding: 8px; cursor: pointer; transition: border-color 0.15s; position: relative; }
+  .cal-day:hover { border-color: var(--gold); }
+  .cal-day.today { border-color: var(--gold); background: rgba(201,168,76,0.05); }
+  .cal-day.other-month { opacity: 0.3; }
+  .cal-day-num { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
+  .cal-day.today .cal-day-num { color: var(--gold); font-weight: 700; }
+  .cal-event { font-size: 10px; padding: 2px 6px; margin-bottom: 2px; border-radius: 0; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cal-event.prospect { background: rgba(41,128,185,0.3); color: #7fb3d3; }
+  .cal-event.projet { background: rgba(201,168,76,0.3); color: var(--gold); }
+  .cal-event.facture { background: rgba(192,57,43,0.3); color: #e88; }
+  .cal-event.post { background: rgba(39,174,96,0.3); color: #7ec; }
+  .cal-event.perso { background: rgba(155,89,182,0.3); color: #c9a; }
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.88); z-index: 100; align-items: center; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--surface); border: 1px solid var(--border); width: 440px; max-width: 95vw; padding: 32px; }
+  .modal h3 { font-family: 'Syne', sans-serif; font-size: 16px; margin-bottom: 20px; color: var(--gold); }
+  .form-row { margin-bottom: 14px; }
+  .form-row label { display: block; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+  .form-row input, .form-row select, .form-row textarea { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 10px 14px; outline: none; }
+  .form-row input:focus, .form-row select:focus { border-color: var(--gold); }
+  .form-row select option { background: var(--surface); }
+  .modal-btns { display: flex; gap: 8px; margin-top: 16px; }
+  .btn-cancel { padding: 11px 18px; background: transparent; border: 1px solid var(--border); color: var(--muted); font-size: 12px; cursor: pointer; }
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--muted); }
+  .legend-dot { width: 10px; height: 10px; }
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-logo">DB STUDIO</div>
+  <div class="nav-section">Principal</div>
+  <a href="dashboard.html" class="nav-item"><span class="ico">⬛</span> Dashboard</a>
+  <a href="crm.html" class="nav-item"><span class="ico">◈</span> Prospects & Clients</a>
+  <a href="projets.html" class="nav-item"><span class="ico">◇</span> Projets</a>
+  <div class="nav-section">Gestion</div>
+  <a href="finances.html" class="nav-item"><span class="ico">◆</span> Finances</a>
+  <a href="documents.html" class="nav-item"><span class="ico">▣</span> Documents</a>
+  <div class="nav-section">Marketing</div>
+  <a href="reseaux.html" class="nav-item"><span class="ico">◎</span> Réseaux Sociaux</a>
+  <a href="marketing.html" class="nav-item"><span class="ico">✦</span> Cerveau Marketing</a>
+  <div class="nav-section">Business</div>
+  <a href="stratege.html" class="nav-item"><span class="ico">◆</span> Stratège</a>
+  <a href="notes.html" class="nav-item"><span class="ico">✎</span> Notes rapides</a>
+  <a href="calendrier.html" class="nav-item active"><span class="ico">▦</span> Calendrier</a>
+  <div class="nav-section">Alter Ego</div>
+  <a href="alterego.html" class="nav-item"><span class="ico">◉</span> Mon Alter Ego</a>
+  <div class="nav-bottom"><a class="nav-logout" onclick="logout()">← Déconnexion</a></div>
+</nav>
+
+<main>
+  <div class="top-bar">
+    <div class="page-title">Calendrier</div>
+    <button class="btn-gold" onclick="openModal()">+ Ajouter</button>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:rgba(41,128,185,0.6)"></div>Prospect</div>
+    <div class="legend-item"><div class="legend-dot" style="background:rgba(201,168,76,0.6)"></div>Projet</div>
+    <div class="legend-item"><div class="legend-dot" style="background:rgba(192,57,43,0.6)"></div>Facture</div>
+    <div class="legend-item"><div class="legend-dot" style="background:rgba(39,174,96,0.6)"></div>Post réseaux</div>
+    <div class="legend-item"><div class="legend-dot" style="background:rgba(155,89,182,0.6)"></div>Personnel</div>
+  </div>
+
+  <div class="cal-header">
+    <button class="cal-nav" onclick="changeMonth(-1)">←</button>
+    <div class="cal-month" id="calMonth"></div>
+    <button class="cal-nav" onclick="changeMonth(1)">→</button>
+    <button class="cal-nav" onclick="goToday()" style="font-size:11px;letter-spacing:1px">Aujourd'hui</button>
+  </div>
+
+  <div class="cal-grid" id="calGrid"></div>
+</main>
+
+<div class="modal-overlay" id="eventModal">
+  <div class="modal">
+    <h3 id="modalTitle">Ajouter un événement</h3>
+    <div class="form-row"><label>Titre</label><input type="text" id="evTitre" placeholder="Rendez-vous client, deadline..."></div>
+    <div class="form-row"><label>Date</label><input type="date" id="evDate"></div>
+    <div class="form-row"><label>Catégorie</label>
+      <select id="evCat">
+        <option value="prospect">Prospect</option>
+        <option value="projet">Projet</option>
+        <option value="facture">Facture</option>
+        <option value="post">Post réseaux</option>
+        <option value="perso">Personnel</option>
+      </select>
+    </div>
+    <div class="form-row"><label>Notes</label><textarea id="evNotes" placeholder="Détails..." style="height:60px;resize:none"></textarea></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">Annuler</button>
+      <button class="btn-gold" onclick="saveEvent()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  if (!sessionStorage.getItem('auth')) window.location.href = 'index.html';
+  function logout() { sessionStorage.clear(); window.location.href = 'index.html'; }
+
+  let events = JSON.parse(localStorage.getItem('cal_events') || '[]');
+  let current = new Date();
+  let selectedDate = null;
+
+  function save() { localStorage.setItem('cal_events', JSON.stringify(events)); }
+
+  const MONTHS = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+  const DAYS = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
+
+  function changeMonth(d) { current = new Date(current.getFullYear(), current.getMonth()+d, 1); renderCal(); }
+  function goToday() { current = new Date(); renderCal(); }
+
+  function renderCal() {
+    document.getElementById('calMonth').textContent = MONTHS[current.getMonth()] + ' ' + current.getFullYear();
+    const grid = document.getElementById('calGrid');
+    grid.innerHTML = '';
+    DAYS.forEach(d => { grid.innerHTML += `<div class="cal-day-header">${d}</div>`; });
+
+    const first = new Date(current.getFullYear(), current.getMonth(), 1);
+    const last = new Date(current.getFullYear(), current.getMonth()+1, 0);
+    let startDay = first.getDay() === 0 ? 6 : first.getDay()-1;
+
+    for (let i = 0; i < startDay; i++) {
+      const d = new Date(first); d.setDate(d.getDate()-startDay+i);
+      grid.innerHTML += `<div class="cal-day other-month"><div class="cal-day-num">${d.getDate()}</div></div>`;
+    }
+
+    const today = new Date().toISOString().split('T')[0];
+    for (let d = 1; d <= last.getDate(); d++) {
+      const dateStr = `${current.getFullYear()}-${String(current.getMonth()+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const dayEvents = events.filter(e => e.date === dateStr);
+      const isToday = dateStr === today;
+      const div = document.createElement('div');
+      div.className = 'cal-day' + (isToday ? ' today' : '');
+      div.innerHTML = `<div class="cal-day-num">${d}</div>` + dayEvents.map(e => `<div class="cal-event ${e.cat}" onclick="event.stopPropagation();delEvent('${e.id}')" title="${e.notes||e.titre}">${e.titre}</div>`).join('');
+      div.addEventListener('click', () => { selectedDate = dateStr; openModal(dateStr); });
+      grid.appendChild(div);
+    }
+  }
+
+  function openModal(date) {
+    document.getElementById('evDate').value = date || new Date().toISOString().split('T')[0];
+    document.getElementById('evTitre').value = '';
+    document.getElementById('evNotes').value = '';
+    document.getElementById('modalTitle').textContent = date ? `Ajouter — ${date}` : 'Ajouter un événement';
+    document.getElementById('eventModal').classList.add('open');
+  }
+
+  function closeModal() { document.getElementById('eventModal').classList.remove('open'); }
+
+  function saveEvent() {
+    const titre = document.getElementById('evTitre').value.trim();
+    if (!titre) return;
+    events.push({ id: Date.now().toString(), titre, date: document.getElementById('evDate').value, cat: document.getElementById('evCat').value, notes: document.getElementById('evNotes').value.trim() });
+    save(); closeModal(); renderCal();
+  }
+
+  function delEvent(id) { if(!confirm('Supprimer ?')) return; events = events.filter(e=>e.id!==id); save(); renderCal(); }
+
+  renderCal();
+</script>
+</body>
+</html>
