@@ -271,6 +271,8 @@
     loadAll();
   }
 
+
+  async function removeTask(id) { await delTask(id); }
   async function delTask(id) {
     await fetch(API+'/taches-dashboard/'+id, {method:'DELETE'});
     loadAll();
@@ -284,6 +286,23 @@
   }
 
   loadAll();
+
+  window.incrementProspection = function() {
+    const today = new Date().toISOString().split('T')[0];
+    const n = parseInt(localStorage.getItem('prospection_'+today)||'0');
+    localStorage.setItem('prospection_'+today, n+1);
+    document.getElementById('compteurProspection').textContent = (n+1)+' / 5';
+    const msgs = ["Aucun prospect contacté aujourd'hui","1 contact — continue !","2 contacts — bien !","3 contacts — à mi-chemin","4 contacts — presque !","5 contacts — objectif atteint 🏆"];
+    document.getElementById('compteurMsg').textContent = msgs[Math.min(n+1,5)];
+    document.getElementById('compteurProspection').style.color = (n+1)>=5?'var(--green)':(n+1)>=3?'var(--gold)':'var(--red)';
+  };
+  window.resetProspection = function() {
+    const today = new Date().toISOString().split('T')[0];
+    localStorage.setItem('prospection_'+today, 0);
+    document.getElementById('compteurProspection').textContent = '0 / 5';
+    document.getElementById('compteurMsg').textContent = "Aucun prospect contacté aujourd'hui";
+    document.getElementById('compteurProspection').style.color = 'var(--red)';
+  };
 </script>
 </body>
 </html>
