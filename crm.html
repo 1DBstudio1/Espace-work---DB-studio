@@ -218,6 +218,19 @@
 
   const SECTEURS = { restaurant:'restaurant / café', hotel:'hôtel', artisan:'artisan', commerce:'commerce', liberal:'professionnel libéral', entrepreneur:'entrepreneur', nettoyage:'entreprise de nettoyage', beaute:'institut de beauté / spa', autre:'entreprise' };
 
+
+  // Vérification serveur au démarrage
+  async function checkServer() {
+    try {
+      await fetch(API + '/prospects', {signal: AbortSignal.timeout(3000)});
+      return true;
+    } catch(e) {
+      document.getElementById('loadingMsg').innerHTML = '<div style="background:#1a0000;border:1px solid var(--red);padding:20px;color:var(--red);font-size:13px">⚠️ Serveur non connecté.<br><br>Dans Termux, lance :<br><code style="background:#000;padding:4px 8px;color:#fff;display:inline-block;margin-top:8px">bash ~/dbstudio/start.sh</code><br><br>Puis actualise cette page.</div>';
+      document.getElementById('loadingMsg').style.display = 'block';
+      return false;
+    }
+  }
+
   let data = [];
   let editId = null;
 
@@ -368,13 +381,13 @@
   async function del(id) {
     if (!confirm('Supprimer ?')) return;
     await fetch(API+'/prospects/'+id, {method:'DELETE'});
-    load();
+    checkServer().then(ok => { if(ok) load(); });
   }
 
   // Ajouter secteur dans la table PostgreSQL si nécessaire
   fetch(API+'/prospects').catch(()=>{});
 
-  load();
+  checkServer().then(ok => { if(ok) load(); });
 </script>
 </body>
 </html>

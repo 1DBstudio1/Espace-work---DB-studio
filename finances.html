@@ -147,6 +147,19 @@
   if (!sessionStorage.getItem('auth')) window.location.href = 'index.html';
   function logout() { sessionStorage.clear(); window.location.href = 'index.html'; }
 
+
+  // Vérification serveur au démarrage
+  async function checkServer() {
+    try {
+      await fetch(API + '/prospects', {signal: AbortSignal.timeout(3000)});
+      return true;
+    } catch(e) {
+      document.getElementById('loadingMsg').innerHTML = '<div style="background:#1a0000;border:1px solid var(--red);padding:20px;color:var(--red);font-size:13px">⚠️ Serveur non connecté.<br><br>Dans Termux, lance :<br><code style="background:#000;padding:4px 8px;color:#fff;display:inline-block;margin-top:8px">bash ~/dbstudio/start.sh</code><br><br>Puis actualise cette page.</div>';
+      document.getElementById('loadingMsg').style.display = 'block';
+      return false;
+    }
+  }
+
   let factures = [], abos = [];
 
   async function load() {
@@ -229,18 +242,18 @@
 
   async function toggleFact(id, statut) {
     await fetch(API+'/factures/'+id, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ statut: statut==='payee'?'attente':'payee' }) });
-    load();
+    checkServer().then(ok => { if(ok) load(); });
   }
 
   async function toggleAbo(id, statut) {
     await fetch(API+'/abonnements/'+id, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ statut: statut==='payé'?'attente':'payé' }) });
-    load();
+    checkServer().then(ok => { if(ok) load(); });
   }
 
   async function delFact(id) { if(!confirm('Supprimer ?')) return; await fetch(API+'/factures/'+id,{method:'DELETE'}); load(); }
   async function delAbo(id) { if(!confirm('Supprimer ?')) return; await fetch(API+'/abonnements/'+id,{method:'DELETE'}); load(); }
 
-  load();
+  checkServer().then(ok => { if(ok) load(); });
 </script>
 </body>
 </html>
